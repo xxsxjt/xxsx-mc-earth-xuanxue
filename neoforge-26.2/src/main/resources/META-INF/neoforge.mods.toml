@@ -4,7 +4,7 @@ license="AGPL-3.0-only"
 
 [[mods]]
 modId="xuanhuan_earth"
-version="0.7.0-alpha.14"
+version="0.7.0-alpha.15"
 displayName="Xuanhuan Earth / 玄幻地球"
 logoFile="logo.png"
 description='''

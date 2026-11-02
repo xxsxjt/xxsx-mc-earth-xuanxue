@@ -31,7 +31,7 @@ public final class EmberCraneModel extends EntityModel<SpiritBeastRenderState> {
         super(root, RenderTypes::entityCutout);
         this.body = root.getChild("body");
         this.neck = root.getChild("neck");
-        this.head = this.neck.getChild("head");
+        this.head = this.neck.getChild("upper").getChild("head");
         this.leftWing = root.getChild("left_wing");
         this.rightWing = root.getChild("right_wing");
         this.leftLeg = root.getChild("left_leg");

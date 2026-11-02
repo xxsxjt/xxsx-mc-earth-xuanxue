@@ -33,8 +33,8 @@ public final class StonehornGoatModel extends EntityModel<SpiritBeastRenderState
         this.head = root.getChild("head");
         this.muzzle = this.head.getChild("muzzle");
         this.beard = this.head.getChild("beard");
-        this.leftHorn = this.head.getChild("left_horn");
-        this.rightHorn = this.head.getChild("right_horn");
+        this.leftHorn = this.head.getChild("left_horn_base");
+        this.rightHorn = this.head.getChild("right_horn_base");
         this.body = root.getChild("body");
         this.armor = root.getChild("armor");
         this.tail = root.getChild("tail");
@@ -166,6 +166,10 @@ public final class StonehornGoatModel extends EntityModel<SpiritBeastRenderState
         this.body.xRot = state.breathPhase * 0.012F - leap * 0.1F;
         this.armor.yScale = 1.0F + Mth.sin(state.ageInTicks * 0.12F) * 0.015F * state.affinity;
         this.tail.yRot = Mth.sin(state.ageInTicks * 0.12F) * 0.22F + state.tailWag * 0.1F;
+        // Horn base only: the mid and tip segments are siblings in the generated tree, so
+        // rotating the base alone keeps the curl rigid instead of compounding angles.
+        this.leftHorn.zRot = -0.34F + Mth.sin(state.ageInTicks * 0.06F) * 0.015F;
+        this.rightHorn.zRot = -this.leftHorn.zRot;
 
         float attack = Mth.sin(state.attackProgress * Mth.PI);
         this.head.xRot -= attack * 0.9F;
