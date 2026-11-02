@@ -1,15 +1,13 @@
-"""Lay out box UVs for a model spec and paint its texture.
+"""Lay out box UVs for a model spec and paint its texture with directional material shaders.
 
-Hand-packing UV offsets is how box models end up with smeared faces. This allocator takes
-a part/box spec, reserves a rectangle for every box using vanilla's unwrap layout, emits
-the Java ``texOffs`` values, and paints each face from a palette so the result is legible
-in the offline preview.
+Every face is painted with smooth volumetric gradients, directional fur/feather strokes,
+hexagonal tortoise scutes, or faceted crystal glows — never 1x1 checkerboards or harsh
+black box borders.
 """
 
 from __future__ import annotations
 
-import json
-import random
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -84,98 +82,239 @@ def face_rects(u: int, v: int, w: int, h: int, d: int) -> dict[str, tuple[int, i
     }
 
 
-def shade(color: tuple[int, int, int], delta: int) -> tuple[int, int, int, int]:
-    return tuple(max(0, min(255, c + delta)) for c in color) + (255,)
+def shade(color: tuple[int, int, int], delta: float) -> tuple[int, int, int, int]:
+    return tuple(max(0, min(255, int(round(c + delta)))) for c in color) + (255,)
 
 
-FACE_LIGHT = {"up": 20, "down": -30, "west": -8, "north": 6, "east": 10, "south": -14}
+def lerp_rgb(c0: tuple[int, int, int], c1: tuple[int, int, int], t: float) -> tuple[int, int, int]:
+    t = max(0.0, min(1.0, t))
+    return (
+        int(round(c0[0] + (c1[0] - c0[0]) * t)),
+        int(round(c0[1] + (c1[1] - c0[1]) * t)),
+        int(round(c0[2] + (c1[2] - c0[2]) * t)),
+    )
+
+
+FACE_LIGHT = {"up": 18, "down": -22, "west": -4, "north": 8, "east": 6, "south": -10}
 
 
 def paint_box(image: Image.Image, u: int, v: int, box: BoxSpec,
               base: tuple[int, int, int], accent: tuple[int, int, int]) -> None:
     draw = ImageDraw.Draw(image)
-    w, h, d = int(box.w), int(box.h), int(box.d)
-    rng = random.Random(sum(ord(c) for c in box.name))
-    # Two-tone shading: dorsal darker, ventral lighter. A single flat fur colour made every
-    # creature read as a white blob in the four-view sheets.
-    dorsal = tuple(max(0, c - 46) for c in base)
-    ventral = tuple(min(255, c + 34) for c in base)
+    w, h, d = int(round(box.w)), int(round(box.h)), int(round(box.d))
+    dorsal = tuple(max(0, c - 26) for c in base)
+    ventral = tuple(min(255, c + 36) for c in base)
+
     for face, rect in face_rects(u, v, w, h, d).items():
         x0, y0, x1, y1 = rect
-        if x1 <= x0 or y1 <= y0:
+        fw = x1 - x0
+        fh = y1 - y0
+        if fw <= 0 or fh <= 0:
             continue
-        tone = shade(base, FACE_LIGHT[face])
-        draw.rectangle((x0, y0, x1 - 1, y1 - 1), fill=tone)
+        fl = FACE_LIGHT[face]
 
-        if box.style == "fur" and y1 - y0 >= 4:
-            split = y0 + max(1, (y1 - y0) // 2)
-            draw.rectangle((x0, y0, x1 - 1, split - 1),
-                           fill=shade(dorsal, FACE_LIGHT[face] // 2))
-            draw.rectangle((x0, split, x1 - 1, y1 - 1),
-                           fill=shade(ventral, FACE_LIGHT[face] // 3))
-            for y in range(y0 + 1, split, 2):
-                for x in range(x0 + 1 + (y & 1), x1 - 1, 3):
-                    draw.point((x, y), fill=shade(dorsal, FACE_LIGHT[face] // 2 + rng.choice((-16, 10))))
-            for y in range(split + 1, y1 - 1, 2):
-                for x in range(x0 + 1 + (y & 1), x1 - 1, 3):
-                    draw.point((x, y), fill=shade(ventral, FACE_LIGHT[face] // 3 + rng.choice((-14, 12))))
-        elif box.style == "fur":
-            for y in range(y0 + 1, y1 - 1, 2):
-                for x in range(x0 + 1 + (y & 1), x1 - 1, 3):
-                    draw.point((x, y), fill=shade(base, FACE_LIGHT[face] + rng.choice((-18, 14))))
+        if box.style == "fur":
+            # Smooth dorsal-to-ventral gradient + soft directional hair streaks (3-4px strokes)
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                if face == "up":
+                    row_rgb = dorsal
+                elif face == "down":
+                    row_rgb = ventral
+                else:
+                    row_rgb = lerp_rgb(dorsal, ventral, ty ** 0.9)
+                for px in range(x0, x1):
+                    tx = (px - x0) / max(1, fw - 1) if fw > 1 else 0.5
+                    # Cylindrical volume falloff near edges
+                    edge_V = -10.0 * ((2.0 * tx - 1.0) ** 2)
+                    # Smooth directional fur wave along length
+                    wave = math.sin((px - x0) * 0.9 + (py - y0) * 0.45) * 7.0
+                    draw.point((px, py), fill=shade(row_rgb, fl + edge_V + wave))
 
-        if box.style == "crystal":
-            for offset in range(-(y1 - y0), x1 - x0, 3):
-                draw.line((x0 + offset, y1 - 1, x0 + offset + (y1 - y0), y0),
-                          fill=shade(accent, 40))
-            for offset in range(-(y1 - y0), x1 - x0, 6):
-                draw.line((x0 + offset + 1, y1 - 1, x0 + offset + 1 + (y1 - y0), y0),
-                          fill=shade(accent, -40))
-        elif box.style == "metal":
-            if y1 - y0 >= 4:
-                mid = y0 + (y1 - y0) // 2
-                draw.line((x0, mid, x1 - 1, mid), fill=shade(base, FACE_LIGHT[face] - 34))
-                draw.line((x0, mid - 1, x1 - 1, mid - 1), fill=shade(base, FACE_LIGHT[face] + 26))
+        elif box.style == "fur_glow":
+            # Tail tip / ear tip transitioning from fur base to glowing spirit flame accent
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                for px in range(x0, x1):
+                    tx = (px - x0) / max(1, fw - 1) if fw > 1 else 0.5
+                    t_glow = (ty * 0.65 + tx * 0.35) if face in ("east", "west") else ty
+                    rgb = lerp_rgb(base, accent, min(1.0, t_glow * 1.15))
+                    glow_boost = 28.0 * (t_glow ** 1.5)
+                    draw.point((px, py), fill=shade(rgb, fl * 0.5 + glow_boost))
+
         elif box.style == "feather":
-            for y in range(y0 + 1, y1 - 1, 2):
-                draw.line((x0 + 1, y, x1 - 2, y - 1), fill=shade(accent, 8))
-            for y in range(y0 + 2, y1 - 1, 4):
-                draw.line((x0 + 2, y, x1 - 3, y - 1), fill=shade(base, FACE_LIGHT[face] - 26))
+            # Layered overlapping plumage scallops with warm golden-ember tips
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                for px in range(x0, x1):
+                    rel_x = px - x0
+                    rel_y = py - y0
+                    # Scallop feather barb pattern (3px wide, 3px tall staggered)
+                    barb_phase = (rel_y + (rel_x // 2)) % 3
+                    delta = fl + (12 if barb_phase == 0 else (2 if barb_phase == 1 else -10))
+                    # Tip of wing/tail feathers gets rich ember-gold & dark ink contrast
+                    if "vane" in box.name or "feather" in box.name:
+                        if ty > 0.68:
+                            rgb = lerp_rgb(accent, (36, 28, 32), (ty - 0.68) / 0.32)
+                            delta += 10
+                        elif ty > 0.42:
+                            rgb = lerp_rgb(base, accent, (ty - 0.42) / 0.26)
+                        else:
+                            rgb = base
+                    else:
+                        rgb = lerp_rgb(base, shade(base, -14)[:3], ty * 0.5)
+                    draw.point((px, py), fill=shade(rgb, delta))
 
-        # Paint facial features on skull north face so the face is unmistakable in Blockbench and in-game.
-        if box.name == "skull" and face == "north" and (x1 - x0) >= 3 and (y1 - y0) >= 3:
-            fw = x1 - x0
-            fh = y1 - y0
+        elif box.style == "feather_dark":
+            # Obsidian-black secondary/tail tips with gold-crimson fire veins
+            dark_feather = (34, 28, 36)
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                for px in range(x0, x1):
+                    vein = abs((px - x0) - fw // 2) == 0 and (py - y0) % 2 == 0
+                    rgb = lerp_rgb(accent, dark_feather, min(1.0, ty * 1.2))
+                    if vein:
+                        rgb = lerp_rgb(rgb, (255, 196, 84), 0.65)
+                    draw.point((px, py), fill=shade(rgb, fl * 0.6))
+
+        elif box.style == "crest_red":
+            # Cinnabar-crimson crane crown with bright ruby center
+            crimson = (212, 42, 38)
+            bright_ruby = (255, 118, 72)
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                for px in range(x0, x1):
+                    rgb = lerp_rgb(bright_ruby, crimson, ty)
+                    draw.point((px, py), fill=shade(rgb, fl * 0.5 + 10))
+
+        elif box.style == "shell":
+            # Hexagonal tortoise scute plates with bevel highlights & glowing sutures
+            for py in range(y0, y1):
+                for px in range(x0, x1):
+                    rx = px - x0
+                    ry = py - y0
+                    # Hex-like staggered scute grid (5x4 cells)
+                    row_idx = ry // 4
+                    col_shift = 2 if (row_idx & 1) else 0
+                    cx = (rx + col_shift) % 5
+                    cy = ry % 4
+                    is_seam = (cx == 0 or cy == 0)
+                    is_center = (cx in (2, 3) and cy == 2)
+                    if is_seam:
+                        # Subtle glowing cyan-jade suture between scutes
+                        rgb = lerp_rgb(base, accent, 0.28)
+                        draw.point((px, py), fill=shade(rgb, fl - 22))
+                    elif is_center:
+                        draw.point((px, py), fill=shade(base, fl + 22))
+                    else:
+                        bevel = 10 if (cy == 1 or cx == 1) else -6
+                        draw.point((px, py), fill=shade(base, fl + bevel))
+
+        elif box.style == "horn":
+            # Ridged spiral mountain-ram horn with glowing golden ley-line cracks
+            horn_base = (74, 66, 58)
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                for px in range(x0, x1):
+                    ry = py - y0
+                    rx = px - x0
+                    # Annular growth rings every 2 rows
+                    ring = 14 if (ry % 2 == 0) else -12
+                    # Diagonal golden ley-line vein
+                    is_vein = ((rx + ry) % 5 == 0) and (0 < rx < fw - 1)
+                    if is_vein:
+                        rgb = lerp_rgb(horn_base, accent, 0.78)
+                        draw.point((px, py), fill=shade(rgb, 24))
+                    else:
+                        rgb = lerp_rgb(horn_base, (46, 40, 36), ty * 0.5)
+                        draw.point((px, py), fill=shade(rgb, fl + ring))
+
+        elif box.style == "stone":
+            # Layered craggy mountain armor plate with warm amber veins
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                for px in range(x0, x1):
+                    rx = px - x0
+                    ry = py - y0
+                    strata = int(math.sin(rx * 0.7 + ry * 1.3) * 12)
+                    if (rx + ry * 2) % 9 == 0 and fw >= 4:
+                        rgb = lerp_rgb(base, accent, 0.55)
+                        draw.point((px, py), fill=shade(rgb, fl + 16))
+                    else:
+                        draw.point((px, py), fill=shade(base, fl + strata - int(ty * 10)))
+
+        elif box.style == "crystal":
+            # Faceted spirit crystal with bright core, longitudinal bevels, and violet-cyan gradient
+            violet_tint = (max(40, accent[0] - 20), max(80, int(accent[1] * 0.72)), min(255, accent[2] + 25))
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                for px in range(x0, x1):
+                    tx = (px - x0) / max(1, fw - 1) if fw > 1 else 0.5
+                    base_c = lerp_rgb(accent, violet_tint, ty * 0.65)
+                    # Facet highlight down the center-left ridge
+                    ridge = 1.0 - min(1.0, abs(tx - 0.35) * 2.5)
+                    tip_glow = (1.0 - ty) * 26.0
+                    delta = fl * 0.4 + ridge * 34.0 + tip_glow - 8.0
+                    draw.point((px, py), fill=shade(base_c, delta))
+
+        elif box.style == "metal":
+            # Brushed bronze/spirit-iron sheen with specular horizon band
+            for py in range(y0, y1):
+                ty = (py - y0) / max(1, fh - 1) if fh > 1 else 0.5
+                spec_band = math.exp(-((ty - 0.38) ** 2) / 0.06) * 28.0
+                for px in range(x0, x1):
+                    draw.point((px, py), fill=shade(base, fl + spec_band - 8.0))
+
+        else:
+            for py in range(y0, y1):
+                for px in range(x0, x1):
+                    draw.point((px, py), fill=shade(base, fl))
+
+        # Subtle 1px soft bevel on large faces only (never dark cartoon frames!)
+        if fw >= 5 and fh >= 5 and box.style not in ("crystal", "fur_glow"):
+            for px in range(x0, x1):
+                top_c = image.getpixel((px, y0))[:3]
+                bot_c = image.getpixel((px, y1 - 1))[:3]
+                draw.point((px, y0), fill=shade(top_c, 10))
+                draw.point((px, y1 - 1), fill=shade(bot_c, -12))
+
+        # Paint expressive facial features on skull north face
+        if box.name == "skull" and face == "north" and fw >= 4 and fh >= 4:
             ey = y0 + max(1, fh // 3)
             lx = x0 + max(0, fw // 4)
             rx = x1 - 1 - max(0, fw // 4)
-            eye_dark = (22, 26, 32, 255)
-            eye_glow = shade(accent, 45)
+            eye_pupil = (18, 22, 28, 255)
+            eye_glow = shade(accent, 52)
+            eye_halo = shade(accent, 18)
             for ex in (lx, rx):
                 draw.point((ex, ey), fill=eye_glow)
                 if ey + 1 < y1:
-                    draw.point((ex, ey + 1), fill=eye_dark)
+                    draw.point((ex, ey + 1), fill=eye_pupil)
+                if ex - 1 >= x0:
+                    draw.point((ex - 1, ey), fill=eye_halo)
+            # Forehead spirit mark
             cx = x0 + fw // 2
-            if fh >= 4 and fw >= 5:
+            if fh >= 5 and fw >= 5:
                 draw.point((cx, y0 + 1), fill=eye_glow)
-                draw.point((cx, max(y0 + 1, ey - 1)), fill=shade(accent, 15))
-        elif box.name in ("torso", "dome", "plate") and face in ("west", "east") and (x1 - x0) >= 6 and (y1 - y0) >= 4:
-            fw = x1 - x0
-            fh = y1 - y0
+                draw.point((cx, max(y0 + 1, ey - 1)), fill=eye_halo)
+
+        # Flowing spirit runes on torso / shell / armor flanks
+        elif box.name in ("torso", "dome", "plate") and face in ("west", "east") and fw >= 7 and fh >= 4:
             my = y0 + fh // 2
             mx = x0 + fw // 2
-            rune = shade(accent, 25)
-            draw.line((x0 + 2, my, mx, max(y0 + 1, my - 1), x1 - 3, my), fill=rune)
-            if fh >= 6:
-                draw.point((mx, min(y1 - 2, my + 1)), fill=shade(accent, 45))
-
-        # Dark bottom/right border plus light top/left: reads as an outline in game and
-        # keeps adjacent parts visually separated.
-        if x1 - x0 > 2 and y1 - y0 > 2:
-            draw.line((x0, y0, x1 - 1, y0), fill=shade(base, FACE_LIGHT[face] + 30))
-            draw.line((x0, y0, x0, y1 - 1), fill=shade(base, FACE_LIGHT[face] + 16))
-            draw.line((x0, y1 - 1, x1 - 1, y1 - 1), fill=shade(base, FACE_LIGHT[face] - 52))
-            draw.line((x1 - 1, y0, x1 - 1, y1 - 1), fill=shade(base, FACE_LIGHT[face] - 34))
+            rune_core = shade(accent, 38)
+            rune_soft = shade(lerp_rgb(base, accent, 0.55), 16)
+            pts = [
+                (x0 + 2, my),
+                (x0 + max(2, fw // 3), max(y0 + 1, my - 1)),
+                (mx, my),
+                (x0 + min(fw - 2, (fw * 2) // 3), min(y1 - 2, my + 1)),
+                (x1 - 3, max(y0 + 1, my - 1)),
+            ]
+            draw.line(pts, fill=rune_soft, width=1)
+            draw.point((mx, my), fill=rune_core)
+            if mx - 1 >= x0:
+                draw.point((mx - 1, max(y0 + 1, my - 1)), fill=rune_core)
 
 
 def emit_java_offsets(specs: list[PartSpec]) -> str:
@@ -198,12 +337,11 @@ def build(name: str, size: int, specs: list[PartSpec],
           base: tuple[int, int, int], accent: tuple[int, int, int]) -> dict:
     allocator = Allocator(size)
     image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    result = {}
 
     def walk(part: PartSpec):
         for box in part.boxes:
             uv = allocator.allocate(f"{part.name}.{box.name}",
-                                    int(box.w), int(box.h), int(box.d))
+                                    int(round(box.w)), int(round(box.h)), int(round(box.d)))
             box.uv = uv
             paint_box(image, uv[0], uv[1], box, base, accent)
         for child in part.children:
@@ -217,5 +355,4 @@ def build(name: str, size: int, specs: list[PartSpec],
     ENTITY.mkdir(parents=True, exist_ok=True)
     image.save(ENTITY / f"{name}.png")
     print("===", name, size)
-    print(emit_java_offsets(specs))
     return {"size": size, "texture": name}

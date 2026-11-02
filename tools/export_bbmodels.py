@@ -24,6 +24,7 @@ MODELS_DIR = ROOT / "neoforge-26.2" / "src" / "main" / "java" / "com" / "xxsx" /
 TEX_DIR = ROOT / "neoforge-26.2" / "src" / "main" / "resources" / "assets" / "xuanhuan_earth" / "textures" / "entity"
 
 OUT_DIR = Path(r"D:\PRIVATE_RESTRICTED\Assets\Blockbench\xuanhuan_earth")
+ENTITIES_DIR = OUT_DIR / "entities"
 PREVIEW_DIR = OUT_DIR / "previews"
 
 
@@ -203,17 +204,18 @@ def build_bbmodel_dict(model_id: str, java_file: Path, tex_file: Path) -> dict:
 
 
 TARGETS = [
-    ("spirit_fox", "SpiritFoxModel", "spirit_fox.png", [22, 18, -24], [0, 9, -1]),
-    ("wind_wolf", "WindWolfModel", "wind_wolf.png", [25, 20, -26], [0, 10, -1]),
-    ("stonehorn_goat", "StonehornGoatModel", "stonehorn_goat.png", [24, 19, -24], [0, 10, -1]),
-    ("crystal_turtle", "CrystalTurtleModel", "crystal_turtle.png", [24, 18, -24], [0, 7, -1]),
-    ("ember_crane", "EmberCraneModel", "ember_crane.png", [36, 26, -36], [0, 15, -2]),
-    ("cultivation_settler", "CultivationSettlerModel", "cultivation_settler_steward.png", [34, 22, -34], [0, 14, 0]),
+    ("spirit_fox", "SpiritFoxModel", "spirit_fox.png", [25, 19, -26], [0, 9, 0]),
+    ("wind_wolf", "WindWolfModel", "wind_wolf.png", [27, 21, -28], [0, 10, -1]),
+    ("stonehorn_goat", "StonehornGoatModel", "stonehorn_goat.png", [26, 20, -26], [0, 11, -1]),
+    ("crystal_turtle", "CrystalTurtleModel", "crystal_turtle.png", [25, 18, -25], [0, 7, -1]),
+    ("ember_crane", "EmberCraneModel", "ember_crane.png", [36, 25, -36], [0, 13, -1]),
+    ("cultivation_settler", "CultivationSettlerModel", "cultivation_settler_steward.png", [40, 24, -40], [0, 16, 0]),
 ]
 
 
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    ENTITIES_DIR.mkdir(parents=True, exist_ok=True)
     PREVIEW_DIR.mkdir(parents=True, exist_ok=True)
 
     bb.close_all_projects()
@@ -221,7 +223,8 @@ def main() -> None:
     for model_id, java_cls, tex_name, cam_pos, cam_target in TARGETS:
         java_file = MODELS_DIR / f"{java_cls}.java"
         tex_file = TEX_DIR / tex_name
-        bbmodel_path = OUT_DIR / f"{model_id}.bbmodel"
+        bbmodel_path = ENTITIES_DIR / f"{model_id}.bbmodel"
+        root_bbmodel_path = OUT_DIR / f"{model_id}.bbmodel"
         preview_path = PREVIEW_DIR / f"{model_id}.png"
 
         data = build_bbmodel_dict(model_id, java_file, tex_file)
@@ -242,6 +245,7 @@ def main() -> None:
         )
         # Resave via Blockbench compiler so the .bbmodel is 100% canonical Blockbench 5.2 output
         bb.save_bbmodel(str(bbmodel_path))
+        bb.save_bbmodel(str(root_bbmodel_path))
         saved_png = bb.save_screenshot(
             str(preview_path),
             camera_angle={
