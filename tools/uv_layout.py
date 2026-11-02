@@ -45,7 +45,7 @@ class PartSpec:
 
 
 def box_extent(w: int, h: int, d: int) -> tuple[int, int]:
-    return (max(w, d) * 2, d + h)
+    return (2 * (w + d), d + h)
 
 
 class Allocator:
@@ -75,11 +75,11 @@ class Allocator:
 
 def face_rects(u: int, v: int, w: int, h: int, d: int) -> dict[str, tuple[int, int, int, int]]:
     return {
-        "down": (u + d, v, u + d + w, v + d),
-        "up": (u + d + w, v, u + d + w + w, v + d),
-        "west": (u, v + d, u + d, v + d + h),
+        "up": (u + d, v, u + d + w, v + d),
+        "down": (u + d + w, v, u + d + w + w, v + d),
+        "east": (u, v + d, u + d, v + d + h),
         "north": (u + d, v + d, u + d + w, v + d + h),
-        "east": (u + d + w, v + d, u + d + w + d, v + d + h),
+        "west": (u + d + w, v + d, u + d + w + d, v + d + h),
         "south": (u + d + w + d, v + d, u + d + w + d + w, v + d + h),
     }
 
@@ -141,6 +141,33 @@ def paint_box(image: Image.Image, u: int, v: int, box: BoxSpec,
                 draw.line((x0 + 1, y, x1 - 2, y - 1), fill=shade(accent, 8))
             for y in range(y0 + 2, y1 - 1, 4):
                 draw.line((x0 + 2, y, x1 - 3, y - 1), fill=shade(base, FACE_LIGHT[face] - 26))
+
+        # Paint facial features on skull north face so the face is unmistakable in Blockbench and in-game.
+        if box.name == "skull" and face == "north" and (x1 - x0) >= 3 and (y1 - y0) >= 3:
+            fw = x1 - x0
+            fh = y1 - y0
+            ey = y0 + max(1, fh // 3)
+            lx = x0 + max(0, fw // 4)
+            rx = x1 - 1 - max(0, fw // 4)
+            eye_dark = (22, 26, 32, 255)
+            eye_glow = shade(accent, 45)
+            for ex in (lx, rx):
+                draw.point((ex, ey), fill=eye_glow)
+                if ey + 1 < y1:
+                    draw.point((ex, ey + 1), fill=eye_dark)
+            cx = x0 + fw // 2
+            if fh >= 4 and fw >= 5:
+                draw.point((cx, y0 + 1), fill=eye_glow)
+                draw.point((cx, max(y0 + 1, ey - 1)), fill=shade(accent, 15))
+        elif box.name in ("torso", "dome", "plate") and face in ("west", "east") and (x1 - x0) >= 6 and (y1 - y0) >= 4:
+            fw = x1 - x0
+            fh = y1 - y0
+            my = y0 + fh // 2
+            mx = x0 + fw // 2
+            rune = shade(accent, 25)
+            draw.line((x0 + 2, my, mx, max(y0 + 1, my - 1), x1 - 3, my), fill=rune)
+            if fh >= 6:
+                draw.point((mx, min(y1 - 2, my + 1)), fill=shade(accent, 45))
 
         # Dark bottom/right border plus light top/left: reads as an outline in game and
         # keeps adjacent parts visually separated.

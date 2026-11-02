@@ -69,8 +69,8 @@ def main() -> None:
         core = tuple(min(255, c + 60) for c in glow)
         # Two eyes, symmetric about the face centre, one third down the face.
         eye_y = y0 + max(1, height // 3)
-        left_x = x0 + max(1, width // 3)
-        right_x = x0 + min(width - 2, (width * 2) // 3)
+        left_x = x0 + max(0, width // 4)
+        right_x = x1 - 1 - max(0, width // 4)
         for x in (left_x, right_x):
             out.putpixel((x, eye_y), (*core, 255))
             if eye_y + 1 < y1:

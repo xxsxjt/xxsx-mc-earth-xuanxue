@@ -55,87 +55,87 @@ public final class SpiritFoxModel extends EntityModel<SpiritFoxRenderState> {
         root.addOrReplaceChild(
                 "body",
                 CubeListBuilder.create()
-                        .texOffs(0, 0).addBox(-3.2F, -3.0F, -4.5F, 6.4F, 6.0F, 9.0F)
-                        .texOffs(19, 0).addBox(-2.7F, -3.5F, -3.9F, 5.4F, 0.8F, 7.8F, new CubeDeformation(0.04F))
-                        .texOffs(34, 0).addBox(-2.8F, 1.0F, -4.4F, 5.6F, 2.2F, 3.4F, new CubeDeformation(0.03F))
-                        .texOffs(45, 0).addBox(-3.4F, -1.8F, 2.4F, 6.8F, 5.2F, 3.0F, new CubeDeformation(0.04F)),
+                        .texOffs(0, 0).addBox(-3.0F, -3.0F, -4.5F, 6.0F, 6.0F, 9.0F)
+                        .texOffs(31, 0).addBox(-2.5F, -3.5F, -4.0F, 5.0F, 1.0F, 8.0F, new CubeDeformation(0.04F))
+                        .texOffs(58, 0).addBox(-2.5F, 1.0F, -4.5F, 5.0F, 2.0F, 3.0F, new CubeDeformation(0.03F))
+                        .texOffs(75, 0).addBox(-3.5F, -2.0F, 2.5F, 7.0F, 5.0F, 3.0F, new CubeDeformation(0.04F)),
                 PartPose.offset(0.0F, 13.5F, 0.0F));
         root.addOrReplaceChild(
                 "neck",
                 CubeListBuilder.create()
-                        .texOffs(58, 0).addBox(-2.3F, -2.2F, -1.8F, 4.6F, 4.4F, 4.0F),
-                PartPose.offsetAndRotation(0.0F, 11.0F, -4.4F, 0.34F, 0.0F, 0.0F));
+                        .texOffs(96, 0).addBox(-2.0F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F),
+                PartPose.offsetAndRotation(0.0F, 11.0F, -4.5F, 0.34F, 0.0F, 0.0F));
         PartDefinition head = root.addOrReplaceChild(
                 "head",
                 CubeListBuilder.create()
-                        .texOffs(67, 0).addBox(-3.0F, -2.6F, -3.4F, 6.0F, 5.2F, 6.6F),
-                PartPose.offset(0.0F, 9.6F, -6.0F));
+                        .texOffs(0, 16).addBox(-3.0F, -2.5F, -3.5F, 6.0F, 5.0F, 7.0F),
+                PartPose.offset(0.0F, 9.5F, -6.0F));
         head.addOrReplaceChild(
                 "muzzle",
                 CubeListBuilder.create()
-                        .texOffs(80, 0).addBox(-1.7F, -1.0F, -2.6F, 3.4F, 2.4F, 2.6F)
-                        .texOffs(87, 0).addBox(-0.8F, 0.1F, -3.2F, 1.6F, 1.2F, 0.8F),
-                PartPose.offset(0.0F, 0.7F, -3.2F));
+                        .texOffs(27, 16).addBox(-1.5F, -1.0F, -3.0F, 3.0F, 2.0F, 3.0F)
+                        .texOffs(40, 16).addBox(-1.0F, 0.0F, -4.0F, 2.0F, 1.0F, 1.0F),
+                PartPose.offset(0.0F, 0.5F, -3.5F));
         head.addOrReplaceChild(
                 "jaw",
                 CubeListBuilder.create()
-                        .texOffs(90, 0).addBox(-1.5F, 0.0F, -2.2F, 3.0F, 0.9F, 2.2F),
-                PartPose.offset(0.0F, 2.0F, -2.6F));
+                        .texOffs(47, 16).addBox(-1.5F, 0.0F, -2.0F, 3.0F, 1.0F, 2.0F),
+                PartPose.offset(0.0F, 2.0F, -2.5F));
         head.addOrReplaceChild(
                 "left_ear",
                 CubeListBuilder.create()
-                        .texOffs(97, 0).addBox(-0.9F, -2.6F, -0.7F, 1.8F, 2.6F, 1.4F)
-                        .texOffs(100, 0).addBox(-0.5F, -2.0F, -0.8F, 1.0F, 1.8F, 0.7F),
-                PartPose.offsetAndRotation(1.6F, -2.4F, 0.1F, -0.12F, 0.0F, 0.14F));
+                        .texOffs(58, 16).addBox(-1.0F, -3.0F, -0.5F, 2.0F, 3.0F, 1.0F)
+                        .texOffs(65, 16).addBox(-0.5F, -2.0F, -1.0F, 1.0F, 2.0F, 1.0F),
+                PartPose.offsetAndRotation(1.5F, -2.5F, 0.0F, -0.12F, 0.0F, 0.14F));
         head.addOrReplaceChild(
                 "right_ear",
                 CubeListBuilder.create()
-                        .texOffs(103, 0).addBox(-0.9F, -2.6F, -0.7F, 1.8F, 2.6F, 1.4F)
-                        .texOffs(106, 0).addBox(-0.5F, -2.0F, -0.8F, 1.0F, 1.8F, 0.7F),
-                PartPose.offsetAndRotation(-1.6F, -2.4F, 0.1F, -0.12F, 0.0F, -0.14F));
+                        .texOffs(70, 16).addBox(-1.0F, -3.0F, -0.5F, 2.0F, 3.0F, 1.0F)
+                        .texOffs(77, 16).addBox(-0.5F, -2.0F, -1.0F, 1.0F, 2.0F, 1.0F),
+                PartPose.offsetAndRotation(-1.5F, -2.5F, 0.0F, -0.12F, 0.0F, -0.14F));
         head.addOrReplaceChild(
                 "crest",
                 CubeListBuilder.create()
-                        .texOffs(109, 0).addBox(-0.7F, -1.8F, -0.7F, 1.4F, 1.8F, 1.4F),
-                PartPose.offset(0.0F, -2.2F, -0.9F));
+                        .texOffs(82, 16).addBox(-0.5F, -2.0F, -0.5F, 1.0F, 2.0F, 1.0F),
+                PartPose.offset(0.0F, -2.5F, -1.0F));
         root.addOrReplaceChild(
                 "front_right",
                 CubeListBuilder.create()
-                        .texOffs(112, 0).addBox(-1.1F, 0.0F, -1.1F, 2.2F, 6.0F, 2.2F)
-                        .texOffs(117, 0).addBox(-1.3F, 5.8F, -1.6F, 2.6F, 1.5F, 2.9F),
-                PartPose.offset(-2.0F, 16.5F, -2.8F));
+                        .texOffs(87, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F)
+                        .texOffs(96, 16).addBox(-1.5F, 5.5F, -2.0F, 3.0F, 2.0F, 3.0F),
+                PartPose.offset(-2.0F, 16.5F, -3.0F));
         root.addOrReplaceChild(
                 "front_left",
                 CubeListBuilder.create()
-                        .texOffs(122, 0).addBox(-1.1F, 0.0F, -1.1F, 2.2F, 6.0F, 2.2F)
-                        .texOffs(0, 16).addBox(-1.3F, 5.8F, -1.6F, 2.6F, 1.5F, 2.9F),
-                PartPose.offset(2.0F, 16.5F, -2.8F));
+                        .texOffs(109, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F)
+                        .texOffs(0, 29).addBox(-1.5F, 5.5F, -2.0F, 3.0F, 2.0F, 3.0F),
+                PartPose.offset(2.0F, 16.5F, -3.0F));
         root.addOrReplaceChild(
                 "back_right",
                 CubeListBuilder.create()
-                        .texOffs(5, 16).addBox(-1.1F, 0.0F, -1.1F, 2.2F, 6.0F, 2.2F)
-                        .texOffs(10, 16).addBox(-1.3F, 5.8F, -1.6F, 2.6F, 1.5F, 2.9F),
-                PartPose.offset(-2.0F, 16.5F, 2.8F));
+                        .texOffs(13, 29).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F)
+                        .texOffs(22, 29).addBox(-1.5F, 5.5F, -2.0F, 3.0F, 2.0F, 3.0F),
+                PartPose.offset(-2.0F, 16.5F, 3.0F));
         root.addOrReplaceChild(
                 "back_left",
                 CubeListBuilder.create()
-                        .texOffs(15, 16).addBox(-1.1F, 0.0F, -1.1F, 2.2F, 6.0F, 2.2F)
-                        .texOffs(20, 16).addBox(-1.3F, 5.8F, -1.6F, 2.6F, 1.5F, 2.9F),
-                PartPose.offset(2.0F, 16.5F, 2.8F));
+                        .texOffs(35, 29).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F)
+                        .texOffs(44, 29).addBox(-1.5F, 5.5F, -2.0F, 3.0F, 2.0F, 3.0F),
+                PartPose.offset(2.0F, 16.5F, 3.0F));
         PartDefinition tail = root.addOrReplaceChild(
                 "tail",
                 CubeListBuilder.create()
-                        .texOffs(25, 16).addBox(-1.9F, -1.9F, 0.0F, 3.8F, 3.8F, 4.6F),
-                PartPose.offsetAndRotation(0.0F, 12.2F, 4.2F, 0.48F, 0.0F, 0.0F));
+                        .texOffs(57, 29).addBox(-2.0F, -2.0F, 0.0F, 4.0F, 4.0F, 5.0F),
+                PartPose.offsetAndRotation(0.0F, 12.0F, 4.5F, 0.48F, 0.0F, 0.0F));
         PartDefinition tail_tail_mid = tail.addOrReplaceChild(
                 "tail_mid",
                 CubeListBuilder.create()
-                        .texOffs(34, 16).addBox(-2.6F, -2.6F, 0.0F, 5.2F, 5.2F, 4.4F),
-                PartPose.offsetAndRotation(0.0F, 0.0F, 4.2F, 0.14F, 0.0F, 0.0F));
+                        .texOffs(76, 29).addBox(-2.5F, -2.5F, 0.0F, 5.0F, 5.0F, 4.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 4.5F, 0.14F, 0.0F, 0.0F));
         tail_tail_mid.addOrReplaceChild(
                 "tail_tip",
                 CubeListBuilder.create()
-                        .texOffs(45, 16).addBox(-1.9F, -1.9F, 0.0F, 3.8F, 3.8F, 4.0F),
+                        .texOffs(95, 29).addBox(-2.0F, -2.0F, 0.0F, 4.0F, 4.0F, 4.0F),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 4.0F, 0.12F, 0.0F, 0.0F));
 
         return LayerDefinition.create(mesh, 128, 128);

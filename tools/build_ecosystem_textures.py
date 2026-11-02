@@ -77,11 +77,11 @@ class Atlas:
         u, v = uv
         width, height, depth = (max(1, int(round(value))) for value in dims)
         faces = {
-            "down": (u + depth, v, u + depth + width, v + depth),
-            "up": (u + depth + width, v, u + depth + width * 2, v + depth),
-            "west": (u, v + depth, u + depth, v + depth + height),
+            "up": (u + depth, v, u + depth + width, v + depth),
+            "down": (u + depth + width, v, u + depth + width * 2, v + depth),
+            "east": (u, v + depth, u + depth, v + depth + height),
             "north": (u + depth, v + depth, u + depth + width, v + depth + height),
-            "east": (u + depth + width, v + depth, u + depth + width + depth, v + depth + height),
+            "west": (u + depth + width, v + depth, u + depth + width + depth, v + depth + height),
             "south": (u + depth + width + depth, v + depth,
                       u + depth + width + depth + width, v + depth + height),
         }
@@ -343,10 +343,6 @@ def seal_icon(path: Path) -> None:
 
 
 def main() -> None:
-    build_wind_wolf()
-    build_stonehorn_goat()
-    build_crystal_turtle()
-    build_ember_crane()
     build_settler("cultivation_settler_merchant", "b98b68", "252421", "6b6659", "3b978a", "574536", "2f756f", True, 501)
     build_settler("cultivation_settler_spring_keeper", "c99a76", "242522", "3d7771", "68d5c6", "385a54", "3e8f87", False, 531)
     build_settler("cultivation_settler_steward", "b98767", "1d2024", "252b35", "c5a454", "343238", "654a2e", True, 561)
