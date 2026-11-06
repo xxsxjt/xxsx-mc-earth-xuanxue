@@ -1,6 +1,8 @@
 package com.xxsx.xuanhuanearth;
 
+import com.mojang.serialization.Codec;
 import com.mojang.logging.LogUtils;
+import com.xxsx.earthlore.registry.LoreContent;
 import com.xxsx.xuanhuanearth.client.XuanhuanEarthClient;
 import com.xxsx.xuanhuanearth.entity.ContractableSpiritBeastEntity;
 import com.xxsx.xuanhuanearth.entity.CrystalTurtleEntity;
@@ -16,8 +18,10 @@ import com.xxsx.xuanhuanearth.settlement.XuanhuanSettlementCatalog;
 import com.xxsx.xuanhuanearth.settlement.XuanhuanSettlementFeature;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -68,8 +72,38 @@ public class XuanhuanEarth {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, MODID);
+    public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, MODID);
     public static final DeferredRegister.DataComponents DATA_COMPONENTS =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MODID);
+
+    public static final DeferredHolder<MobEffect, AuspiciousMobEffect> AUSPICIOUS =
+            MOB_EFFECTS.register("auspicious", AuspiciousMobEffect::new);
+
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
+            net.minecraft.core.component.DataComponentType<PillComponent>> PILL_COMPONENT =
+            DATA_COMPONENTS.registerComponentType("pill", builder -> builder
+                    .persistent(PillComponent.CODEC)
+                    .networkSynchronized(ByteBufCodecs.fromCodec(PillComponent.CODEC)));
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
+            net.minecraft.core.component.DataComponentType<JadeComponent>> JADE_COMPONENT =
+            DATA_COMPONENTS.registerComponentType("jade", builder -> builder
+                    .persistent(JadeComponent.CODEC)
+                    .networkSynchronized(ByteBufCodecs.fromCodec(JadeComponent.CODEC)));
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
+            net.minecraft.core.component.DataComponentType<RuneStoneComponent>> RUNE_STONE_COMPONENT =
+            DATA_COMPONENTS.registerComponentType("rune_stone", builder -> builder
+                    .persistent(RuneStoneComponent.CODEC)
+                    .networkSynchronized(ByteBufCodecs.fromCodec(RuneStoneComponent.CODEC)));
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
+            net.minecraft.core.component.DataComponentType<ArrayControlTabletItem.TabletState>> ARRAY_TABLET_COMPONENT =
+            DATA_COMPONENTS.registerComponentType("array_tablet", builder -> builder
+                    .persistent(ArrayControlTabletItem.TabletState.CODEC)
+                    .networkSynchronized(ByteBufCodecs.fromCodec(ArrayControlTabletItem.TabletState.CODEC)));
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
+            net.minecraft.core.component.DataComponentType<Integer>> LUOPAN_RATING =
+            DATA_COMPONENTS.registerComponentType("luopan_rating", builder -> builder
+                    .persistent(Codec.intRange(0, 9))
+                    .networkSynchronized(ByteBufCodecs.VAR_INT));
 
     private static final List<ItemLike> TAB_ITEMS = new ArrayList<>();
     private static final List<DeferredBlock<XuanhuanMachineBlock>> MACHINE_BLOCKS = new ArrayList<>();
@@ -81,6 +115,8 @@ public class XuanhuanEarth {
     public static final DeferredBlock<XuanhuanBlock> SPIRIT_SOIL = block("spirit_soil",
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(0.6F).sound(SoundType.GRAVEL),
             "message.xuanhuan_earth.block.spirit_soil");
+    public static final DeferredBlock<XuanhuanBlock> ARRAY_PILLAR = block("array_pillar",
+            () -> stone(MapColor.COLOR_CYAN, 3.0F), "message.xuanhuan_earth.block.array_pillar");
     public static final DeferredBlock<MeditationCushionBlock> MEDITATION_CUSHION = meditationBlock("meditation_cushion",
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(0.25F).sound(SoundType.WOOL).noOcclusion());
     public static final DeferredHolder<EntityType<?>, EntityType<MeditationSeatEntity>> MEDITATION_SEAT =
@@ -158,24 +194,52 @@ public class XuanhuanEarth {
     public static final DeferredItem<XuanhuanHandbookItem> XUANHUAN_HANDBOOK = item("xuanhuan_handbook",
             props -> new XuanhuanHandbookItem(props.stacksTo(1)));
     public static final DeferredItem<QiGuidingManualItem> QI_GUIDING_MANUAL = item("qi_guiding_manual",
-            props -> new QiGuidingManualItem(props.stacksTo(1)));
+            props -> new QiGuidingManualItem(props.stacksTo(1)
+                    .component(LoreContent.LORE_TEXT.get(), QiGuidingManualItem.defaultLoreText())));
     public static final DeferredItem<CultivationManualItem> BIGU_MANUAL = item("bigu_manual",
-            props -> new CultivationManualItem(props.stacksTo(1), CultivationManualItem.Type.BIGU));
+            props -> new CultivationManualItem(props.stacksTo(1)
+                    .component(LoreContent.LORE_TEXT.get(), CultivationManualItem.Type.BIGU.defaultLoreText()),
+                    CultivationManualItem.Type.BIGU));
     public static final DeferredItem<CultivationManualItem> BODY_TEMPERING_MANUAL = item("body_tempering_manual",
-            props -> new CultivationManualItem(props.stacksTo(1), CultivationManualItem.Type.BODY_TEMPERING));
+            props -> new CultivationManualItem(props.stacksTo(1)
+                    .component(LoreContent.LORE_TEXT.get(), CultivationManualItem.Type.BODY_TEMPERING.defaultLoreText()),
+                    CultivationManualItem.Type.BODY_TEMPERING));
     public static final DeferredItem<CultivationManualItem> FETAL_BREATH_MANUAL = item("fetal_breath_manual",
-            props -> new CultivationManualItem(props.stacksTo(1), CultivationManualItem.Type.FETAL_BREATH));
+            props -> new CultivationManualItem(props.stacksTo(1)
+                    .component(LoreContent.LORE_TEXT.get(), CultivationManualItem.Type.FETAL_BREATH.defaultLoreText()),
+                    CultivationManualItem.Type.FETAL_BREATH));
+    public static final DeferredItem<CultivationJournalItem> CULTIVATION_JOURNAL = item("cultivation_journal",
+            props -> new CultivationJournalItem(props.stacksTo(1), "tooltip.xuanhuan_earth.cultivation_journal"));
     public static final DeferredItem<SpiritCompassItem> SPIRIT_COMPASS = item("spirit_compass",
             props -> new SpiritCompassItem(props.stacksTo(1)));
-    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_SPRING_BOTTLE = material("spirit_spring_bottle", "tooltip.xuanhuan_earth.spirit_spring_bottle");
+    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_SPRING_BOTTLE = item("spirit_spring_bottle",
+            props -> new GuidedXuanhuanItem(props.stacksTo(16), "tooltip.xuanhuan_earth.spirit_spring_bottle"));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_GRASS = material("spirit_grass", "tooltip.xuanhuan_earth.spirit_grass");
+    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_HERB = material("spirit_herb", "tooltip.xuanhuan_earth.spirit_herb");
     public static final DeferredItem<GuidedXuanhuanItem> CINNABAR_SPIRIT_INK = material("cinnabar_spirit_ink", "tooltip.xuanhuan_earth.cinnabar_spirit_ink");
     public static final DeferredItem<GuidedXuanhuanItem> TALISMAN_PAPER = material("talisman_paper", "tooltip.xuanhuan_earth.talisman_paper");
+    public static final DeferredItem<GuidedXuanhuanItem> EMPTY_TALISMAN = item("empty_talisman",
+            props -> new GuidedXuanhuanItem(props.stacksTo(16), "tooltip.xuanhuan_earth.empty_talisman"));
     public static final DeferredItem<BasicTalismanItem> BASIC_TALISMAN = item("basic_talisman",
-            props -> new BasicTalismanItem(props, "tooltip.xuanhuan_earth.basic_talisman"));
+            props -> new BasicTalismanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.basic_talisman"));
+    public static final DeferredItem<ElementalTalismanItem> FIRE_TALISMAN = item("fire_talisman",
+            props -> new ElementalTalismanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.fire_talisman", ElementalTalismanItem.Kind.FIRE));
+    public static final DeferredItem<ElementalTalismanItem> WIND_TALISMAN = item("wind_talisman",
+            props -> new ElementalTalismanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.wind_talisman", ElementalTalismanItem.Kind.WIND));
+    public static final DeferredItem<ElementalTalismanItem> SEAL_TALISMAN = item("seal_talisman",
+            props -> new ElementalTalismanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.seal_talisman", ElementalTalismanItem.Kind.SEAL));
+    public static final DeferredItem<TalismanBrushItem> TALISMAN_BRUSH = item("talisman_brush",
+            props -> new TalismanBrushItem(props.durability(TalismanBrushItem.MAX_DURABILITY), "tooltip.xuanhuan_earth.talisman_brush"));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_CRYSTAL_SHARD = material("spirit_crystal_shard", "tooltip.xuanhuan_earth.spirit_crystal_shard");
+    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_DUST = material("spirit_dust", "tooltip.xuanhuan_earth.spirit_dust");
+    public static final DeferredItem<SpiritStoneRawItem> SPIRIT_STONE_RAW = item("spirit_stone_raw",
+            props -> new SpiritStoneRawItem(props.stacksTo(16), "tooltip.xuanhuan_earth.spirit_stone_raw"));
     public static final DeferredItem<SpiritStoneItem> SPIRIT_STONE = item("spirit_stone",
             props -> new SpiritStoneItem(props.stacksTo(1), "tooltip.xuanhuan_earth.spirit_stone"));
+    public static final DeferredItem<SpiritStoneItem> SPIRIT_STONE_CRACKED = item("spirit_stone_cracked",
+            props -> new SpiritStoneItem(props.stacksTo(1), "tooltip.xuanhuan_earth.spirit_stone_cracked", true));
+    public static final DeferredItem<SpiritStoneCoreItem> SPIRIT_STONE_CORE = item("spirit_stone_core",
+            props -> new SpiritStoneCoreItem(props.stacksTo(1), "tooltip.xuanhuan_earth.spirit_stone_core"));
     public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
             net.minecraft.core.component.DataComponentType<SpiritStoneComponent>> SPIRIT_STONE_CHARGE =
             DATA_COMPONENTS.registerComponentType("spirit_stone_charge", builder -> builder
@@ -187,14 +251,58 @@ public class XuanhuanEarth {
                     .persistent(TalismanComponent.CODEC)
                     .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.fromCodec(TalismanComponent.CODEC)));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_IRON_BLANK = material("spirit_iron_blank", "tooltip.xuanhuan_earth.spirit_iron_blank");
+    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_IRON_INGOT = material("spirit_iron_ingot", "tooltip.xuanhuan_earth.spirit_iron_ingot");
+    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_GLASS = material("spirit_glass", "tooltip.xuanhuan_earth.spirit_glass");
+    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_THREAD = material("spirit_thread", "tooltip.xuanhuan_earth.spirit_thread");
     public static final DeferredItem<QiRecoveryPillItem> QI_RECOVERY_PILL = item("qi_recovery_pill",
-            props -> new QiRecoveryPillItem(props, "tooltip.xuanhuan_earth.qi_recovery_pill"));
+            props -> new QiRecoveryPillItem(props.stacksTo(1)
+                    .component(PILL_COMPONENT.get(), PillComponent.ofDefault("qi_recovery_pill")),
+                    "tooltip.xuanhuan_earth.qi_recovery_pill"));
     public static final DeferredItem<XuanhuanPillItem> FOUNDATION_PILL = pill(XuanhuanPills.FOUNDATION);
     public static final DeferredItem<XuanhuanPillItem> IRONBODY_PILL = pill(XuanhuanPills.IRONBODY);
     public static final DeferredItem<XuanhuanPillItem> CLOUDBREATH_PILL = pill(XuanhuanPills.CLOUDBREATH);
     public static final DeferredItem<XuanhuanPillItem> GRAINFAST_PILL = pill(XuanhuanPills.GRAINFAST);
     public static final DeferredItem<XuanhuanPillItem> BREAKTHROUGH_PILL = pill(XuanhuanPills.BREAKTHROUGH);
     public static final DeferredItem<XuanhuanPillItem> NIGHTSIGHT_PILL = pill(XuanhuanPills.NIGHTSIGHT);
+    public static final DeferredItem<XuanhuanPillItem> MARROW_PILL = pill(XuanhuanPills.MARROW);
+    public static final DeferredItem<XuanhuanPillItem> BREATH_PILL = pill(XuanhuanPills.BREATH);
+    public static final DeferredItem<XuanhuanPillItem> FAST_PILL = pill(XuanhuanPills.FAST);
+    public static final DeferredItem<XuanhuanPillItem> DETOX_PILL = pill(XuanhuanPills.DETOX);
+    public static final DeferredItem<GuidedXuanhuanItem> PILL_RESIDUE = material("pill_residue", "tooltip.xuanhuan_earth.pill_residue");
+    public static final DeferredItem<XuanhuanPillItem> FAILED_PILL = item("failed_pill",
+            props -> new XuanhuanPillItem(props.stacksTo(64), XuanhuanPills.FAILED.hintKey(), XuanhuanPills.FAILED));
+    public static final DeferredItem<XuanhuanPillItem> NOURISH_QI_PILL = pill(XuanhuanPills.NOURISH_QI);
+    public static final DeferredItem<XuanhuanPillItem> CALM_SPIRIT_PILL = pill(XuanhuanPills.CALM_SPIRIT);
+    public static final DeferredItem<XuanhuanPillItem> CLEAR_HEAT_PILL = pill(XuanhuanPills.CLEAR_HEAT);
+    public static final DeferredItem<XuanhuanPillItem> INVIGORATE_BLOOD_PILL = pill(XuanhuanPills.INVIGORATE_BLOOD);
+    public static final DeferredItem<XuanhuanPillItem> RESOLVE_TOXIN_PILL = pill(XuanhuanPills.RESOLVE_TOXIN);
+
+    public static final DeferredItem<JadeSlipItem> JADE_SLIP = item("jade_slip",
+            props -> new JadeSlipItem(props.stacksTo(1).component(JADE_COMPONENT.get(), JadeComponent.EMPTY),
+                    "tooltip.xuanhuan_earth.jade_slip"));
+    public static final DeferredItem<JadeWardAmuletItem> JADE_WARD_AMULET = item("jade_ward_amulet",
+            props -> new JadeWardAmuletItem(props.stacksTo(1).component(JADE_COMPONENT.get(), JadeComponent.EMPTY),
+                    "tooltip.xuanhuan_earth.jade_ward_amulet"));
+    public static final DeferredItem<JadeArrayPlateItem> JADE_ARRAY_PLATE = item("jade_array_plate",
+            props -> new JadeArrayPlateItem(props.stacksTo(1).component(JADE_COMPONENT.get(), JadeComponent.EMPTY),
+                    "tooltip.xuanhuan_earth.jade_array_plate"));
+    public static final DeferredItem<ArrayRuneStoneItem> ARRAY_RUNE_STONE = item("array_rune_stone",
+            props -> new ArrayRuneStoneItem(props.component(RUNE_STONE_COMPONENT.get(), RuneStoneComponent.DEFAULT),
+                    "tooltip.xuanhuan_earth.array_rune_stone"));
+    public static final DeferredItem<ArrayControlTabletItem> ARRAY_CONTROL_TABLET = item("array_control_tablet",
+            props -> new ArrayControlTabletItem(props.stacksTo(1)
+                    .component(ARRAY_TABLET_COMPONENT.get(), ArrayControlTabletItem.TabletState.DEFAULT),
+                    "tooltip.xuanhuan_earth.array_control_tablet"));
+    public static final DeferredItem<LuopanItem> LUOPAN = item("luopan",
+            props -> new LuopanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.luopan"));
+    public static final DeferredItem<DragonSeekingRodItem> DRAGON_SEEKING_ROD = item("dragon_seeking_rod",
+            props -> new DragonSeekingRodItem(props.durability(DragonSeekingRodItem.MAX_DURABILITY),
+                    "tooltip.xuanhuan_earth.dragon_seeking_rod"));
+    public static final DeferredItem<DivinationCoinsItem> DIVINATION_COINS = item("divination_coins",
+            props -> new DivinationCoinsItem(props.stacksTo(1), "tooltip.xuanhuan_earth.divination_coins"));
+    public static final DeferredItem<OracleBoneItem> ORACLE_BONE = item("oracle_bone",
+            props -> new OracleBoneItem(props.stacksTo(16), "tooltip.xuanhuan_earth.oracle_bone"));
+
     public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
             net.minecraft.core.component.DataComponentType<ImplementComponent>> IMPLEMENT_CHARGE =
             DATA_COMPONENTS.registerComponentType("implement_charge", builder -> builder
@@ -242,14 +350,16 @@ public class XuanhuanEarth {
 
     public XuanhuanEarth(IEventBus modBus) {
         registerLegacyAliases();
+        DATA_COMPONENTS.register(modBus);
+        MOB_EFFECTS.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         ENTITY_TYPES.register(modBus);
         BLOCK_ENTITY_TYPES.register(modBus);
         MENUS.register(modBus);
         FEATURES.register(modBus);
-        DATA_COMPONENTS.register(modBus);
         XuanhuanParticles.PARTICLE_TYPES.register(modBus);
+        XuanhuanLoreIntegration.init();
         modBus.addListener(CultivationNetwork::registerPayloads);
         modBus.addListener(this::registerEntityAttributes);
         modBus.addListener(this::registerSpawnPlacements);
@@ -260,6 +370,7 @@ public class XuanhuanEarth {
         NeoForge.EVENT_BUS.addListener(ArcanaPassiveEffects::onBreathe);
         NeoForge.EVENT_BUS.addListener(XuanhuanSettlementCatalog::register);
         NeoForge.EVENT_BUS.addListener(SpellGraphLoader::register);
+        NeoForge.EVENT_BUS.addListener(XuanhuanLoreIntegration::onLoreLearned);
         modBus.addListener(this::registerCreativeTab);
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             XuanhuanEarthClient.register(modBus);
@@ -313,7 +424,9 @@ public class XuanhuanEarth {
     }
 
     private static DeferredItem<XuanhuanPillItem> pill(XuanhuanPillItem.Pill pill) {
-        return item(pill.id(), props -> new XuanhuanPillItem(props, pill.hintKey(), pill));
+        return item(pill.id(), props -> new XuanhuanPillItem(
+                props.stacksTo(1).component(PILL_COMPONENT.get(), PillComponent.ofDefault(pill.id())),
+                pill.hintKey(), pill));
     }
 
     private static <T extends Item> DeferredItem<T> item(String id, Function<Item.Properties, T> factory) {

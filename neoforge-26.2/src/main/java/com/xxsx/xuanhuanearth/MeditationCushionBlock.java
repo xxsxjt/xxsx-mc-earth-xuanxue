@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.BlockHitResult;
@@ -28,11 +29,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class MeditationCushionBlock extends Block {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty OCCUPIED = BooleanProperty.create("occupied");
     private static final VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 3.0D, 15.0D);
 
     public MeditationCushionBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(OCCUPIED, false));
     }
 
     @Override
@@ -63,7 +65,7 @@ public class MeditationCushionBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, OCCUPIED);
     }
 
     private InteractionResult sit(BlockState state, Level level, BlockPos pos, Player player) {
@@ -71,6 +73,11 @@ public class MeditationCushionBlock extends Block {
             return InteractionResult.SUCCESS;
         }
         if (!(level instanceof ServerLevel serverLevel) || !(player instanceof ServerPlayer serverPlayer)) {
+            return InteractionResult.SUCCESS_SERVER;
+        }
+        if (!XuanhuanLoreIntegration.knowsCirculation(serverPlayer)) {
+            serverPlayer.sendSystemMessage(Component.translatable("lore.earth_lore.fail.lore_locked")
+                    .withStyle(ChatFormatting.RED));
             return InteractionResult.SUCCESS_SERVER;
         }
         if (ArcanaPower.getCultivationLevel(serverPlayer) <= 0) {
@@ -107,6 +114,9 @@ public class MeditationCushionBlock extends Block {
                 seat.discard();
             }
             return InteractionResult.SUCCESS_SERVER;
+        }
+        if (!state.getValue(OCCUPIED)) {
+            serverLevel.setBlock(pos, state.setValue(OCCUPIED, true), Block.UPDATE_CLIENTS);
         }
 
         Direction facing = state.getValue(FACING);

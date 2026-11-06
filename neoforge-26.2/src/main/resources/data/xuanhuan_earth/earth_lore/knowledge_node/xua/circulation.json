@@ -1,0 +1,60 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 2,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/qi_guiding"
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "field>=30"
+    }
+  ],
+  "unlocks": [
+    {
+      "ability": "xuanhuan_earth:practice"
+    },
+    {
+      "ability": "xuanhuan_earth:progress"
+    },
+    {
+      "ability": "xuanhuan_earth:spell_graph_builtin"
+    },
+    {
+      "item": "xuanhuan_earth:body_tempering_manual"
+    },
+    {
+      "item": "xuanhuan_earth:fetal_breath_manual"
+    },
+    {
+      "item": "xuanhuan_earth:bigu_manual"
+    }
+  ],
+  "literature": [
+    "notes",
+    "manual"
+  ],
+  "teachers": [
+    "xuanhuan_earth:cultivation_settler"
+  ],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_stone",
+        "count": 1
+      },
+      {
+        "ingredient": "xuanhuan_earth:spirit_crystal_shard",
+        "count": 2
+      }
+    ],
+    "ticks": 1200
+  },
+  "fail_codes": [
+    "field_low"
+  ],
+  "name_key": "lore.xuanhuan_earth.xua.circulation",
+  "desc_key": "lore.xuanhuan_earth.xua.circulation.desc"
+}

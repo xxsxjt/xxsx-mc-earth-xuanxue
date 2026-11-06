@@ -1,0 +1,54 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 5,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/restorative_pills"
+    },
+    {
+      "any": [
+        "earth_on_minecraft:med/herbal_processing",
+        "xuanhuan_earth:xua/herb_tasting"
+      ]
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:nourish_qi_pill"
+    },
+    {
+      "item": "xuanhuan_earth:calm_spirit_pill"
+    },
+    {
+      "item": "xuanhuan_earth:clear_heat_pill"
+    },
+    {
+      "item": "xuanhuan_earth:invigorate_blood_pill"
+    },
+    {
+      "item": "xuanhuan_earth:resolve_toxin_pill"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_herb",
+        "count": 8
+      },
+      {
+        "ingredient": "xuanhuan_earth:spirit_spring_bottle",
+        "count": 4
+      }
+    ],
+    "ticks": 6000
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.herbal_formulas",
+  "desc_key": "lore.xuanhuan_earth.xua.herbal_formulas.desc"
+}

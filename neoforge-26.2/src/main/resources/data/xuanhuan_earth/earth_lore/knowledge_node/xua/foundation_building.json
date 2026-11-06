@@ -1,0 +1,53 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 6,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/qi_refining"
+    },
+    {
+      "all": "xuanhuan_earth:xua/breakthrough_pills"
+    },
+    {
+      "any": [
+        "xuanhuan_earth:xua/body_tempering",
+        "xuanhuan_earth:xua/fetal_breath",
+        "xuanhuan_earth:xua/bigu"
+      ]
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "field>=50"
+    }
+  ],
+  "unlocks": [
+    {
+      "ability": "xuanhuan_earth:realm_2"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_stone",
+        "count": 4
+      },
+      {
+        "ingredient": "xuanhuan_earth:breakthrough_pill",
+        "count": 1
+      }
+    ],
+    "ticks": 7200
+  },
+  "fail_codes": [
+    "field_low"
+  ],
+  "name_key": "lore.xuanhuan_earth.xua.foundation_building",
+  "desc_key": "lore.xuanhuan_earth.xua.foundation_building.desc"
+}

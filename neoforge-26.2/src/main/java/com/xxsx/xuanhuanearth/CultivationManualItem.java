@@ -1,16 +1,27 @@
 package com.xxsx.xuanhuanearth;
 
+import com.xxsx.earthlore.api.LoreApi;
+import com.xxsx.earthlore.api.StudyResult;
+import com.xxsx.earthlore.data.LoreText;
+import com.xxsx.earthlore.registry.LoreContent;
+import com.xxsx.earthlore.study.LiteratureItem;
+import com.xxsx.earthlore.study.StudyService;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class CultivationManualItem extends Item {
@@ -24,6 +35,18 @@ public class CultivationManualItem extends Item {
         Type(String id) {
             this.id = id;
         }
+
+        public Identifier nodeId() {
+            return switch (this) {
+                case BIGU -> XuanhuanLoreIntegration.K_XUA_05_BIGU;
+                case BODY_TEMPERING -> XuanhuanLoreIntegration.K_XUA_03_BODY_TEMPERING;
+                case FETAL_BREATH -> XuanhuanLoreIntegration.K_XUA_04_FETAL_BREATH;
+            };
+        }
+
+        public LoreText defaultLoreText() {
+            return XuanhuanLoreIntegration.manualLoreText(List.of(nodeId()));
+        }
     }
 
     private final Type type;
@@ -35,34 +58,45 @@ public class CultivationManualItem extends Item {
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!stack.has(LoreContent.LORE_TEXT.get())) {
+            stack.set(LoreContent.LORE_TEXT.get(), type.defaultLoreText());
+        }
         if (level.isClientSide()) {
-            return InteractionResult.SUCCESS;
+            if (!LiteratureItem.clientCanStudy.test(player, stack)) {
+                return InteractionResult.FAIL;
+            }
+            player.startUsingItem(hand);
+            return InteractionResult.CONSUME;
         }
-        if (ArcanaPower.getCultivationLevel(player) <= 0) {
-            player.sendSystemMessage(Component.translatable(
-                    "message.xuanhuan_earth.cultivation_manual.requires_qi_guiding")
-                    .withStyle(ChatFormatting.RED));
-            return InteractionResult.SUCCESS_SERVER;
-        }
-        boolean learned = switch (type) {
-            case BIGU -> ArcanaPower.learnBigu(player);
-            case BODY_TEMPERING -> ArcanaPower.learnBodyTempering(player);
-            case FETAL_BREATH -> ArcanaPower.learnFetalBreath(player);
-        };
-        CultivationFocus focus = switch (type) {
-            case BIGU -> CultivationFocus.BIGU;
-            case BODY_TEMPERING -> CultivationFocus.BODY_TEMPERING;
-            case FETAL_BREATH -> CultivationFocus.FETAL_BREATH;
-        };
-        ArcanaPower.setCultivationFocus(player, focus);
-        player.sendSystemMessage(Component.translatable("message.xuanhuan_earth." + type.id
-                        + (learned ? ".learned" : ".already_learned"))
-                .withStyle(learned ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
-        sendAdaptationStatus(player);
-        if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-            CultivationNetwork.sync(serverPlayer, player.blockPosition(), true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            StudyResult result = LoreApi.beginStudy(serverPlayer, stack);
+            if (!result.started()) {
+                serverPlayer.sendOverlayMessage(StudyService.failMessage(result));
+                return InteractionResult.FAIL;
+            }
+            player.startUsingItem(hand);
+            return InteractionResult.CONSUME;
         }
         return InteractionResult.SUCCESS_SERVER;
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity user) {
+        return LiteratureItem.USE_DURATION;
+    }
+
+    @Override
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.NONE;
+    }
+
+    @Override
+    public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int remainingTime) {
+        if (entity instanceof ServerPlayer serverPlayer) {
+            StudyService.cancel(serverPlayer);
+        }
+        return false;
     }
 
     @Override

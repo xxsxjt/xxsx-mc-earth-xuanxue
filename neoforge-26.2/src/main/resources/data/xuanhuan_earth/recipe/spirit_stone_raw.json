@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " D ",
+    "DSD",
+    " D "
+  ],
+  "key": {
+    "D": "xuanhuan_earth:spirit_dust",
+    "S": "minecraft:stone"
+  },
+  "result": {
+    "id": "xuanhuan_earth:spirit_stone_raw",
+    "count": 2
+  }
+}

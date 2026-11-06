@@ -17,6 +17,8 @@ public class XuanhuanMachineMenu extends AbstractContainerMenu {
     public static final int BUTTON_REDSTONE_ALWAYS = 0;
     public static final int BUTTON_REDSTONE_REQUIRE_SIGNAL = 1;
     public static final int BUTTON_REDSTONE_REQUIRE_NO_SIGNAL = 2;
+    public static final int BUTTON_CYCLE_FIRE = 3;
+    public static final int BUTTON_CYCLE_ARRAY_MODE = 4;
     private static final int PLAYER_INV_START = XuanhuanMachineBlockEntity.SLOT_COUNT;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 27;
     private static final int HOTBAR_END = PLAYER_INV_END + 9;
@@ -72,9 +74,21 @@ public class XuanhuanMachineMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (container instanceof XuanhuanMachineBlockEntity machine && id >= BUTTON_REDSTONE_ALWAYS && id <= BUTTON_REDSTONE_REQUIRE_NO_SIGNAL) {
-            machine.setRedstoneMode(XuanhuanMachineBlockEntity.RedstoneMode.byId(id));
-            return true;
+        if (container instanceof XuanhuanMachineBlockEntity machine) {
+            if (id >= BUTTON_REDSTONE_ALWAYS && id <= BUTTON_REDSTONE_REQUIRE_NO_SIGNAL) {
+                machine.setRedstoneMode(XuanhuanMachineBlockEntity.RedstoneMode.byId(id));
+                return true;
+            }
+            if (id == BUTTON_CYCLE_FIRE && machine.kind() == XuanhuanMachineBlock.Kind.ALCHEMY_FURNACE) {
+                machine.cycleFireMode();
+                return true;
+            }
+            if (id == BUTTON_CYCLE_ARRAY_MODE && machine.kind() == XuanhuanMachineBlock.Kind.SPIRIT_ARRAY_CORE) {
+                if (!(player instanceof ServerPlayer serverPlayer) || XuanhuanLoreIntegration.knowsArrayFunctions(serverPlayer)) {
+                    machine.cycleArrayMode();
+                    return true;
+                }
+            }
         }
         return super.clickMenuButton(player, id);
     }
@@ -175,6 +189,18 @@ public class XuanhuanMachineMenu extends AbstractContainerMenu {
 
     public XuanhuanMachineBlockEntity.ProcessState processState() {
         return XuanhuanMachineBlockEntity.ProcessState.byId(data.get(7));
+    }
+
+    public XuanhuanMachineBlockEntity.FireMode fireMode() {
+        return XuanhuanMachineBlockEntity.FireMode.byId(data.get(8));
+    }
+
+    public int temperature() {
+        return Math.max(300, data.get(9));
+    }
+
+    public XuanhuanMachineBlockEntity.ArrayMode arrayMode() {
+        return XuanhuanMachineBlockEntity.ArrayMode.byId(data.get(10));
     }
 
     public static MachineLayout layoutFor(XuanhuanMachineBlock.Kind kind) {

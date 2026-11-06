@@ -1,0 +1,50 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 1,
+  "gate": "soft",
+  "requires": [],
+  "item_requires": [
+    {
+      "cond": "field>=20"
+    }
+  ],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:qi_guiding_manual"
+    },
+    {
+      "item": "xuanhuan_earth:cultivation_journal"
+    },
+    {
+      "block": "xuanhuan_earth:meditation_cushion"
+    },
+    {
+      "item": "xuanhuan_earth:meditation_cushion"
+    }
+  ],
+  "literature": [
+    "notes",
+    "manual"
+  ],
+  "teachers": [
+    "xuanhuan_earth:cultivation_settler"
+  ],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:paper",
+        "count": 4
+      },
+      {
+        "ingredient": "xuanhuan_earth:spirit_dust",
+        "count": 2
+      }
+    ],
+    "ticks": 600
+  },
+  "fail_codes": [
+    "field_low"
+  ],
+  "name_key": "lore.xuanhuan_earth.xua.qi_guiding",
+  "desc_key": "lore.xuanhuan_earth.xua.qi_guiding.desc"
+}

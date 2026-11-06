@@ -1,0 +1,43 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 9,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/nascent_soul"
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "field>=80"
+    }
+  ],
+  "unlocks": [
+    {
+      "ability": "xuanhuan_earth:realm_5"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_stone_core",
+        "count": 4
+      },
+      {
+        "ingredient": "xuanhuan_earth:breakthrough_pill",
+        "count": 4
+      }
+    ],
+    "ticks": 14400
+  },
+  "fail_codes": [
+    "field_low"
+  ],
+  "name_key": "lore.xuanhuan_earth.xua.spirit_transformation",
+  "desc_key": "lore.xuanhuan_earth.xua.spirit_transformation.desc"
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "xuanhuan_earth:item/talisman_brush"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 4,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/spirit_veins"
+    },
+    {
+      "all": "xuanhuan_earth:xua/divination"
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "night"
+    }
+  ],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:oracle_bone"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:bone",
+        "count": 8
+      },
+      {
+        "ingredient": "minecraft:flint_and_steel",
+        "count": 1
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [
+    "needs_night"
+  ],
+  "name_key": "lore.xuanhuan_earth.xua.bone_oracle",
+  "desc_key": "lore.xuanhuan_earth.xua.bone_oracle.desc"
+}

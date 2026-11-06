@@ -42,6 +42,7 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
@@ -49,7 +50,9 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
 public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
-    public static final int MAX_AFFINITY = 3;
+    public static final int MAX_AFFINITY = 100;
+    public static final int CONTRACT_AFFINITY = 30;
+    public static final int FEED_AFFINITY_STEP = 10;
     private static final EntityDataAccessor<Integer> DATA_AFFINITY = SynchedEntityData.defineId(
             ContractableSpiritBeastEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Byte> DATA_MODE = SynchedEntityData.defineId(
@@ -143,7 +146,7 @@ public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
         this.goalSelector.addGoal(3, new ModeAwareFollowOwnerGoal(this, 1.15D, 9.0F, 2.2F));
         this.goalSelector.addGoal(4, new BreedGoal(this, 1.0D));
         this.goalSelector.addGoal(5, new TemptGoal(this, 1.12D,
-                stack -> stack.is(XuanhuanEarth.SPIRIT_GRASS.get()), false));
+                this::isTameFood, false));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.92D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 9.0F));
         this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
@@ -156,10 +159,10 @@ public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!this.isTame()) {
-            if (stack.is(XuanhuanEarth.SPIRIT_GRASS.get())) {
+            if (isTameFood(stack)) {
                 if (!this.level().isClientSide()) {
                     stack.consume(1, player);
-                    setAffinity(getAffinity() + 1);
+                    setAffinity(Math.min(CONTRACT_AFFINITY, getAffinity() + FEED_AFFINITY_STEP));
                     if (this.level() instanceof ServerLevel serverLevel) {
                         XuanhuanEffects.qiRise(serverLevel,
                                 this.position().add(0.0D, this.getBbHeight() * 0.5D, 0.0D),
@@ -169,16 +172,17 @@ public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
                                 5, 0.3D, 0.25D, 0.3D, 0.02D);
                     }
                     player.sendSystemMessage(Component.translatable(
-                            "message.xuanhuan_earth.beast.affinity", getAffinity(), MAX_AFFINITY));
+                            "message.xuanhuan_earth.beast.affinity", getAffinity(), CONTRACT_AFFINITY));
                 }
                 return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
             }
             if (stack.is(XuanhuanEarth.SPIRIT_BEAST_SEAL.get())) {
                 if (!this.level().isClientSide()) {
-                    if (getAffinity() < MAX_AFFINITY) {
+                    if (getAffinity() < CONTRACT_AFFINITY) {
                         player.sendSystemMessage(Component.translatable(
                                 "message.xuanhuan_earth.beast.affinity_required",
-                                getAffinity(), MAX_AFFINITY));
+                                getAffinity(), CONTRACT_AFFINITY));
+                        return InteractionResult.FAIL;
                     } else if (!net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, player)) {
                         stack.consume(1, player);
                         tame(player);
@@ -221,9 +225,10 @@ public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
                 }
                 return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
             }
-            if (stack.is(XuanhuanEarth.SPIRIT_GRASS.get()) && getHealth() < getMaxHealth()) {
+            if (isTameFood(stack) && (getHealth() < getMaxHealth() || getAffinity() < MAX_AFFINITY)) {
                 if (!this.level().isClientSide()) {
                     stack.consume(1, player);
+                    setAffinity(Math.min(MAX_AFFINITY, getAffinity() + FEED_AFFINITY_STEP));
                     heal(5.0F);
                 }
                 return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
@@ -244,7 +249,29 @@ public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
 
     @Override
     public boolean isFood(ItemStack stack) {
-        return stack.is(XuanhuanEarth.SPIRIT_GRASS.get());
+        if (stack.is(XuanhuanEarth.SPIRIT_GRASS.get())) {
+            return true;
+        }
+        return switch (kind) {
+            case SPIRIT_FOX -> stack.is(Items.GLOW_BERRIES);
+            case WIND_WOLF -> stack.is(Items.ROTTEN_FLESH);
+            case STONEHORN_GOAT -> stack.is(Items.HAY_BLOCK);
+            case CRYSTAL_TURTLE -> stack.is(Items.PRISMARINE_SHARD);
+            case EMBER_CRANE -> stack.is(Items.BLAZE_POWDER);
+        };
+    }
+
+    public boolean isTameFood(ItemStack stack) {
+        if (stack.is(XuanhuanEarth.SPIRIT_GRASS.get()) || stack.is(XuanhuanEarth.SPIRIT_HERB.get())) {
+            return true;
+        }
+        return switch (kind) {
+            case SPIRIT_FOX -> stack.is(Items.SWEET_BERRIES);
+            case WIND_WOLF -> stack.is(Items.BONE);
+            case STONEHORN_GOAT -> stack.is(Items.WHEAT);
+            case CRYSTAL_TURTLE -> stack.is(Items.SEAGRASS);
+            case EMBER_CRANE -> stack.is(Items.COOKED_CHICKEN);
+        };
     }
 
     @Override

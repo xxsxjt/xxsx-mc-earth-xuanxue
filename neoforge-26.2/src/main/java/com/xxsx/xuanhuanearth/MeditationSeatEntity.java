@@ -12,6 +12,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -67,6 +68,11 @@ public class MeditationSeatEntity extends Entity {
         }
 
         if (!(this.getFirstPassenger() instanceof ServerPlayer player)) {
+            if (cushionState.getValue(MeditationCushionBlock.OCCUPIED)) {
+                serverLevel.setBlock(this.sourcePos,
+                        cushionState.setValue(MeditationCushionBlock.OCCUPIED, false),
+                        Block.UPDATE_CLIENTS);
+            }
             this.discard();
             return;
         }

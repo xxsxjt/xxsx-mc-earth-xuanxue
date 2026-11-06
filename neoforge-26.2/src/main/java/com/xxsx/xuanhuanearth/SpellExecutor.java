@@ -26,6 +26,11 @@ public final class SpellExecutor {
         if (!validation.valid()) {
             return Plan.reject(validation.errorCode(), validation.message());
         }
+        boolean builtIn = resolved.id().equals(SpellCatalog.WARD_TALISMAN.id())
+                || resolved.id().equals(SpellCatalog.CIRCULATION.id());
+        if (!builtIn && player != null && !XuanhuanLoreIntegration.knowsSpellGraphs(player)) {
+            return Plan.reject("lore_locked", "spell_graphs knowledge is required for custom spell graphs");
+        }
         if (resolved.id().equals(SpellCatalog.WARD_TALISMAN.id())) {
             ItemStack talisman = player.getItemInHand(hand);
             if (!talisman.is(XuanhuanEarth.BASIC_TALISMAN.get())) {

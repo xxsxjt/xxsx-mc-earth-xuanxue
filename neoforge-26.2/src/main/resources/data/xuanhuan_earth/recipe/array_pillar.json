@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "xuanhuan_earth:spirit_iron_ingot",
+    "xuanhuan_earth:array_rune_stone"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:array_pillar",
+    "count": 2
+  }
+}

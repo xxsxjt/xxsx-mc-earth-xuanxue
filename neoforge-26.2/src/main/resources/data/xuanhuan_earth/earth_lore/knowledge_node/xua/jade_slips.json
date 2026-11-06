@@ -1,0 +1,49 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 4,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/spirit_stones"
+    },
+    {
+      "any": [
+        "earth_on_minecraft:geo/gemology",
+        "xuanhuan_earth:xua/stone_reading"
+      ]
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:jade_slip"
+    },
+    {
+      "item": "xuanhuan_earth:jade_ward_amulet"
+    },
+    {
+      "item": "xuanhuan_earth:jade_array_plate"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_crystal_shard",
+        "count": 4
+      },
+      {
+        "ingredient": "minecraft:paper",
+        "count": 4
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.jade_slips",
+  "desc_key": "lore.xuanhuan_earth.xua.jade_slips.desc"
+}

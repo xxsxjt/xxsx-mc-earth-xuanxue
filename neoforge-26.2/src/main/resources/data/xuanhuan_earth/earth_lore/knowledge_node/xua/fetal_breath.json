@@ -1,0 +1,37 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 3,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/circulation"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:breath_pill"
+    }
+  ],
+  "literature": [
+    "notes",
+    "manual"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_spring_bottle",
+        "count": 2
+      },
+      {
+        "ingredient": "minecraft:kelp",
+        "count": 8
+      }
+    ],
+    "ticks": 2400
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.fetal_breath",
+  "desc_key": "lore.xuanhuan_earth.xua.fetal_breath.desc"
+}

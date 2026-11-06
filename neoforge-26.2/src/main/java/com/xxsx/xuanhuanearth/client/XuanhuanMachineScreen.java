@@ -37,6 +37,15 @@ public class XuanhuanMachineScreen extends AbstractContainerScreen<XuanhuanMachi
         addRenderableWidget(Button.builder(Component.empty(), b -> cycleRedstoneMode())
                 .bounds(this.leftPos + 151, this.topPos + 59, 18, 18)
                 .build());
+        if (this.menu.kind() == XuanhuanMachineBlock.Kind.ALCHEMY_FURNACE) {
+            addRenderableWidget(Button.builder(Component.empty(), b -> cycleFireMode())
+                    .bounds(this.leftPos + 151, this.topPos + 39, 18, 18)
+                    .build());
+        } else if (this.menu.kind() == XuanhuanMachineBlock.Kind.SPIRIT_ARRAY_CORE) {
+            addRenderableWidget(Button.builder(Component.empty(), b -> cycleArrayMode())
+                    .bounds(this.leftPos + 151, this.topPos + 39, 18, 18)
+                    .build());
+        }
         addRenderableWidget(Button.builder(Component.translatable("screen.xuanhuan_earth.button.handbook"), button -> {
                     this.onClose();
                     XuanhuanEarthClient.openHandbook();
@@ -65,6 +74,7 @@ public class XuanhuanMachineScreen extends AbstractContainerScreen<XuanhuanMachi
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
         super.extractRenderState(g, mouseX, mouseY, delta);
         drawRedstoneIcon(g);
+        drawExtraControlIcon(g);
         drawStatus(g);
         drawTooltips(g, mouseX, mouseY);
     }
@@ -181,6 +191,7 @@ public class XuanhuanMachineScreen extends AbstractContainerScreen<XuanhuanMachi
                     recipe.map(this::effectiveMinField).orElse(0));
             case OUTPUT_FULL -> Component.translatable("screen.xuanhuan_earth.machine.output_full");
             case REDSTONE_PAUSED -> Component.translatable("screen.xuanhuan_earth.machine.redstone_paused");
+            case LORE_LOCKED -> Component.translatable("lore.earth_lore.fail.lore_locked");
             case RUNNING -> recipe.map(value -> Component.translatable(value.noteKey()))
                     .orElseGet(() -> Component.translatable("screen.xuanhuan_earth.machine.running"));
         };
@@ -188,7 +199,7 @@ public class XuanhuanMachineScreen extends AbstractContainerScreen<XuanhuanMachi
 
     private int statusColor() {
         return switch (this.menu.processState()) {
-            case INVALID_COMBINATION, FIELD_LOW, OUTPUT_FULL -> WARNING;
+            case INVALID_COMBINATION, FIELD_LOW, OUTPUT_FULL, LORE_LOCKED -> WARNING;
             case RUNNING -> OK;
             case MISSING_INPUT, REDSTONE_PAUSED -> MUTED;
         };
@@ -237,6 +248,47 @@ public class XuanhuanMachineScreen extends AbstractContainerScreen<XuanhuanMachi
                     Component.translatable(structureStatusKey()),
                     Component.translatable("screen.xuanhuan_earth.structure.array.hint")
             ), mouseX, mouseY);
+        }
+        if (this.menu.kind() == XuanhuanMachineBlock.Kind.ALCHEMY_FURNACE && isHovering(151, 39, 18, 18, mouseX, mouseY)) {
+            g.setComponentTooltipForNextFrame(this.font, List.of(
+                    Component.translatable("screen.xuanhuan_earth.furnace.fire",
+                            Component.translatable(this.menu.fireMode().labelKey()),
+                            this.menu.temperature())
+            ), mouseX, mouseY);
+        } else if (this.menu.kind() == XuanhuanMachineBlock.Kind.SPIRIT_ARRAY_CORE && isHovering(151, 39, 18, 18, mouseX, mouseY)) {
+            g.setComponentTooltipForNextFrame(this.font, List.of(
+                    Component.translatable("screen.xuanhuan_earth.array.mode",
+                            Component.translatable(this.menu.arrayMode().labelKey()))
+            ), mouseX, mouseY);
+        }
+    }
+
+    private void drawExtraControlIcon(GuiGraphicsExtractor g) {
+        int x = this.leftPos + 152;
+        int y = this.topPos + 40;
+        if (this.menu.kind() == XuanhuanMachineBlock.Kind.ALCHEMY_FURNACE) {
+            Item icon = switch (this.menu.fireMode()) {
+                case GENTLE -> Items.CAMPFIRE;
+                case MEDIUM -> Items.BLAZE_POWDER;
+                case FIERCE -> Items.FIRE_CHARGE;
+            };
+            g.item(new ItemStack(icon), x, y);
+        } else if (this.menu.kind() == XuanhuanMachineBlock.Kind.SPIRIT_ARRAY_CORE) {
+            g.item(new ItemStack(Items.AMETHYST_SHARD), x, y);
+        }
+    }
+
+    private void cycleFireMode() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.gameMode != null) {
+            mc.gameMode.handleInventoryButtonClick(this.menu.containerId, XuanhuanMachineMenu.BUTTON_CYCLE_FIRE);
+        }
+    }
+
+    private void cycleArrayMode() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.gameMode != null) {
+            mc.gameMode.handleInventoryButtonClick(this.menu.containerId, XuanhuanMachineMenu.BUTTON_CYCLE_ARRAY_MODE);
         }
     }
 

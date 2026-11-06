@@ -1,0 +1,44 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 5,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/geomancy"
+    }
+  ],
+  "item_requires": [
+    {
+      "hold": "xuanhuan_earth:luopan"
+    }
+  ],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:dragon_seeking_rod"
+    },
+    {
+      "readout": "xuanhuan_earth:luopan"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_crystal_shard",
+        "count": 8
+      },
+      {
+        "ingredient": "xuanhuan_earth:spirit_stone",
+        "count": 2
+      }
+    ],
+    "ticks": 6000
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.dragon_vein_seeking",
+  "desc_key": "lore.xuanhuan_earth.xua.dragon_vein_seeking.desc"
+}

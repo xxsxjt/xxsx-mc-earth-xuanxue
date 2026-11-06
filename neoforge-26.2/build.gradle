@@ -3,7 +3,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.148'
 }
 
-version = '0.7.0-alpha.15'
+version = '0.8.0'
 group = 'com.xxsx.xuanhuanearth'
 base.archivesName = 'xuanhuan-earth-neoforge-26.1.2'
 
@@ -38,11 +38,21 @@ repositories {
             includeGroup 'mezz.jei'
         }
     }
+    mavenCentral()
 }
 
 dependencies {
+    implementation files('../../earth_lore/neoforge-26.1.2/build/libs/earth-lore-neoforge-26.1.2-0.1.0.jar')
     compileOnly 'mezz.jei:jei-26.1.2-common-api:29.53.0.112'
     compileOnly 'mezz.jei:jei-26.1.2-neoforge-api:29.53.0.112'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+configurations {
+    testCompileClasspath.extendsFrom compileClasspath
+    testRuntimeClasspath.extendsFrom runtimeClasspath
 }
 
 jar {
@@ -51,7 +61,7 @@ jar {
     }
     manifest {
         attributes([
-            'Specification-Title'     : 'Xuanhuan Earth',
+            'Specification-Title'     : 'Earth: Xuanxue',
             'Specification-Vendor'    : 'xxsx',
             'Specification-Version'   : '1',
             'Implementation-Title'    : project.name,
@@ -73,6 +83,7 @@ tasks.register('verifyArcanaBalance', JavaExec) {
 }
 
 tasks.named('test', Test) {
+    useJUnitPlatform()
     failOnNoDiscoveredTests = false
 }
 

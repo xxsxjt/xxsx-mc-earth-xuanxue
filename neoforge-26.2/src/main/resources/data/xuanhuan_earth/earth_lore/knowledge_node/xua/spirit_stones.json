@@ -1,0 +1,56 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 2,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/qi_guiding"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:spirit_stone_raw"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_stone"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_stone_cracked"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_crystal_shard"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_dust"
+    },
+    {
+      "ability": "xuanhuan_earth:spirit_stone_charge"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_compass"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [
+    "xuanhuan_earth:cultivation_settler"
+  ],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_stone_raw",
+        "count": 2
+      },
+      {
+        "ingredient": "xuanhuan_earth:spirit_crystal_shard",
+        "count": 2
+      }
+    ],
+    "ticks": 1200
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.spirit_stones",
+  "desc_key": "lore.xuanhuan_earth.xua.spirit_stones.desc"
+}

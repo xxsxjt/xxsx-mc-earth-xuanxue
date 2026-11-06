@@ -17,9 +17,15 @@ import java.util.function.Consumer;
 public class SpiritStoneItem extends GuidedXuanhuanItem {
     private static final double CHARGE_BATCH_AEU = 24.0D;
     private static final double RELEASE_BATCH_MANA = 10.0D;
+    private final boolean cracked;
 
     public SpiritStoneItem(Properties properties, String hintKey) {
+        this(properties, hintKey, false);
+    }
+
+    public SpiritStoneItem(Properties properties, String hintKey, boolean cracked) {
         super(properties, hintKey);
+        this.cracked = cracked;
     }
 
     @Override
@@ -31,37 +37,67 @@ public class SpiritStoneItem extends GuidedXuanhuanItem {
         if (player.isShiftKeyDown()) {
             releaseIntoMana(level, player, stack);
         } else {
-            chargeFromField(level, player, stack);
+            chargeFromField(level, player, hand, stack);
         }
         return InteractionResult.SUCCESS_SERVER;
     }
 
-    private static void chargeFromField(Level level, Player player, ItemStack stack) {
+    private void chargeFromField(Level level, Player player, InteractionHand hand, ItemStack stack) {
         SpiritStoneComponent state = SpiritStoneComponent.read(stack);
+        double cap = cracked ? SpiritStoneComponent.CRACKED_CAPACITY_AEU : SpiritStoneCharge.CAPACITY_AEU;
         ArcanaChunkField.Reading reading = Spirituality.reading(level, player.blockPosition());
         double usableField = SpiritFieldLedger.availableField(reading.value(), reading.depletion());
-        double coupling = usableField / SpiritFieldLedger.FIELD_MAX;
-        SpiritStoneCharge.ChargeResult result = SpiritStoneCharge.capture(
-                state.chargeAeu(), coupling, CHARGE_BATCH_AEU);
-        if (result.fieldSpent() <= 0.0D) {
+        double coupling = Math.min(1.0D, Math.max(0.0D, usableField / SpiritFieldLedger.FIELD_MAX));
+        if (coupling <= 0.0D) {
             player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.spirit_stone.no_field")
                     .withStyle(ChatFormatting.YELLOW));
             return;
         }
-        stack.set(XuanhuanEarth.SPIRIT_STONE_CHARGE, state.withCharge(result.charge()));
-        Spirituality.consumeField(level, player.blockPosition(), result.fieldSpent());
+        double requested = CHARGE_BATCH_AEU * coupling * coupling;
+        double remaining = Math.max(0.0D, cap - state.chargeAeu());
+        double capturable = remaining / SpiritStoneCharge.CAPTURE_EFFICIENCY;
+        double fieldSpent = Math.min(requested, capturable);
+        double rejected = Math.max(0.0D, requested - fieldSpent);
+        double nextStability = Math.max(0.0D, state.stability() - 0.02D * rejected);
+        double gained = fieldSpent * SpiritStoneCharge.CAPTURE_EFFICIENCY;
+        double nextCharge = Math.min(cap, state.chargeAeu() + gained);
+        String sig = SpiritStoneComponent.computeSignature(level, player.blockPosition(), reading.mainSourceKey());
+
+        if (!cracked && nextStability < 0.2D) {
+            ItemStack crackedStack = new ItemStack(XuanhuanEarth.SPIRIT_STONE_CRACKED.get());
+            double clamped = Math.min(SpiritStoneComponent.CRACKED_CAPACITY_AEU, nextCharge);
+            crackedStack.set(XuanhuanEarth.SPIRIT_STONE_CHARGE.get(),
+                    state.withStoneState(clamped, SpiritStoneComponent.CRACKED_CAPACITY_AEU, nextStability, sig));
+            player.setItemInHand(hand, crackedStack);
+            if (fieldSpent > 0.0D) {
+                Spirituality.consumeField(level, player.blockPosition(), fieldSpent);
+            }
+            player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.spirit_stone.cracked")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        if (fieldSpent <= 0.0001D) {
+            stack.set(XuanhuanEarth.SPIRIT_STONE_CHARGE.get(), state.withStoneState(nextCharge, cap, nextStability, sig));
+            player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.spirit_stone.full")
+                    .withStyle(ChatFormatting.YELLOW));
+            return;
+        }
+        stack.set(XuanhuanEarth.SPIRIT_STONE_CHARGE.get(), state.withStoneState(nextCharge, cap, nextStability, sig));
+        Spirituality.consumeField(level, player.blockPosition(), fieldSpent);
         if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
             XuanhuanEffects.stoneCharge(serverLevel, player.position());
         }
         player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.spirit_stone.charged",
-                ArcanaPower.format(result.fieldSpent()), ArcanaPower.format(result.gained()),
-                ArcanaPower.format(result.charge()), ArcanaPower.format(SpiritStoneCharge.CAPACITY_AEU),
-                ArcanaPower.format(result.loss()), Spirituality.gradeName(reading.value()))
+                ArcanaPower.format(fieldSpent), ArcanaPower.format(gained),
+                ArcanaPower.format(nextCharge), ArcanaPower.format(cap),
+                ArcanaPower.format(Math.max(0.0D, fieldSpent - gained)), Spirituality.gradeName(reading.value()))
                 .withStyle(ChatFormatting.AQUA));
     }
 
-    private static void releaseIntoMana(Level level, Player player, ItemStack stack) {
+    private void releaseIntoMana(Level level, Player player, ItemStack stack) {
         SpiritStoneComponent state = SpiritStoneComponent.read(stack);
+        double cap = cracked ? SpiritStoneComponent.CRACKED_CAPACITY_AEU : SpiritStoneCharge.CAPACITY_AEU;
         double missing = ArcanaPower.getMaxMana(player) - ArcanaPower.getCurrentMana(player);
         if (missing <= 0.0001D) {
             player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.spirit_stone.mana_full")
@@ -78,7 +114,8 @@ public class SpiritStoneItem extends GuidedXuanhuanItem {
         double before = ArcanaPower.getCurrentMana(player);
         ArcanaPower.setCurrentMana(player, before + result.manaRestored());
         double restored = ArcanaPower.getCurrentMana(player) - before;
-        stack.set(XuanhuanEarth.SPIRIT_STONE_CHARGE, state.withCharge(result.charge()));
+        stack.set(XuanhuanEarth.SPIRIT_STONE_CHARGE.get(),
+                state.withStoneState(Math.min(cap, result.charge()), cap, state.stability(), state.fieldSignature()));
         if (player instanceof ServerPlayer serverPlayer) {
             CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.RECOVERY);
             XuanhuanJourney.complete(serverPlayer, XuanhuanJourney.Milestone.ARTIFACT_USE);
@@ -88,7 +125,7 @@ public class SpiritStoneItem extends GuidedXuanhuanItem {
         }
         player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.spirit_stone.released",
                 ArcanaPower.format(result.aeuSpent()), ArcanaPower.format(restored),
-                ArcanaPower.format(result.charge()), ArcanaPower.format(SpiritStoneCharge.CAPACITY_AEU))
+                ArcanaPower.format(Math.min(cap, result.charge())), ArcanaPower.format(cap))
                 .withStyle(ChatFormatting.GOLD));
     }
 
@@ -97,11 +134,12 @@ public class SpiritStoneItem extends GuidedXuanhuanItem {
                                 Consumer<Component> lines, TooltipFlag flag) {
         super.appendHoverText(stack, context, display, lines, flag);
         SpiritStoneComponent state = SpiritStoneComponent.read(stack);
+        double cap = cracked ? SpiritStoneComponent.CRACKED_CAPACITY_AEU : SpiritStoneCharge.CAPACITY_AEU;
         lines.accept(Component.translatable("tooltip.xuanhuan_earth.spirit_stone.matrix")
                 .withStyle(ChatFormatting.GRAY));
         lines.accept(Component.translatable("tooltip.xuanhuan_earth.spirit_stone.charge",
                 ArcanaPower.format(state.chargeAeu()),
-                ArcanaPower.format(SpiritStoneCharge.CAPACITY_AEU),
+                ArcanaPower.format(cap),
                 Component.translatable("spirit_stone.xuanhuan_earth.grade." + SpiritStoneCharge.grade(state.chargeAeu())))
                 .withStyle(ChatFormatting.AQUA));
         lines.accept(Component.translatable("tooltip.xuanhuan_earth.spirit_stone.use")

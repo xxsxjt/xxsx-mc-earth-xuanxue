@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:village",
+    "minecraft:ancient_city",
+    "minecraft:trial_chambers",
+    "minecraft:stronghold"
+  ]
+}

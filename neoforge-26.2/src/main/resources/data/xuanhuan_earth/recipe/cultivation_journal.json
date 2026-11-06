@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:book",
+    "xuanhuan_earth:spirit_dust"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:cultivation_journal",
+    "count": 1
+  }
+}

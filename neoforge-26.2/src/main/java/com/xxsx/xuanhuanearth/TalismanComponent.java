@@ -25,7 +25,11 @@ public record TalismanComponent(double chargeAeu, int schemaVersion) {
 
     /** A talisman is only usable when the stack still carries sealed field charge. */
     public static boolean isSealed(ItemStack stack) {
-        return stack.is(XuanhuanEarth.BASIC_TALISMAN.get())
+        boolean isTalisman = stack.is(XuanhuanEarth.BASIC_TALISMAN.get())
+                || stack.is(XuanhuanEarth.FIRE_TALISMAN.get())
+                || stack.is(XuanhuanEarth.WIND_TALISMAN.get())
+                || stack.is(XuanhuanEarth.SEAL_TALISMAN.get());
+        return isTalisman
                 && TalismanCharge.isCharged(read(stack).chargeAeu());
     }
 

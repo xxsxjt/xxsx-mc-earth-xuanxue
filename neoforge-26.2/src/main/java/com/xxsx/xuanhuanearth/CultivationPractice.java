@@ -49,6 +49,22 @@ public final class CultivationPractice {
 
     public static boolean perform(ServerLevel level, BlockPos pos, ServerPlayer player,
                                   Support support, boolean quietOutput) {
+        if (!XuanhuanLoreIntegration.knowsCirculation(player)) {
+            if (!quietOutput) {
+                player.sendSystemMessage(Component.translatable("lore.earth_lore.fail.lore_locked")
+                        .withStyle(ChatFormatting.RED));
+            }
+            return false;
+        }
+        CultivationFocus rawSelected = CultivationFocus.byId(
+                ArcanaPower.data(player).getIntOr(ArcanaPower.CULTIVATION_FOCUS, 0));
+        if (!XuanhuanLoreIntegration.knowsFocus(player, rawSelected)) {
+            if (!quietOutput) {
+                player.sendSystemMessage(Component.translatable("lore.earth_lore.fail.lore_locked")
+                        .withStyle(ChatFormatting.RED));
+            }
+            return false;
+        }
         if (ArcanaPower.getCultivationLevel(player) <= 0) {
             if (!quietOutput) {
                 player.sendSystemMessage(Component.translatable(
@@ -89,6 +105,9 @@ public final class CultivationPractice {
         }
         double restored = circulation.manaRestored();
         int gainedXp = Math.max(2, (int) Math.round((3.0D + focusedQi * 0.12D) * support.efficiency()));
+        if (support == Support.CUSHION && ArcanaChunkField.isAcupoint(level, pos)) {
+            gainedXp += 1;
+        }
         ArcanaPower.ProgressResult progress = ArcanaPower.addCultivationExperience(player, focus, gainedXp);
         ArcanaPower.startQiMeditationCooldown(player, level);
         CultivationNetwork.broadcastVisual(player, CultivationVisualAction.MEDITATION);

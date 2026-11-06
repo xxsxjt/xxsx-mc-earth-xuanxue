@@ -1,0 +1,10 @@
+{
+  "forms": [
+    {
+      "carrier": "xuanhuan_earth:jade_slip",
+      "result": "xuanhuan_earth:jade_slip",
+      "discipline": "earth_lore:xua",
+      "study_factor": 0.5
+    }
+  ]
+}

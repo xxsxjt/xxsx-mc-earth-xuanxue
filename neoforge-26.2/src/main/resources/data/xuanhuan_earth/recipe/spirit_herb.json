@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "xuanhuan_earth:spirit_grass",
+    "minecraft:bone_meal"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:spirit_herb",
+    "count": 2
+  }
+}

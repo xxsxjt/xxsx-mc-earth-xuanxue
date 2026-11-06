@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "  C",
+    " I ",
+    "S  "
+  ],
+  "key": {
+    "C": "xuanhuan_earth:spirit_crystal_shard",
+    "I": "xuanhuan_earth:spirit_iron_ingot",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "xuanhuan_earth:dragon_seeking_rod",
+    "count": 1
+  }
+}

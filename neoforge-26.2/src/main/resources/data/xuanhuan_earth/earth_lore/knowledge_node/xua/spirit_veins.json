@@ -1,0 +1,45 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 3,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/spirit_stones"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "block": "xuanhuan_earth:spirit_vein_node"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_vein_node"
+    },
+    {
+      "block": "xuanhuan_earth:spirit_spring_stone"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_spring_stone"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_crystal_shard",
+        "count": 4
+      },
+      {
+        "ingredient": "xuanhuan_earth:spirit_stone",
+        "count": 1
+      }
+    ],
+    "ticks": 2400
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.spirit_veins",
+  "desc_key": "lore.xuanhuan_earth.xua.spirit_veins.desc"
+}

@@ -4,8 +4,8 @@ license="AGPL-3.0-only"
 
 [[mods]]
 modId="xuanhuan_earth"
-version="0.7.0-alpha.15"
-displayName="Xuanhuan Earth / 玄幻地球"
+version="0.8.0"
+displayName="地球：玄学 / Earth: Xuanxue"
 logoFile="logo.png"
 description='''
 In-development beta for Minecraft 26.1.2 + NeoForge 26.1.2.124.
@@ -53,6 +53,13 @@ modId="minecraft"
 type="required"
 versionRange="[26.1.2]"
 ordering="NONE"
+side="BOTH"
+
+[[dependencies.xuanhuan_earth]]
+modId="earth_lore"
+type="required"
+versionRange="[0.1.0,)"
+ordering="AFTER"
 side="BOTH"
 
 [[dependencies.xuanhuan_earth]]

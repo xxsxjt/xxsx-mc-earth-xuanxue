@@ -1,0 +1,45 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 3,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/spirit_stones"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:spirit_iron_blank"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_iron_ingot"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_glass"
+    },
+    {
+      "item": "xuanhuan_earth:spirit_thread"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:iron_ingot",
+        "count": 4
+      },
+      {
+        "ingredient": "xuanhuan_earth:spirit_crystal_shard",
+        "count": 4
+      }
+    ],
+    "ticks": 2400
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.spirit_materials",
+  "desc_key": "lore.xuanhuan_earth.xua.spirit_materials.desc"
+}

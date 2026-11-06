@@ -36,6 +36,7 @@ public final class ArcanaPower {
     public static final String QI_MEDITATION_COOLDOWN_UNTIL = "earth_arcana.qi_meditation_cooldown_until";
     public static final String XUANHUAN_SKILL_COOLDOWN_UNTIL = "earth_arcana.xuanhuan_skill_cooldown_until";
     public static final String CULTIVATION_FOCUS = "earth_arcana.cultivation_focus";
+    public static final String DIVINATION_DAY = "earth_arcana.divination_day";
 
     private static final double DEFAULT_BASE_MANA = 20.0D;
     private static final double MAX_REASONABLE_MANA = 1_000_000.0D;
@@ -149,6 +150,12 @@ public final class ArcanaPower {
     }
 
     public static ProgressResult addCultivationExperience(Player player, CultivationFocus focus, int amount) {
+        if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                && !XuanhuanLoreIntegration.knowsFocus(serverPlayer, focus)) {
+            int cur = getFocusLevel(player, focus);
+            return new ProgressResult(cur, cur, getFocusXp(player, focus),
+                    getFocusXpNeeded(player, focus), 0, false, cur >= MAX_CULTIVATION_LEVEL);
+        }
         int previousLevel = getFocusLevel(player, focus);
         if (previousLevel <= 0 || amount <= 0 || previousLevel >= MAX_CULTIVATION_LEVEL) {
             return new ProgressResult(previousLevel, previousLevel, getFocusXp(player, focus),
@@ -286,6 +293,57 @@ public final class ArcanaPower {
         add(tag, XUANHUAN_MANA_BONUS, 12.0D);
         setCurrentMana(player, getMaxMana(player));
         return true;
+    }
+
+    public static boolean learnBodyTemperingFromLore(Player player) {
+        CompoundTag tag = data(player);
+        if (getBodyTemperingLevel(player) > 0) {
+            return false;
+        }
+        tag.putInt(BODY_TEMPERING_LEVEL, 1);
+        tag.putInt(BODY_TEMPERING_XP, 0);
+        add(tag, BODY_TEMPERING_BONUS, 0.45D);
+        add(tag, ENDURANCE_BONUS, 0.22D);
+        add(tag, BREATH_CAPACITY_BONUS, 60.0D);
+        add(tag, XUANHUAN_MANA_BONUS, 15.0D);
+        setCurrentMana(player, getMaxMana(player));
+        return true;
+    }
+
+    public static boolean learnFetalBreathFromLore(Player player) {
+        CompoundTag tag = data(player);
+        if (getFetalBreathLevel(player) > 0) {
+            return false;
+        }
+        tag.putInt(FETAL_BREATH_LEVEL, 1);
+        tag.putInt(FETAL_BREATH_XP, 0);
+        add(tag, BREATH_CAPACITY_BONUS, 180.0D);
+        add(tag, ENDURANCE_BONUS, 0.08D);
+        add(tag, XUANHUAN_MANA_BONUS, 12.0D);
+        setCurrentMana(player, getMaxMana(player));
+        return true;
+    }
+
+    public static boolean learnBiguFromLore(Player player) {
+        CompoundTag tag = data(player);
+        if (getBiguLevel(player) > 0) {
+            return false;
+        }
+        tag.putInt(BIGU_LEVEL, 1);
+        tag.putInt(BIGU_XP, 0);
+        add(tag, FASTING_FOOD_BONUS, 0.60D);
+        add(tag, ENDURANCE_BONUS, 0.10D);
+        add(tag, XUANHUAN_MANA_BONUS, 10.0D);
+        setCurrentMana(player, getMaxMana(player));
+        return true;
+    }
+
+    public static long getDivinationDay(Player player) {
+        return data(player).getLongOr(DIVINATION_DAY, -1L);
+    }
+
+    public static void setDivinationDay(Player player, long day) {
+        data(player).putLong(DIVINATION_DAY, day);
     }
 
     public static long getQiMeditationCooldownTicks(Player player, Level level) {

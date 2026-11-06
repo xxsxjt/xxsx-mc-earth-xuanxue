@@ -2,6 +2,7 @@ package com.xxsx.xuanhuanearth;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
@@ -15,6 +16,8 @@ public final class ArcanaPassiveEffects {
     private static final String LAST_SATURATION = "earth_arcana.passive_last_saturation";
     private static final String FOOD_RESTORE_CREDIT = "earth_arcana.passive_food_restore_credit";
     private static final String BREATH_CREDIT = "earth_arcana.passive_breath_credit";
+    public static final String CALM_SPIRIT_UNTIL = "earth_arcana.calm_spirit_until";
+    public static final String RESOLVE_TOXIN_UNTIL = "earth_arcana.resolve_toxin_until";
 
     private ArcanaPassiveEffects() {
     }
@@ -24,6 +27,15 @@ public final class ArcanaPassiveEffects {
             return;
         }
 
+        CompoundTag data = ArcanaPower.data(player);
+        long now = player.level().getGameTime();
+        if (data.getLongOr(CALM_SPIRIT_UNTIL, 0L) > now) {
+            player.removeEffect(MobEffects.NAUSEA);
+            player.removeEffect(MobEffects.WEAKNESS);
+        }
+        if (data.getLongOr(RESOLVE_TOXIN_UNTIL, 0L) > now) {
+            player.removeEffect(MobEffects.POISON);
+        }
         applyMetabolicReduction(player);
     }
 

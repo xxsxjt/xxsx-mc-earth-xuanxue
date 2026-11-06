@@ -1,0 +1,43 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 8,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/golden_core"
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "field>=70"
+    }
+  ],
+  "unlocks": [
+    {
+      "ability": "xuanhuan_earth:realm_4"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_stone_core",
+        "count": 2
+      },
+      {
+        "ingredient": "xuanhuan_earth:breakthrough_pill",
+        "count": 3
+      }
+    ],
+    "ticks": 12000
+  },
+  "fail_codes": [
+    "field_low"
+  ],
+  "name_key": "lore.xuanhuan_earth.xua.nascent_soul",
+  "desc_key": "lore.xuanhuan_earth.xua.nascent_soul.desc"
+}

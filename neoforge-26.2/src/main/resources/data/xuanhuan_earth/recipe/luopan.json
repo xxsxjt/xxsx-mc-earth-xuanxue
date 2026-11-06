@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " P ",
+    "PCP",
+    " S "
+  ],
+  "key": {
+    "P": "#minecraft:planks",
+    "C": "minecraft:compass",
+    "S": "xuanhuan_earth:spirit_crystal_shard"
+  },
+  "result": {
+    "id": "xuanhuan_earth:luopan",
+    "count": 1
+  }
+}

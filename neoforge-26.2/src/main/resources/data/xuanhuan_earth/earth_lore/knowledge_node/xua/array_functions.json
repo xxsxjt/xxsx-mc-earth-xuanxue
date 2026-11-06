@@ -1,0 +1,43 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 6,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/array_expansion"
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "field>=50"
+    }
+  ],
+  "unlocks": [
+    {
+      "ability": "xuanhuan_earth:array_functions"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "xuanhuan_earth:spirit_stone_core",
+        "count": 1
+      },
+      {
+        "ingredient": "xuanhuan_earth:array_rune_stone",
+        "count": 8
+      }
+    ],
+    "ticks": 7200
+  },
+  "fail_codes": [
+    "field_low"
+  ],
+  "name_key": "lore.xuanhuan_earth.xua.array_functions",
+  "desc_key": "lore.xuanhuan_earth.xua.array_functions.desc"
+}

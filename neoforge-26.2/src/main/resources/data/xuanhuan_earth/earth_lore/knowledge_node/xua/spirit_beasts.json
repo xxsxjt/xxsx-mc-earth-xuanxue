@@ -1,0 +1,39 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 3,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/circulation"
+    },
+    {
+      "all": "xuanhuan_earth:xua/spirit_stones"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "xuanhuan_earth:spirit_beast_seal"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:sweet_berries",
+        "count": 16
+      },
+      {
+        "ingredient": "xuanhuan_earth:spirit_dust",
+        "count": 4
+      }
+    ],
+    "ticks": 2400
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.spirit_beasts",
+  "desc_key": "lore.xuanhuan_earth.xua.spirit_beasts.desc"
+}

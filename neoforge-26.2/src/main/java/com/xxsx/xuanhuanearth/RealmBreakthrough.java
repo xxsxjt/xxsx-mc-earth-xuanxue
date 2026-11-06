@@ -45,11 +45,16 @@ public final class RealmBreakthrough {
             return -1;
         }
         int next = realm + 1;
+        if (!XuanhuanLoreIntegration.knowsRealm(player, next)) {
+            player.sendSystemMessage(Component.translatable("lore.earth_lore.fail.lore_locked")
+                    .withStyle(ChatFormatting.RED));
+            return -1;
+        }
         int required = requiredLevel(next);
 
         // Every learned route must be at the required level.
         for (CultivationFocus focus : CultivationFocus.values()) {
-            if (!focus.isUnlocked(player)) {
+            if (ArcanaPower.getFocusLevel(player, focus) <= 0) {
                 continue;
             }
             if (ArcanaPower.getFocusLevel(player, focus) < required) {

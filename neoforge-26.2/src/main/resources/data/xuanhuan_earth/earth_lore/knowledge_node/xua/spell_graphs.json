@@ -1,0 +1,47 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 6,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/talisman_basics"
+    },
+    {
+      "all": "xuanhuan_earth:xua/array_expansion"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "ability": "xuanhuan_earth:spell_graph_structure"
+    },
+    {
+      "ability": "xuanhuan_earth:spell_graph_load"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:book",
+        "count": 2
+      },
+      {
+        "ingredient": "xuanhuan_earth:cinnabar_spirit_ink",
+        "count": 4
+      },
+      {
+        "ingredient": "xuanhuan_earth:array_rune_stone",
+        "count": 4
+      }
+    ],
+    "ticks": 7200
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.spell_graphs",
+  "desc_key": "lore.xuanhuan_earth.xua.spell_graphs.desc"
+}

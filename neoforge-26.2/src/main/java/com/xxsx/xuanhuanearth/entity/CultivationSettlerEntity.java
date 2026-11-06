@@ -1,5 +1,6 @@
 package com.xxsx.xuanhuanearth.entity;
 
+import com.xxsx.earthlore.api.LoreApi;
 import com.xxsx.xuanhuanearth.XuanhuanEarth;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -121,6 +122,7 @@ public final class CultivationSettlerEntity extends AbstractVillager {
                 add(offers, Items.IRON_INGOT, 6, new ItemStack(XuanhuanEarth.SPIRIT_IRON_BLANK.get()), 8, 5);
             }
         }
+        offers.addAll(LoreApi.teachingOffers(level, getType()));
     }
 
     private static void add(MerchantOffers offers, net.minecraft.world.level.ItemLike cost, int count,

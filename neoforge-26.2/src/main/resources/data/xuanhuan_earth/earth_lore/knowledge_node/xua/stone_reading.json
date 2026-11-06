@@ -1,0 +1,36 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 2,
+  "gate": "theory",
+  "requires": [
+    {
+      "all": "xuanhuan_earth:xua/qi_guiding"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:cobblestone",
+        "count": 16
+      },
+      {
+        "ingredient": "minecraft:clay_ball",
+        "count": 8
+      },
+      {
+        "ingredient": "minecraft:paper",
+        "count": 8
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [],
+  "name_key": "lore.xuanhuan_earth.xua.stone_reading",
+  "desc_key": "lore.xuanhuan_earth.xua.stone_reading.desc"
+}
