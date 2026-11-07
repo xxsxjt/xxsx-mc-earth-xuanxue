@@ -7,7 +7,8 @@ public enum CultivationVisualAction {
     BODY_TEMPERING(3, 24),
     FETAL_BREATH(4, 24),
     BIGU(5, 20),
-    TALISMAN(6, 16);
+    TALISMAN(6, 16),
+    IMPLEMENT_CAST(7, 20);
 
     private final int id;
     private final int durationTicks;

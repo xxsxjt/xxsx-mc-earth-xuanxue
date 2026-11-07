@@ -183,6 +183,18 @@ public final class CultivationPlayerAnimations {
                 model.head.xRot -= 0.12F * pulse;
                 model.body.yRot += 0.10F * (cast - fade);
             }
+            case IMPLEMENT_CAST -> {
+                // Two-handed seal / sword-qi sweep: form seal at chest, sweep right arm outward.
+                float sweep = Mth.lerp(cast, -0.45F, 0.78F);
+                model.rightArm.xRot = Mth.lerp(rise, 0.0F, -1.42F) + cast * 0.48F;
+                model.rightArm.yRot = sweep * (1.0F - fade * 0.5F);
+                model.rightArm.zRot = 0.28F * pulse;
+                model.leftArm.xRot = Mth.lerp(rise, 0.0F, -1.15F) - pulse * 0.15F;
+                model.leftArm.yRot = 0.42F * rise * (1.0F - fade * 0.4F);
+                model.leftArm.zRot = -0.22F * rise;
+                model.body.yRot += 0.14F * (cast - fade);
+                model.head.xRot -= 0.08F * pulse;
+            }
         }
         copyPose(model.rightArm, model.rightSleeve);
         copyPose(model.leftArm, model.leftSleeve);

@@ -137,6 +137,9 @@ public final class XuanhuanEffects {
         level.sendParticles(ParticleTypes.END_ROD, origin.x, origin.y + 1.0D, origin.z, 6,
                 0.2D, 0.25D, 0.2D, 0.02D);
         sparkBurst(level, origin.add(0.0D, 1.0D, 0.0D), 14, 0.1D);
+        level.playSound(null, BlockPos.containing(origin),
+                net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME,
+                SoundSource.PLAYERS, 0.75F, 1.2F);
     }
 
     /** Spirit stone charge draw. */
@@ -145,6 +148,9 @@ public final class XuanhuanEffects {
         qiRise(level, origin, 0.7D, 12, 0.025D);
         level.sendParticles(XuanhuanParticles.QI_SPARK.get(), origin.x, origin.y + 1.0D, origin.z,
                 8, 0.3D, 0.25D, 0.3D, 0.02D);
+        level.playSound(null, BlockPos.containing(origin),
+                net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE,
+                SoundSource.PLAYERS, 0.65F, 1.05F);
     }
 
     /** Spirit stone release. */
@@ -152,6 +158,9 @@ public final class XuanhuanEffects {
         level.sendParticles(XuanhuanParticles.SPIRIT_FLAME.get(), origin.x, origin.y + 0.9D, origin.z,
                 14, 0.35D, 0.4D, 0.35D, 0.02D);
         groundRing(level, origin, 1.0F);
+        level.playSound(null, BlockPos.containing(origin),
+                net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME,
+                SoundSource.PLAYERS, 0.75F, 1.15F);
     }
 
     /** Ambient aura for a tame spirit beast. */
@@ -177,22 +186,37 @@ public final class XuanhuanEffects {
     public static void implementCast(ServerLevel level, Vec3 origin,
                                      SpiritImplementItem.Implement kind) {
         groundRing(level, origin, 1.3F);
+        BlockPos soundPos = BlockPos.containing(origin);
         switch (kind) {
             case WIND_FAN -> {
                 level.sendParticles(XuanhuanParticles.WIND_RING.get(),
                         origin.x, origin.y + 0.4D, origin.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 sparkBurst(level, origin.add(0.0D, 0.8D, 0.0D), 16, 0.14D);
+                level.playSound(null, soundPos,
+                        net.minecraft.sounds.SoundEvents.BREEZE_WIND_CHARGE_BURST.value(),
+                        SoundSource.PLAYERS, 0.85F, 1.15F);
             }
             case STONE_SEAL -> {
                 runeCluster(level, origin, 4, 1.0D, false);
                 level.sendParticles(XuanhuanParticles.EMBER_SPARK.get(),
                         origin.x, origin.y + 0.6D, origin.z, 12, 0.4D, 0.3D, 0.4D, 0.02D);
+                level.playSound(null, soundPos,
+                        net.minecraft.sounds.SoundEvents.ANVIL_LAND,
+                        SoundSource.PLAYERS, 0.55F, 0.85F);
             }
-            case GATHER_ORB -> qiRise(level, origin, 1.1D, 18, 0.03D);
+            case GATHER_ORB -> {
+                qiRise(level, origin, 1.1D, 18, 0.03D);
+                level.playSound(null, soundPos,
+                        net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE,
+                        SoundSource.PLAYERS, 0.85F, 1.1F);
+            }
             case LANTERN_ROD -> {
                 runeCluster(level, origin, 3, 0.9D, true);
                 level.sendParticles(XuanhuanParticles.QI_SPARK.get(),
                         origin.x, origin.y + 1.2D, origin.z, 10, 0.5D, 0.4D, 0.5D, 0.02D);
+                level.playSound(null, soundPos,
+                        net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE,
+                        SoundSource.PLAYERS, 0.65F, 1.35F);
             }
         }
     }

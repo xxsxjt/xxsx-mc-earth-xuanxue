@@ -36,6 +36,8 @@ public final class CultivationSettlerRenderer extends MobRenderer<CultivationSet
         state.walking = entity.walkAnimation.speed(partialTick) > 0.02F;
         state.runAmount = net.minecraft.util.Mth.clamp(entity.walkAnimation.speed(partialTick) * 1.5F,
                 0.0F, 1.0F);
+        state.attackTime = entity.getAttackAnim(partialTick);
+        state.combatPose = entity.getCombatPose();
     }
 
     @Override

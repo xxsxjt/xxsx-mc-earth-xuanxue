@@ -1,10 +1,13 @@
 package com.xxsx.xuanhuanearth.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.xxsx.earthlore.client.LoreTreeScreen;
 import com.xxsx.xuanhuanearth.ArcanaPower;
 import com.xxsx.xuanhuanearth.CultivationFocus;
-import com.xxsx.xuanhuanearth.RealmBreakthrough;
 import com.xxsx.xuanhuanearth.CultivationStatusPayload;
+import com.xxsx.xuanhuanearth.RealmBreakthrough;
+import com.xxsx.xuanhuanearth.Spirituality;
+import com.xxsx.xuanhuanearth.XuanhuanLoreIntegration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -13,7 +16,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.fml.ModList;
 
+import java.lang.reflect.Constructor;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +37,8 @@ public class CultivationScreen extends Screen {
     private Button primaryActionButton;
     private Button breakthroughButton;
     private Button techniqueButton;
+    private Button hubButton;
+    private Button loreTreeButton;
     private int refreshTicks;
 
     public CultivationScreen() {
@@ -43,6 +50,8 @@ public class CultivationScreen extends Screen {
         focusButtons.clear();
         int left = panelLeft();
         int top = panelTop();
+        int w = panelWidth();
+        int h = panelHeight();
         int buttonWidth = navigationWidth() - 20;
         int y = top + 37;
         for (CultivationFocus focus : CultivationFocus.values()) {
@@ -52,25 +61,47 @@ public class CultivationScreen extends Screen {
                     .build());
             button.setTooltip(Tooltip.create(Component.translatable(focus.descriptionKey())));
             focusButtons.put(focus, button);
-            y += 20;
+            y += 19;
         }
-        techniqueButton = addRenderableWidget(Button.builder(
-                        Component.translatable("screen.xuanhuan_earth.cultivation.skill"),
-                        ignored -> XuanhuanEarthClient.requestActivateTechnique())
-                .bounds(left + 10, top + panelHeight() - 50, buttonWidth, 18)
-                .build());
         breakthroughButton = addRenderableWidget(Button.builder(
                         Component.translatable("screen.xuanhuan_earth.cultivation.breakthrough"),
                         ignored -> XuanhuanEarthClient.requestBreakthrough())
-                .bounds(left + 10, top + panelHeight() - 72, buttonWidth, 18)
+                .bounds(left + 10, top + h - 68, buttonWidth, 18)
+                .build());
+        techniqueButton = addRenderableWidget(Button.builder(
+                        Component.translatable("screen.xuanhuan_earth.cultivation.skill"),
+                        ignored -> XuanhuanEarthClient.requestActivateTechnique())
+                .bounds(left + 10, top + h - 48, buttonWidth, 18)
                 .build());
         primaryActionButton = addRenderableWidget(Button.builder(
                         Component.translatable("screen.xuanhuan_earth.cultivation.practice"),
                         ignored -> performPrimaryAction())
-                .bounds(left + 10, top + panelHeight() - 28, buttonWidth, 20)
+                .bounds(left + 10, top + h - 28, buttonWidth, 20)
                 .build());
+
+        int closeX = left + w - 26;
+        int loreW = 54;
+        int hubW = 54;
+        int loreX = closeX - loreW - 4;
+        int hubX = loreX - hubW - 4;
+        hubButton = addRenderableWidget(Button.builder(
+                        Component.translatable("screen.xuanhuan_earth.cultivation.hub"),
+                        ignored -> openCultivationHubOrHandbook())
+                .bounds(hubX, top + 8, hubW, 18)
+                .build());
+        hubButton.setTooltip(Tooltip.create(Component.translatable(
+                "screen.xuanhuan_earth.cultivation.hub.tooltip")));
+
+        loreTreeButton = addRenderableWidget(Button.builder(
+                        Component.translatable("screen.xuanhuan_earth.cultivation.lore_tree"),
+                        ignored -> openXuanxueLoreTree())
+                .bounds(loreX, top + 8, loreW, 18)
+                .build());
+        loreTreeButton.setTooltip(Tooltip.create(Component.translatable(
+                "screen.xuanhuan_earth.cultivation.lore_tree.tooltip")));
+
         addRenderableWidget(Button.builder(Component.literal("X"), ignored -> onClose())
-                .bounds(left + panelWidth() - 28, top + 8, 18, 18)
+                .bounds(closeX, top + 8, 18, 18)
                 .build());
         updateButtons();
     }
@@ -111,7 +142,8 @@ public class CultivationScreen extends Screen {
         Component support = Component.translatable(status.seated()
                 ? "screen.xuanhuan_earth.cultivation.support.cushion"
                 : "screen.xuanhuan_earth.cultivation.support.free");
-        g.text(font, fitted(support, Math.max(60, w - navW - 46)), left + navW + 8, top + 11,
+        int maxSupportWidth = Math.max(48, w - navW - 156);
+        g.text(font, fitted(support, maxSupportWidth), left + navW + 8, top + 11,
                 status.seated() ? ACCENT : MUTED, false);
 
         List<FormattedCharSequence> description = font.split(Component.translatable(focus.descriptionKey()),
@@ -124,19 +156,23 @@ public class CultivationScreen extends Screen {
         int meterX = contentX + meridianWidth + 4;
         int meterWidth = Math.max(82, contentW - meridianWidth - 4);
         int y = top + 52;
+        int manaY = y;
         drawCompactBar(g, meterX, y, meterWidth,
                 Component.translatable("screen.xuanhuan_earth.cultivation.mana"),
                 status.maxMana() <= 0.0D ? 0.0D : status.currentMana() / status.maxMana(),
                 Math.round(status.currentMana()) + " / " + Math.round(status.maxMana()), ACCENT);
         y += 17;
+        int fieldY = y;
         drawCompactBar(g, meterX, y, meterWidth,
                 Component.translatable("screen.xuanhuan_earth.cultivation.field"),
                 status.fieldValue() / 100.0D, status.fieldValue() + " / 100", fieldColor(status.fieldValue()));
         y += 17;
+        int depletionY = y;
         drawCompactBar(g, meterX, y, meterWidth,
                 Component.translatable("screen.xuanhuan_earth.cultivation.depletion"),
                 status.depletion() / 45.0D, Math.round(status.depletion()) + " / 45", 0xFFD6A55B);
         y += 17;
+        int growthY = y;
         boolean focusUnlocked = status.isUnlocked(focus);
         drawCompactBar(g, meterX, y, meterWidth,
                 Component.translatable("screen.xuanhuan_earth.cultivation.growth"),
@@ -153,13 +189,15 @@ public class CultivationScreen extends Screen {
         int stageY = top + h - 39;
         drawStageTrack(g, contentX, stageY, contentW, status);
 
-        if (h >= 194 && contentW >= 188) {
+        if (h >= 184 && contentW >= 160) {
             int infoY = stageY - 12;
             Component source = Component.translatable("screen.xuanhuan_earth.cultivation.source",
                     Component.translatable(status.sourceKey()));
             g.text(font, fitted(source, contentW), contentX, infoY, MUTED, false);
         }
         super.extractRenderState(g, mouseX, mouseY, delta);
+        renderHoverTooltips(g, mouseX, mouseY, contentX, top + 53, meridianWidth - 2, 72,
+                meterX, meterWidth, manaY, fieldY, depletionY, growthY, status, focus);
     }
 
     @Override
@@ -190,6 +228,30 @@ public class CultivationScreen extends Screen {
         }
     }
 
+    private void openXuanxueLoreTree() {
+        if (minecraft == null) {
+            return;
+        }
+        minecraft.setScreen(new LoreTreeScreen(XuanhuanLoreIntegration.DISCIPLINE_XUA));
+    }
+
+    private void openCultivationHubOrHandbook() {
+        if (minecraft == null) {
+            return;
+        }
+        if (ModList.get().isLoaded("earth_human")) {
+            try {
+                Class<?> cls = Class.forName("com.xxsx.earthhuman.client.CultivationHubScreen");
+                Constructor<?> ctor = cls.getConstructor(Screen.class);
+                Screen hub = (Screen) ctor.newInstance(this);
+                minecraft.setScreen(hub);
+                return;
+            } catch (Throwable ignored) {
+            }
+        }
+        XuanhuanEarthClient.openHandbook();
+    }
+
     private void leaveCushion() {
         XuanhuanEarthClient.requestStopCultivating();
         onClose();
@@ -208,11 +270,21 @@ public class CultivationScreen extends Screen {
         if (breakthroughButton != null) {
             boolean maxed = status.realm() >= RealmBreakthrough.MAX_REALM;
             breakthroughButton.active = !maxed;
-            breakthroughButton.setMessage(Component.translatable(
+            Component label = Component.translatable(
                     "screen.xuanhuan_earth.cultivation.breakthrough")
                     .copy()
-                    .append(Component.literal("  "))
-                    .append(Component.translatable(RealmBreakthrough.realmNameKey(status.realm()))));
+                    .append(Component.literal("·"))
+                    .append(Component.translatable(RealmBreakthrough.realmNameKey(status.realm())));
+            breakthroughButton.setMessage(fitted(label, Math.max(48, navigationWidth() - 28)));
+            int nextRealm = Math.min(RealmBreakthrough.MAX_REALM, status.realm() + 1);
+            Component tooltip = maxed
+                    ? Component.translatable("message.xuanhuan_earth.realm.max")
+                    : Component.translatable("screen.xuanhuan_earth.cultivation.breakthrough.tooltip",
+                            Component.translatable(RealmBreakthrough.realmNameKey(status.realm())),
+                            Component.translatable(RealmBreakthrough.realmNameKey(nextRealm)),
+                            RealmBreakthrough.requiredLevel(nextRealm),
+                            Component.translatable("item.xuanhuan_earth.breakthrough_pill"));
+            breakthroughButton.setTooltip(Tooltip.create(tooltip));
         }
         if (primaryActionButton != null) {
             boolean seated = status.seated();
@@ -239,8 +311,10 @@ public class CultivationScreen extends Screen {
     private void drawCompactBar(GuiGraphicsExtractor g, int x, int y, int width, Component label,
                                 double ratio, String value, int color) {
         double clamped = Math.max(0.0D, Math.min(1.0D, ratio));
-        g.text(font, label, x, y, MUTED, false);
-        g.text(font, value, x + width - font.width(value), y, INK, false);
+        int valueW = font.width(value);
+        int maxLabelW = Math.max(24, width - valueW - 6);
+        g.text(font, fitted(label, maxLabelW), x, y, MUTED, false);
+        g.text(font, value, x + width - valueW, y, INK, false);
         g.fill(x, y + 11, x + width, y + 16, 0xFF314037);
         g.fill(x + 1, y + 12, x + 1 + (int) Math.round((width - 2) * clamped), y + 15, color);
     }
@@ -278,17 +352,60 @@ public class CultivationScreen extends Screen {
         Component stage = Component.translatable(MeditationHud.stageKey(current));
         Component remaining = Component.translatable("screen.xuanhuan_earth.cultivation.remaining",
                 Math.max(0, (status.remainingTicks() + 19) / 20));
-        g.text(font, stage, x, y + 11, ACCENT, false);
-        g.text(font, remaining, x + width - font.width(remaining), y + 11, MUTED, false);
+        int remW = font.width(remaining);
+        int maxStageW = Math.max(40, width - remW - 8);
+        g.text(font, fitted(stage, maxStageW), x, y + 11, ACCENT, false);
+        g.text(font, remaining, x + width - remW, y + 11, MUTED, false);
     }
 
     private void drawAmbientMotif(GuiGraphicsExtractor g, int left, int top, int width) {
         long time = Minecraft.getInstance().level == null ? 0L : Minecraft.getInstance().level.getGameTime();
-        for (int i = 0; i < 7; i++) {
-            int px = left + width - 90 + i * 10;
+        for (int i = 0; i < 5; i++) {
+            int px = left + width - 196 + i * 9;
             int py = top + 7 + (int) Math.round(Math.sin((time + i * 7) * 0.12D) * 3.0D);
             g.fill(px, py, px + 2, py + 2, i % 2 == 0 ? ACCENT : 0xFFCCEED6);
         }
+    }
+
+    private void renderHoverTooltips(GuiGraphicsExtractor g, int mouseX, int mouseY,
+                                     int meridianX, int meridianY, int meridianW, int meridianH,
+                                     int meterX, int meterW, int manaY, int fieldY, int depletionY, int growthY,
+                                     CultivationStatusPayload status, CultivationFocus focus) {
+        if (inside(mouseX, mouseY, meridianX, meridianY, meridianW, meridianH)) {
+            float progress = 1.0F - Math.min(1.0F,
+                    status.remainingTicks() / (float) ArcanaPower.QI_MEDITATION_COOLDOWN_TICKS);
+            int current = Math.min(3, Math.max(0, (int) (progress * 4.0F)));
+            g.setTooltipForNextFrame(font, List.of(
+                    Component.translatable(MeditationHud.stageKey(current)).getVisualOrderText(),
+                    Component.translatable("screen.xuanhuan_earth.cultivation.meridian.tooltip",
+                            Component.translatable(RealmBreakthrough.realmNameKey(status.realm())),
+                            Math.max(0, (status.remainingTicks() + 19) / 20)).getVisualOrderText()
+            ), mouseX, mouseY);
+        } else if (inside(mouseX, mouseY, meterX, manaY, meterW, 16)) {
+            g.setTooltipForNextFrame(font, Component.translatable(
+                    "screen.xuanhuan_earth.cultivation.mana.tooltip",
+                    ArcanaPower.format(status.currentMana()),
+                    ArcanaPower.format(status.maxMana())), mouseX, mouseY);
+        } else if (inside(mouseX, mouseY, meterX, fieldY, meterW, 16)) {
+            g.setTooltipForNextFrame(font, Component.translatable(
+                    "screen.xuanhuan_earth.cultivation.field.tooltip",
+                    Spirituality.gradeName(status.fieldValue()),
+                    status.fieldValue(),
+                    Component.translatable(status.sourceKey())), mouseX, mouseY);
+        } else if (inside(mouseX, mouseY, meterX, depletionY, meterW, 16)) {
+            g.setTooltipForNextFrame(font, Component.translatable(
+                    "screen.xuanhuan_earth.cultivation.depletion.tooltip",
+                    ArcanaPower.format(status.depletion())), mouseX, mouseY);
+        } else if (inside(mouseX, mouseY, meterX, growthY, meterW, 16)) {
+            g.setTooltipForNextFrame(font, Component.translatable(
+                    "screen.xuanhuan_earth.cultivation.growth.tooltip",
+                    Component.translatable(focus.titleKey()),
+                    status.focusLevel()), mouseX, mouseY);
+        }
+    }
+
+    private static boolean inside(int mx, int my, int x, int y, int w, int h) {
+        return mx >= x && mx < x + w && my >= y && my < y + h;
     }
 
     private static int fieldColor(int value) {
@@ -310,7 +427,7 @@ public class CultivationScreen extends Screen {
     }
 
     private int panelHeight() {
-        return Math.min(238, Math.max(166, height - 16));
+        return Math.min(238, Math.max(186, height - 12));
     }
 
     private int navigationWidth() {

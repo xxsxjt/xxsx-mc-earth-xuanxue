@@ -127,6 +127,7 @@ public class ElementalTalismanItem extends GuidedXuanhuanItem {
         if (!player.getAbilities().instabuild) {
             stack.shrink(1);
         }
+        player.swing(hand, true);
         XuanhuanJourney.complete(serverPlayer, XuanhuanJourney.Milestone.ARTIFACT_USE);
         CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.TALISMAN);
         XuanhuanEffects.talismanActivation(serverLevel, player.position());

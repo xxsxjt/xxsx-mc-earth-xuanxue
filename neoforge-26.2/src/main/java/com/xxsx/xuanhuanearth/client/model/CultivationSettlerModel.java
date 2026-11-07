@@ -213,6 +213,32 @@ public final class CultivationSettlerModel extends EntityModel<CultivationSettle
             this.leftArm.xRot += this.rightLeg.xRot * 0.65F;
         }
 
+        if (state.combatPose == 2 || (state.attackTime > 0.0F && state.combatPose == 2)) {
+            float castPulse = state.attackTime > 0.0F
+                    ? Mth.sin(state.attackTime * Mth.PI)
+                    : 0.65F + 0.35F * Mth.sin(state.ageInTicks * 0.35F);
+            this.rightArm.xRot = -1.35F - castPulse * 0.28F;
+            this.leftArm.xRot = -1.25F - castPulse * 0.24F;
+            this.rightArm.yRot = -0.32F + castPulse * 0.45F;
+            this.leftArm.yRot = 0.32F - castPulse * 0.45F;
+            this.rightArm.zRot = 0.22F * castPulse;
+            this.leftArm.zRot = -0.22F * castPulse;
+            this.body.xRot -= 0.06F * castPulse;
+        } else if (state.attackTime > 0.0F || state.combatPose == 1) {
+            float swing = state.attackTime > 0.0F
+                    ? Mth.sin(Mth.sqrt(state.attackTime) * Mth.TWO_PI)
+                    : Mth.sin(state.ageInTicks * 0.45F) * 0.5F;
+            float thrust = state.attackTime > 0.0F
+                    ? Mth.sin(state.attackTime * Mth.PI)
+                    : 0.7F;
+            this.body.yRot += swing * 0.22F;
+            this.rightArm.xRot = -1.45F * thrust + swing * 0.35F;
+            this.rightArm.yRot += this.body.yRot * 1.5F;
+            this.rightArm.zRot += Mth.sin(state.attackTime * Mth.PI) * -0.32F;
+            this.leftArm.xRot -= thrust * 0.45F;
+            this.leftArm.yRot += 0.25F * thrust;
+        }
+
         this.body.xRot += breath * 0.012F + hurt * 0.06F;
         this.body.yRot += Mth.sin(state.ageInTicks * 0.03F) * 0.015F;
         this.head.zRot += hurt * 0.14F;

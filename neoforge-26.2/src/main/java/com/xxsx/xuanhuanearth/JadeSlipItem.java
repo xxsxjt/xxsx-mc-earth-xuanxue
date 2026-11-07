@@ -63,14 +63,14 @@ public class JadeSlipItem extends GuidedXuanhuanItem {
             return InteractionResult.SUCCESS;
         }
         if (player.isShiftKeyDown()) {
-            releaseMana(level, player, stack);
+            releaseMana(level, player, hand, stack);
         } else {
-            captureField(level, player, stack);
+            captureField(level, player, hand, stack);
         }
         return InteractionResult.SUCCESS_SERVER;
     }
 
-    private static void captureField(Level level, Player player, ItemStack stack) {
+    private static void captureField(Level level, Player player, InteractionHand hand, ItemStack stack) {
         JadeComponent jade = JadeComponent.read(stack);
         double remaining = JadeComponent.NEPHRITE_CAPACITY_AEU - jade.chargeAeu();
         ArcanaChunkField.Reading reading = Spirituality.reading(level, player.blockPosition());
@@ -91,6 +91,10 @@ public class JadeSlipItem extends GuidedXuanhuanItem {
         double after = Math.min(JadeComponent.NEPHRITE_CAPACITY_AEU, jade.chargeAeu() + gained);
         stack.set(XuanhuanEarth.JADE_COMPONENT.get(), jade.withCharge(after, jade.stability()));
         Spirituality.consumeField(level, player.blockPosition(), spent);
+        player.swing(hand, true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.RECOVERY);
+        }
         if (level instanceof ServerLevel serverLevel) {
             XuanhuanEffects.stoneCharge(serverLevel, player.position());
         }
@@ -99,7 +103,7 @@ public class JadeSlipItem extends GuidedXuanhuanItem {
                 .withStyle(ChatFormatting.AQUA));
     }
 
-    private static void releaseMana(Level level, Player player, ItemStack stack) {
+    private static void releaseMana(Level level, Player player, InteractionHand hand, ItemStack stack) {
         JadeComponent jade = JadeComponent.read(stack);
         double missing = ArcanaPower.getMaxMana(player) - ArcanaPower.getCurrentMana(player);
         if (missing <= 0.0001D || jade.chargeAeu() <= 0.0001D) {
@@ -113,6 +117,13 @@ public class JadeSlipItem extends GuidedXuanhuanItem {
         double restored = spent * JadeComponent.NEPHRITE_RELEASE / SpiritStoneCharge.AEU_PER_MANA;
         ArcanaPower.setCurrentMana(player, ArcanaPower.getCurrentMana(player) + restored);
         stack.set(XuanhuanEarth.JADE_COMPONENT.get(), jade.withCharge(jade.chargeAeu() - spent, jade.stability()));
+        player.swing(hand, true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.RECOVERY);
+            if (level instanceof ServerLevel serverLevel) {
+                XuanhuanEffects.stoneRelease(serverLevel, player.position());
+            }
+        }
         player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.jade_slip.released",
                 ArcanaPower.format(restored), ArcanaPower.format(jade.chargeAeu() - spent))
                 .withStyle(ChatFormatting.GOLD));

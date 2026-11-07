@@ -10,4 +10,6 @@ public final class CultivationSettlerRenderState extends LivingEntityRenderState
     public float gesturePhase;
     public boolean walking;
     public float runAmount;
+    public float attackTime;
+    public int combatPose;
 }

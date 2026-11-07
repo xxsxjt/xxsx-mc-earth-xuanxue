@@ -50,10 +50,13 @@ import org.jspecify.annotations.Nullable;
 public final class CultivationSettlerEntity extends AbstractVillager {
     private static final EntityDataAccessor<Integer> DATA_ROLE = SynchedEntityData.defineId(
             CultivationSettlerEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_COMBAT_POSE = SynchedEntityData.defineId(
+            CultivationSettlerEntity.class, EntityDataSerializers.INT);
     @Nullable
     private LivingEntity combatTarget;
     private int aggroTicks;
     private int attackCooldown;
+    private int poseTicks;
 
     public CultivationSettlerEntity(EntityType<? extends CultivationSettlerEntity> type, Level level) {
         super(type, level);
@@ -76,7 +79,22 @@ public final class CultivationSettlerEntity extends AbstractVillager {
         if (this.aggroTicks > 0) {
             this.aggroTicks--;
         }
+        if (this.poseTicks > 0) {
+            this.poseTicks--;
+            if (this.poseTicks == 0 && !this.level().isClientSide()) {
+                setCombatPose(0);
+            }
+        }
         if (this.level() instanceof ServerLevel serverLevel) {
+            if (this.combatTarget == null || !this.combatTarget.isAlive()) {
+                Monster nearbyMonster = serverLevel.getEntitiesOfClass(Monster.class,
+                        this.getBoundingBox().inflate(9.0D),
+                        m -> m.isAlive() && m.getTarget() == this).stream().findFirst().orElse(null);
+                if (nearbyMonster != null) {
+                    this.combatTarget = nearbyMonster;
+                    this.aggroTicks = 240;
+                }
+            }
             if (this.combatTarget != null && this.combatTarget.isAlive() && this.aggroTicks > 0
                     && this.distanceToSqr(this.combatTarget) < 576.0D) {
                 this.getLookControl().setLookAt(this.combatTarget, 30.0F, 30.0F);
@@ -89,6 +107,8 @@ public final class CultivationSettlerEntity extends AbstractVillager {
                 if (this.attackCooldown <= 0) {
                     if (distSqr <= 10.24D) {
                         this.swing(InteractionHand.MAIN_HAND);
+                        setCombatPose(1);
+                        this.poseTicks = 12;
                         float meleeDamage = 5.0F + getRole().id() * 1.5F;
                         this.combatTarget.hurtServer(serverLevel, serverLevel.damageSources().mobAttack(this), meleeDamage);
                         serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK,
@@ -101,6 +121,10 @@ public final class CultivationSettlerEntity extends AbstractVillager {
                         this.attackCooldown = 24;
                     } else if (distSqr <= 256.0D) {
                         this.swing(InteractionHand.MAIN_HAND);
+                        setCombatPose(2);
+                        this.poseTicks = 18;
+                        XuanhuanEffects.groundRing(serverLevel, this.position(), 0.9F);
+                        XuanhuanEffects.sparkBurst(serverLevel, this.position().add(0.0D, 1.0D, 0.0D), 10, 0.08D);
                         Vec3 start = this.position().add(0.0D, this.getBbHeight() * 0.65D, 0.0D);
                         Vec3 end = this.combatTarget.position().add(0.0D, this.combatTarget.getBbHeight() * 0.55D, 0.0D);
                         Vec3 dir = end.subtract(start);
@@ -124,6 +148,9 @@ public final class CultivationSettlerEntity extends AbstractVillager {
                 }
             } else if (this.aggroTicks <= 0 || (this.combatTarget != null && !this.combatTarget.isAlive())) {
                 this.combatTarget = null;
+                if (getCombatPose() != 0) {
+                    setCombatPose(0);
+                }
             }
         }
     }
@@ -161,11 +188,21 @@ public final class CultivationSettlerEntity extends AbstractVillager {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, damageSource, recentlyHit);
         this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.SPIRIT_STONE_RAW.get(), 1 + this.random.nextInt(2)));
+        this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 1 + this.random.nextInt(2)));
         this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.SPIRIT_GRASS.get(), 1 + this.random.nextInt(3)));
         if (this.random.nextBoolean()) {
             this.spawnAtLocation(level, TalismanComponent.drawn(new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get())));
         } else {
             this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.TALISMAN_PAPER.get(), 1 + this.random.nextInt(2)));
+        }
+        if (this.random.nextFloat() < 0.35F) {
+            ItemStack manualDrop = switch (this.random.nextInt(4)) {
+                case 0 -> new ItemStack(XuanhuanEarth.QI_GUIDING_MANUAL.get());
+                case 1 -> new ItemStack(XuanhuanEarth.BIGU_MANUAL.get());
+                case 2 -> new ItemStack(XuanhuanEarth.BODY_TEMPERING_MANUAL.get());
+                default -> new ItemStack(XuanhuanEarth.FETAL_BREATH_MANUAL.get());
+            };
+            this.spawnAtLocation(level, manualDrop);
         }
         if (getRole() == Role.SECT_STEWARD) {
             this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.SPIRIT_IRON_BLANK.get(), 1));
@@ -181,6 +218,7 @@ public final class CultivationSettlerEntity extends AbstractVillager {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_ROLE, Role.WANDERING_MERCHANT.id());
+        builder.define(DATA_COMBAT_POSE, 0);
     }
 
     @Override
@@ -200,9 +238,41 @@ public final class CultivationSettlerEntity extends AbstractVillager {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new TradeWithPlayerGoal(this));
         this.goalSelector.addGoal(1, new LookAtTradingPlayerGoal(this));
-        this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, Monster.class, 9.0F, 0.7D, 0.8D));
-        this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.62D));
+        this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, Monster.class, 9.0F, 0.7D, 0.8D) {
+            @Override
+            public boolean canUse() {
+                return !isInCombat() && super.canUse();
+            }
+
+            @Override
+            public boolean canContinueToUse() {
+                return !isInCombat() && super.canContinueToUse();
+            }
+        });
+        this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.62D) {
+            @Override
+            public boolean canUse() {
+                return !isInCombat() && super.canUse();
+            }
+
+            @Override
+            public boolean canContinueToUse() {
+                return !isInCombat() && super.canContinueToUse();
+            }
+        });
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
+    }
+
+    public boolean isInCombat() {
+        return this.aggroTicks > 0 && this.combatTarget != null && this.combatTarget.isAlive();
+    }
+
+    public int getCombatPose() {
+        return this.entityData.get(DATA_COMBAT_POSE);
+    }
+
+    public void setCombatPose(int pose) {
+        this.entityData.set(DATA_COMBAT_POSE, pose);
     }
 
     @Override

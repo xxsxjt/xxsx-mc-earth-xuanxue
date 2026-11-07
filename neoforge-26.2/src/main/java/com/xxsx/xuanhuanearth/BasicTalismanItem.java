@@ -81,6 +81,8 @@ public class BasicTalismanItem extends GuidedXuanhuanItem {
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
             }
+            player.swing(context.getHand(), true);
+            CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.TALISMAN);
             serverLevel.sendParticles(ParticleTypes.EXPLOSION,
                     center.getX() + 0.5D, center.getY() + 0.5D, center.getZ() + 0.5D,
                     2, 0.3D, 0.3D, 0.3D, 0.02D);
@@ -124,6 +126,7 @@ public class BasicTalismanItem extends GuidedXuanhuanItem {
                         ArcanaPower.format(ArcanaPower.getMaxMana(player))).withStyle(ChatFormatting.YELLOW));
                 return InteractionResult.SUCCESS_SERVER;
             }
+            player.swing(hand, true);
             player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 160, 0, true, false, true));
             player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 160, 0, true, false, true));
             player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 240, 1, true, false, true));

@@ -90,6 +90,35 @@ class XuanhuanLoreIntegrationTest {
         assertTrue(h1 >= 0 && h1 < 64);
     }
 
+    @Test
+    void visualActionsAndResourceJsonAreValid() throws IOException {
+        assertEquals(CultivationVisualAction.IMPLEMENT_CAST, CultivationVisualAction.byId(7));
+        assertTrue(CultivationVisualAction.IMPLEMENT_CAST.durationTicks() > 0);
+
+        JsonObject veinPlacement = JsonParser.parseString(Files.readString(
+                Path.of("src/main/resources/data/xuanhuan_earth/worldgen/placed_feature/spirit_vein_node.json"),
+                StandardCharsets.UTF_8)).getAsJsonObject();
+        JsonObject firstModifier = veinPlacement.getAsJsonArray("placement").get(0).getAsJsonObject();
+        assertEquals("minecraft:count", firstModifier.get("type").getAsString());
+        assertTrue(firstModifier.get("count").getAsInt() >= 2);
+
+        JsonObject settlerLoot = JsonParser.parseString(Files.readString(
+                Path.of("src/main/resources/data/xuanhuan_earth/loot_table/entities/cultivation_settler.json"),
+                StandardCharsets.UTF_8)).getAsJsonObject();
+        assertTrue(settlerLoot.getAsJsonArray("pools").size() >= 2);
+
+        JsonObject zhCn = JsonParser.parseString(Files.readString(
+                Path.of("src/main/resources/assets/xuanhuan_earth/lang/zh_cn.json"),
+                StandardCharsets.UTF_8)).getAsJsonObject();
+        JsonObject enUs = JsonParser.parseString(Files.readString(
+                Path.of("src/main/resources/assets/xuanhuan_earth/lang/en_us.json"),
+                StandardCharsets.UTF_8)).getAsJsonObject();
+        assertTrue(zhCn.has("screen.xuanhuan_earth.cultivation.hub"));
+        assertTrue(zhCn.has("screen.xuanhuan_earth.cultivation.lore_tree"));
+        assertTrue(enUs.has("screen.xuanhuan_earth.cultivation.hub"));
+        assertTrue(enUs.has("screen.xuanhuan_earth.cultivation.lore_tree"));
+    }
+
     private static List<NodeDef> loadXuaNodes() throws IOException {
         Path dir = Path.of("src/main/resources/data/xuanhuan_earth/earth_lore/knowledge_node/xua");
         List<NodeDef> list = new ArrayList<>();

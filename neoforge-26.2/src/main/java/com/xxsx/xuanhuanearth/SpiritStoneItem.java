@@ -35,7 +35,7 @@ public class SpiritStoneItem extends GuidedXuanhuanItem {
         }
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            releaseIntoMana(level, player, stack);
+            releaseIntoMana(level, player, hand, stack);
         } else {
             chargeFromField(level, player, hand, stack);
         }
@@ -85,6 +85,10 @@ public class SpiritStoneItem extends GuidedXuanhuanItem {
         }
         stack.set(XuanhuanEarth.SPIRIT_STONE_CHARGE.get(), state.withStoneState(nextCharge, cap, nextStability, sig));
         Spirituality.consumeField(level, player.blockPosition(), fieldSpent);
+        player.swing(hand, true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.RECOVERY);
+        }
         if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
             XuanhuanEffects.stoneCharge(serverLevel, player.position());
         }
@@ -95,7 +99,7 @@ public class SpiritStoneItem extends GuidedXuanhuanItem {
                 .withStyle(ChatFormatting.AQUA));
     }
 
-    private void releaseIntoMana(Level level, Player player, ItemStack stack) {
+    private void releaseIntoMana(Level level, Player player, InteractionHand hand, ItemStack stack) {
         SpiritStoneComponent state = SpiritStoneComponent.read(stack);
         double cap = cracked ? SpiritStoneComponent.CRACKED_CAPACITY_AEU : SpiritStoneCharge.CAPACITY_AEU;
         double missing = ArcanaPower.getMaxMana(player) - ArcanaPower.getCurrentMana(player);
@@ -116,6 +120,7 @@ public class SpiritStoneItem extends GuidedXuanhuanItem {
         double restored = ArcanaPower.getCurrentMana(player) - before;
         stack.set(XuanhuanEarth.SPIRIT_STONE_CHARGE.get(),
                 state.withStoneState(Math.min(cap, result.charge()), cap, state.stability(), state.fieldSignature()));
+        player.swing(hand, true);
         if (player instanceof ServerPlayer serverPlayer) {
             CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.RECOVERY);
             XuanhuanJourney.complete(serverPlayer, XuanhuanJourney.Milestone.ARTIFACT_USE);

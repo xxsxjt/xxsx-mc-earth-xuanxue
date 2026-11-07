@@ -2,6 +2,8 @@ package com.xxsx.xuanhuanearth;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -43,7 +45,17 @@ public class JadeWardAmuletItem extends GuidedXuanhuanItem {
                     jade.withCharge(jade.chargeAeu() - WARD_COST_AEU, jade.stability()));
             player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 200, 0, true, false, true));
             player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 200, 0, true, false, true));
-            player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.jade_ward.activated")
+            player.swing(hand, true);
+            if (player instanceof ServerPlayer serverPlayer) {
+                CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.TALISMAN);
+                XuanhuanJourney.complete(serverPlayer, XuanhuanJourney.Milestone.ARTIFACT_USE);
+            }
+            if (level instanceof ServerLevel serverLevel) {
+                XuanhuanEffects.talismanActivation(serverLevel, player.position());
+            }
+            player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.jade_ward.activated",
+                    ArcanaPower.format(jade.chargeAeu() - WARD_COST_AEU),
+                    ArcanaPower.format(jade.stability()))
                     .withStyle(ChatFormatting.AQUA));
             return InteractionResult.SUCCESS_SERVER;
         }
@@ -64,6 +76,13 @@ public class JadeWardAmuletItem extends GuidedXuanhuanItem {
         stack.set(XuanhuanEarth.JADE_COMPONENT.get(), jade.withCharge(after, nextStability));
         if (spent > 0.0D) {
             Spirituality.consumeField(level, player.blockPosition(), spent);
+            player.swing(hand, true);
+            if (player instanceof ServerPlayer serverPlayer) {
+                CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.RECOVERY);
+            }
+            if (level instanceof ServerLevel serverLevel) {
+                XuanhuanEffects.stoneCharge(serverLevel, player.position());
+            }
         }
         player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.jade_slip.charged",
                 ArcanaPower.format(after), ArcanaPower.format(JadeComponent.NEPHRITE_CAPACITY_AEU))

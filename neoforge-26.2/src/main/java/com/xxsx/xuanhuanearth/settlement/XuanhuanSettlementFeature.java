@@ -6,6 +6,8 @@ import com.xxsx.xuanhuanearth.XuanhuanEarth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +19,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+
+import java.util.Optional;
 
 /**
  * Generates one xuanhuan settlement.
@@ -38,12 +42,9 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
-        BlockPos center = context.origin();
-        while (level.isEmptyBlock(center) && center.getY() > level.getMinY() + 2) {
-            center = center.below();
-        }
-        center = center.above();
-        if (level.isEmptyBlock(center.below())) {
+        int radius = type.radius();
+        BlockPos center = resolveGround(level, context.origin());
+        if (center == null || !isSuitableSite(level, center, radius)) {
             return false;
         }
 
@@ -59,7 +60,6 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         SettlementStyle.Theme theme = type.themeFor(level, center);
         SettlementStyle.Palette palette = SettlementStyle.paletteFor(theme, random);
         SettlementStyle.Layout layout = SettlementStyle.layoutFor(random);
-        int radius = type.radius();
 
         clearSite(level, center, radius);
         switch (type) {
@@ -81,10 +81,85 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         return true;
     }
 
+    private static BlockPos resolveGround(WorldGenLevel level, BlockPos start) {
+        BlockPos cursor = start;
+        int minY = level.getMinY() + 4;
+        while (cursor.getY() > minY) {
+            BlockState below = level.getBlockState(cursor.below());
+            if (!below.getFluidState().isEmpty()
+                    || below.is(Blocks.WATER)
+                    || below.is(Blocks.LAVA)
+                    || below.is(Blocks.ICE)
+                    || below.is(Blocks.FROSTED_ICE)
+                    || below.is(Blocks.KELP)
+                    || below.is(Blocks.KELP_PLANT)
+                    || below.is(Blocks.SEAGRASS)
+                    || below.is(Blocks.TALL_SEAGRASS)) {
+                return null;
+            }
+            if (isFoliageOrReplaceable(below)) {
+                cursor = cursor.below();
+                continue;
+            }
+            break;
+        }
+        BlockState ground = level.getBlockState(cursor.below());
+        if (ground.isAir() || !ground.getFluidState().isEmpty() || isFoliageOrReplaceable(ground)) {
+            return null;
+        }
+        return cursor;
+    }
+
+    private static boolean isFoliageOrReplaceable(BlockState state) {
+        return state.isAir()
+                || state.canBeReplaced()
+                || state.is(BlockTags.LEAVES)
+                || state.is(BlockTags.LOGS)
+                || state.is(BlockTags.FLOWERS)
+                || state.is(BlockTags.SAPLINGS)
+                || state.is(Blocks.SNOW)
+                || state.is(Blocks.VINE)
+                || state.is(Blocks.BAMBOO);
+    }
+
+    private static boolean isSuitableSite(WorldGenLevel level, BlockPos center, int radius) {
+        var centerBiome = level.getBiome(center);
+        if (centerBiome.is(BiomeTags.IS_OCEAN) || centerBiome.is(BiomeTags.IS_RIVER)) {
+            return false;
+        }
+        int minSampleY = center.getY();
+        int maxSampleY = center.getY();
+        int[][] offsets = {
+                {0, 0},
+                {-radius, -radius}, {radius, -radius}, {-radius, radius}, {radius, radius},
+                {-radius, 0}, {radius, 0}, {0, -radius}, {0, radius}
+        };
+        for (int[] off : offsets) {
+            BlockPos probeStart = new BlockPos(center.getX() + off[0], center.getY() + 6, center.getZ() + off[1]);
+            var biome = level.getBiome(probeStart);
+            if (biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_RIVER)) {
+                return false;
+            }
+            BlockPos ground = resolveGround(level, probeStart);
+            if (ground == null) {
+                return false;
+            }
+            for (int dy = -1; dy <= 2; dy++) {
+                BlockState check = level.getBlockState(ground.offset(0, dy, 0));
+                if (!check.getFluidState().isEmpty() || check.is(Blocks.WATER) || check.is(Blocks.LAVA)) {
+                    return false;
+                }
+            }
+            minSampleY = Math.min(minSampleY, ground.getY());
+            maxSampleY = Math.max(maxSampleY, ground.getY());
+        }
+        return (maxSampleY - minSampleY) <= 9;
+    }
+
     private static void clearSite(WorldGenLevel level, BlockPos center, int radius) {
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
-                for (int y = 0; y <= 6; y++) {
+                for (int y = 0; y <= 7; y++) {
                     level.setBlock(center.offset(x, y, z), Blocks.AIR.defaultBlockState(), FLAGS);
                 }
             }
@@ -138,7 +213,18 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         switch (layout) {
             case CROSS -> {
                 SettlementStyle.hut(level, center.offset(-4, 0, -3), palette, 2, 3, true);
+                stock(level, center.offset(-4, 0, -4),
+                        new ItemStack(XuanhuanEarth.SPIRIT_HERB.get(), 3 + random.nextInt(4)),
+                        new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 1 + random.nextInt(2)),
+                        new ItemStack(XuanhuanEarth.GRAINFAST_PILL.get(), 1 + random.nextInt(2)),
+                        new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get(), 2),
+                        new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 3 + random.nextInt(4)));
                 SettlementStyle.hut(level, center.offset(4, 0, -3), palette, 2, 3, true);
+                stock(level, center.offset(4, 0, -4),
+                        new ItemStack(XuanhuanEarth.CULTIVATION_JOURNAL.get(), 1),
+                        new ItemStack(XuanhuanEarth.QI_GUIDING_MANUAL.get(), 1),
+                        new ItemStack(XuanhuanEarth.SPIRIT_SPRING_BOTTLE.get(), 2 + random.nextInt(3)),
+                        new ItemStack(XuanhuanEarth.SPIRIT_GRASS.get(), 6 + random.nextInt(6)));
                 SettlementStyle.hut(level, center.offset(-4, 0, 3), palette, 2, 3, true);
                 SettlementStyle.hut(level, center.offset(4, 0, 3), palette, 2, 3, true);
             }
@@ -147,9 +233,22 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                     SettlementStyle.hut(level, center.offset(i * 5, 0, -4), palette, 2, 3, true);
                     SettlementStyle.hut(level, center.offset(i * 5, 0, 4), palette, 2, 3, true);
                 }
+                stock(level, center.offset(0, 0, -5),
+                        new ItemStack(XuanhuanEarth.CULTIVATION_JOURNAL.get(), 1),
+                        new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 2),
+                        new ItemStack(XuanhuanEarth.GRAINFAST_PILL.get(), 2),
+                        new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get(), 2),
+                        new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 4));
             }
             case HALL -> {
                 SettlementStyle.hut(level, center.offset(0, 0, -4), palette, 4, 4, true);
+                stock(level, center.offset(0, 0, -6),
+                        new ItemStack(XuanhuanEarth.CULTIVATION_JOURNAL.get(), 1),
+                        new ItemStack(XuanhuanEarth.QI_GUIDING_MANUAL.get(), 1),
+                        new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 2),
+                        new ItemStack(XuanhuanEarth.GRAINFAST_PILL.get(), 2),
+                        new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get(), 2),
+                        new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 5));
                 SettlementStyle.hut(level, center.offset(-5, 0, 3), palette, 2, 3, true);
                 SettlementStyle.hut(level, center.offset(5, 0, 3), palette, 2, 3, true);
             }
@@ -159,6 +258,12 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                     SettlementStyle.hut(level, center.offset((int) Math.round(Math.cos(angle) * 5), 0,
                             (int) Math.round(Math.sin(angle) * 5)), palette, 2, 3, true);
                 }
+                stock(level, center.offset(5, 0, 0),
+                        new ItemStack(XuanhuanEarth.CULTIVATION_JOURNAL.get(), 1),
+                        new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 2),
+                        new ItemStack(XuanhuanEarth.GRAINFAST_PILL.get(), 2),
+                        new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get(), 2),
+                        new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 4));
             }
         }
         terrace(level, center.offset(-radius, 0, -radius + 1), palette);
@@ -229,7 +334,10 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         SettlementStyle.hut(level, center.offset(0, 0, -radius + 3), palette, 2, 3, true);
         stock(level, center.offset(0, 0, -radius + 3),
                 new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 6),
-                new ItemStack(XuanhuanEarth.SPIRIT_SPRING_BOTTLE.get(), 4));
+                new ItemStack(XuanhuanEarth.SPIRIT_SPRING_BOTTLE.get(), 4),
+                new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 2),
+                new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get(), 2),
+                new ItemStack(XuanhuanEarth.CULTIVATION_JOURNAL.get(), 1));
         SettlementStyle.plantBed(level, center.offset(-radius + 2, 0, radius - 2), 2, palette);
         SettlementStyle.lanternRing(level, center, radius - 1, palette);
         scatterProps(level, center, radius - 1, random);
@@ -260,7 +368,10 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                 XuanhuanEarth.ALCHEMY_FURNACE.get().defaultBlockState(), FLAGS);
         stock(level, center.offset(radius - 3, 0, -radius + 3),
                 new ItemStack(XuanhuanEarth.SPIRIT_GRASS.get(), 16),
-                new ItemStack(XuanhuanEarth.SPIRIT_BEAST_SEAL.get(), 2));
+                new ItemStack(XuanhuanEarth.SPIRIT_HERB.get(), 6),
+                new ItemStack(XuanhuanEarth.SPIRIT_BEAST_SEAL.get(), 2),
+                new ItemStack(XuanhuanEarth.GRAINFAST_PILL.get(), 2),
+                new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 4));
         SettlementStyle.lanternRing(level, center, radius - 1, palette);
         scatterProps(level, center, radius - 1, random);
     }
@@ -280,11 +391,22 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
 
     private static void pave(WorldGenLevel level, BlockPos center, int radius,
                              SettlementStyle.Palette palette) {
+        int minFoundationY = Math.max(level.getMinY() + 1, center.getY() - 28);
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 boolean edge = Math.abs(x) == radius || Math.abs(z) == radius;
-                level.setBlock(center.offset(x, -1, z),
-                        edge ? palette.wall() : palette.floor(), FLAGS);
+                BlockState topState = edge ? palette.wall() : palette.floor();
+                level.setBlock(center.offset(x, -1, z), topState, FLAGS);
+                BlockState pillarState = edge ? palette.wall() : palette.floor();
+                for (int y = -2; center.getY() + y >= minFoundationY; y--) {
+                    BlockPos supportPos = center.offset(x, y, z);
+                    BlockState existing = level.getBlockState(supportPos);
+                    if (isFoliageOrReplaceable(existing) || !existing.getFluidState().isEmpty()) {
+                        level.setBlock(supportPos, pillarState, FLAGS);
+                    } else {
+                        break;
+                    }
+                }
             }
         }
     }
@@ -333,19 +455,32 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         }
         level.setBlock(pos.offset(0, 2, 0), palette.light(), FLAGS);
         level.setBlock(pos.offset(0, 0, 1), Blocks.BARREL.defaultBlockState(), FLAGS);
-        stock(level, pos.offset(0, 0, 1), randomTradeStack(random));
+        stock(level, pos.offset(0, 0, 1),
+                randomTradeStack(random),
+                randomTradeStack(random),
+                randomTradeStack(random));
         if (random.nextBoolean()) {
             level.setBlock(pos.offset(-1, 0, 0), Blocks.CHEST.defaultBlockState(), FLAGS);
+            stock(level, pos.offset(-1, 0, 0),
+                    randomTradeStack(random),
+                    randomTradeStack(random),
+                    new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 2 + random.nextInt(4)));
         }
     }
 
     private static ItemStack randomTradeStack(RandomSource random) {
-        return switch (random.nextInt(6)) {
+        return switch (random.nextInt(12)) {
             case 0 -> new ItemStack(XuanhuanEarth.TALISMAN_PAPER.get(), 4 + random.nextInt(8));
             case 1 -> new ItemStack(XuanhuanEarth.CINNABAR_SPIRIT_INK.get(), 2 + random.nextInt(5));
             case 2 -> new ItemStack(XuanhuanEarth.SPIRIT_GRASS.get(), 4 + random.nextInt(10));
             case 3 -> new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 2 + random.nextInt(5));
             case 4 -> new ItemStack(Items.EMERALD, 1 + random.nextInt(4));
+            case 5 -> new ItemStack(XuanhuanEarth.SPIRIT_HERB.get(), 2 + random.nextInt(5));
+            case 6 -> new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 1 + random.nextInt(2));
+            case 7 -> new ItemStack(XuanhuanEarth.NOURISH_QI_PILL.get(), 1 + random.nextInt(2));
+            case 8 -> new ItemStack(XuanhuanEarth.GRAINFAST_PILL.get(), 1 + random.nextInt(2));
+            case 9 -> new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get(), 1 + random.nextInt(3));
+            case 10 -> new ItemStack(XuanhuanEarth.SPIRIT_STONE_RAW.get(), 1 + random.nextInt(3));
             default -> new ItemStack(XuanhuanEarth.SPIRIT_SPRING_BOTTLE.get(), 1 + random.nextInt(3));
         };
     }
@@ -367,6 +502,7 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                 level.setBlock(center.offset(x, -2, z), palette.floor(), FLAGS);
                 if (Math.abs(x) == 2 || Math.abs(z) == 2) {
                     level.setBlock(center.offset(x, -1, z), palette.wall(), FLAGS);
+                    level.setBlock(center.offset(x, 0, z), Blocks.SMOOTH_STONE_SLAB.defaultBlockState(), FLAGS);
                 } else {
                     level.setBlock(center.offset(x, -1, z), Blocks.WATER.defaultBlockState(), FLAGS);
                     level.setBlock(center.offset(x, 0, z), Blocks.AIR.defaultBlockState(), FLAGS);
@@ -374,6 +510,7 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
             }
         }
         level.setBlock(center.offset(0, -2, 0), XuanhuanEarth.SPIRIT_SPRING_STONE.get().defaultBlockState(), FLAGS);
+        level.setBlock(center.offset(0, -1, 0), XuanhuanEarth.SPIRIT_SPRING_STONE.get().defaultBlockState(), FLAGS);
         for (int x : new int[]{-2, 2}) {
             for (int z : new int[]{-2, 2}) {
                 level.setBlock(center.offset(x, 0, z), palette.post(), FLAGS);
@@ -386,13 +523,23 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
     private static void terrace(WorldGenLevel level, BlockPos pos, SettlementStyle.Palette palette) {
         for (int x = 0; x < 4; x++) {
             for (int z = 0; z < 3; z++) {
-                level.setBlock(pos.offset(x, 0, z), palette.wall(), FLAGS);
-                level.setBlock(pos.offset(x, 1, z),
-                        (z == 1 && x > 0 && x < 3) ? XuanhuanEarth.SPIRIT_SOIL.get().defaultBlockState()
-                                : palette.accent(), FLAGS);
+                level.setBlock(pos.offset(x, -1, z), palette.floor(), FLAGS);
+                boolean border = x == 0 || x == 3 || z == 0 || z == 2;
+                if (border) {
+                    level.setBlock(pos.offset(x, 0, z), palette.wall(), FLAGS);
+                    level.setBlock(pos.offset(x, 1, z), Blocks.SMOOTH_STONE_SLAB.defaultBlockState(), FLAGS);
+                } else if (x == 1 && z == 1) {
+                    level.setBlock(pos.offset(x, -1, z),
+                            XuanhuanEarth.SPIRIT_SPRING_STONE.get().defaultBlockState(), FLAGS);
+                    level.setBlock(pos.offset(x, 0, z), Blocks.WATER.defaultBlockState(), FLAGS);
+                    level.setBlock(pos.offset(x, 1, z), Blocks.AIR.defaultBlockState(), FLAGS);
+                } else {
+                    level.setBlock(pos.offset(x, 0, z),
+                            XuanhuanEarth.SPIRIT_SOIL.get().defaultBlockState(), FLAGS);
+                    level.setBlock(pos.offset(x, 1, z), Blocks.FERN.defaultBlockState(), FLAGS);
+                }
             }
         }
-        level.setBlock(pos.offset(1, 1, 1), Blocks.WATER.defaultBlockState(), FLAGS);
     }
 
     private static void workshop(WorldGenLevel level, BlockPos pos, SettlementStyle.Palette palette,
@@ -406,7 +553,13 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
             default -> formalArray(level, pos.offset(0, 0, 0));
         }
         level.setBlock(pos.offset(-1, 0, 0), Blocks.CRAFTING_TABLE.defaultBlockState(), FLAGS);
-        stock(level, pos.offset(1, 0, 0), randomTradeStack(random));
+        level.setBlock(pos.offset(1, 0, 0), Blocks.BARREL.defaultBlockState(), FLAGS);
+        stock(level, pos.offset(1, 0, 0),
+                randomTradeStack(random),
+                randomTradeStack(random),
+                new ItemStack(XuanhuanEarth.CULTIVATION_JOURNAL.get(), 1),
+                new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get(), 2),
+                new ItemStack(XuanhuanEarth.SPIRIT_CRYSTAL_SHARD.get(), 3 + random.nextInt(4)));
     }
 
     /**
@@ -443,7 +596,12 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                                   RandomSource random) {
         SettlementStyle.hut(level, pos, palette, 2, 3, true);
         level.setBlock(pos.offset(0, 0, 0), Blocks.BARREL.defaultBlockState(), FLAGS);
-        stock(level, pos.offset(0, 0, 0), randomTradeStack(random), randomTradeStack(random));
+        stock(level, pos.offset(0, 0, 0),
+                randomTradeStack(random),
+                randomTradeStack(random),
+                new ItemStack(XuanhuanEarth.QI_GUIDING_MANUAL.get(), 1),
+                new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 2),
+                new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get(), 2));
         placeBoard(level, pos.offset(0, 1, -1));
     }
 
@@ -462,23 +620,46 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                 case 1 -> SettlementStyle.placeIfAir(level, pos, Blocks.HAY_BLOCK);
                 case 2 -> SettlementStyle.placeIfAir(level, pos, Blocks.COMPOSTER);
                 case 3 -> SettlementStyle.placeIfAir(level, pos, Blocks.LECTERN);
-                default -> SettlementStyle.placeIfAir(level, pos, Blocks.BARREL);
+                default -> {
+                    if (level.isEmptyBlock(pos)) {
+                        level.setBlock(pos, Blocks.BARREL.defaultBlockState(), FLAGS);
+                        stock(level, pos, randomTradeStack(random), randomTradeStack(random));
+                    }
+                }
             }
         }
     }
 
     private static void stock(WorldGenLevel level, BlockPos pos, ItemStack... items) {
-        if (!(level.getBlockEntity(pos) instanceof Container container)) {
-            return;
+        Container container;
+        if (level.getBlockEntity(pos) instanceof Container existing) {
+            container = existing;
+        } else {
+            level.setBlock(pos, Blocks.BARREL.defaultBlockState(), FLAGS);
+            if (!(level.getBlockEntity(pos) instanceof Container placedContainer)) {
+                return;
+            }
+            container = placedContainer;
         }
         for (int slot = 0; slot < Math.min(container.getContainerSize(), items.length); slot++) {
             container.setItem(slot, sealed(items[slot].copy()));
+        }
+        Optional<net.minecraft.world.item.Item> optRice = BuiltInRegistries.ITEM.getOptional(
+                Identifier.fromNamespaceAndPath("earth_on_minecraft", "rice"));
+        if (optRice.isPresent() && items.length < container.getContainerSize()) {
+            container.setItem(items.length, new ItemStack(optRice.get(), 4));
         }
     }
 
     /** Village stock must be usable; an unsealed talisman could never be triggered. */
     private static ItemStack sealed(ItemStack stack) {
-        return stack.is(XuanhuanEarth.BASIC_TALISMAN.get()) ? TalismanComponent.drawn(stack) : stack;
+        if (stack.is(XuanhuanEarth.BASIC_TALISMAN.get())
+                || stack.is(XuanhuanEarth.FIRE_TALISMAN.get())
+                || stack.is(XuanhuanEarth.WIND_TALISMAN.get())
+                || stack.is(XuanhuanEarth.SEAL_TALISMAN.get())) {
+            return TalismanComponent.drawn(stack);
+        }
+        return stack;
     }
 
     private static void placeBoard(WorldGenLevel level, BlockPos pos) {

@@ -372,6 +372,7 @@ public class XuanhuanEarth {
         modBus.addListener(this::registerEntityAttributes);
         modBus.addListener(this::registerSpawnPlacements);
         NeoForge.EVENT_BUS.addListener(ArcanaEvents::onPlayerClone);
+        NeoForge.EVENT_BUS.addListener(ArcanaEvents::onBlockBreak);
         NeoForge.EVENT_BUS.addListener(ArcanaPassiveEffects::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(ArcanaPassiveEffects::onIncomingDamage);
         NeoForge.EVENT_BUS.addListener(ArcanaPassiveEffects::onFall);

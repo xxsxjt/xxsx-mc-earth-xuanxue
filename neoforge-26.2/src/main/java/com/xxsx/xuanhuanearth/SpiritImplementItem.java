@@ -40,12 +40,12 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
 
         // Shift: draw charge from the field. Plain use: spend it.
         if (player.isShiftKeyDown()) {
-            return charge(level, player, stack);
+            return charge(level, player, hand, stack);
         }
-        return cast(level, player, stack);
+        return cast(level, player, hand, stack);
     }
 
-    private InteractionResult charge(Level level, Player player, ItemStack stack) {
+    private InteractionResult charge(Level level, Player player, InteractionHand hand, ItemStack stack) {
         ImplementComponent state = ImplementComponent.read(stack);
         ArcanaChunkField.Reading reading = Spirituality.reading(level, player.blockPosition());
         double usable = SpiritFieldLedger.availableField(reading.value(), reading.depletion());
@@ -66,6 +66,10 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
         double gained = drawAeu * SpiritStoneCharge.CAPTURE_EFFICIENCY;
         stack.set(XuanhuanEarth.IMPLEMENT_CHARGE, state.withCharge(state.charge() + gained));
         Spirituality.consumeField(level, player.blockPosition(), drawAeu);
+        player.swing(hand, true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.RECOVERY);
+        }
         if (level instanceof ServerLevel serverLevel) {
             XuanhuanEffects.stoneCharge(serverLevel, player.position());
         }
@@ -75,7 +79,7 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
         return InteractionResult.SUCCESS_SERVER;
     }
 
-    private InteractionResult cast(Level level, Player player, ItemStack stack) {
+    private InteractionResult cast(Level level, Player player, InteractionHand hand, ItemStack stack) {
         ImplementComponent state = ImplementComponent.read(stack);
         double remainingCharge = state.charge();
         if (state.charge() < kind.costPerCast() - 0.0001D) {
@@ -95,7 +99,11 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
         }
         kind.apply(serverLevel, player);
         XuanhuanEffects.implementCast(serverLevel, player.position(), kind);
-        player.swing(InteractionHand.MAIN_HAND, true);
+        player.swing(hand, true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            CultivationNetwork.broadcastVisual(serverPlayer, CultivationVisualAction.IMPLEMENT_CAST);
+            XuanhuanJourney.complete(serverPlayer, XuanhuanJourney.Milestone.ARTIFACT_USE);
+        }
         player.sendSystemMessage(Component.translatable(kind.messageKey(),
                 ArcanaPower.format(remainingCharge),
                 ArcanaPower.format(kind.capacity())).withStyle(ChatFormatting.GOLD));
