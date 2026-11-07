@@ -1,7 +1,9 @@
 package com.xxsx.xuanhuanearth.entity;
 
 import com.xxsx.earthlore.api.LoreApi;
+import com.xxsx.xuanhuanearth.TalismanComponent;
 import com.xxsx.xuanhuanearth.XuanhuanEarth;
+import com.xxsx.xuanhuanearth.XuanhuanEffects;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -13,10 +15,14 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -38,11 +44,13 @@ import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 public final class CultivationSettlerEntity extends AbstractVillager {
     private static final EntityDataAccessor<Integer> DATA_ROLE = SynchedEntityData.defineId(
             CultivationSettlerEntity.class, EntityDataSerializers.INT);
+    private int counterAttackCooldown;
 
     public CultivationSettlerEntity(EntityType<? extends CultivationSettlerEntity> type, Level level) {
         super(type, level);
@@ -50,9 +58,61 @@ public final class CultivationSettlerEntity extends AbstractVillager {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 24.0D)
+                .add(Attributes.MAX_HEALTH, 30.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.42D)
-                .add(Attributes.FOLLOW_RANGE, 24.0D);
+                .add(Attributes.FOLLOW_RANGE, 24.0D)
+                .add(Attributes.ATTACK_DAMAGE, 6.0D);
+    }
+
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        if (this.counterAttackCooldown > 0) {
+            this.counterAttackCooldown--;
+        }
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        boolean hurt = super.hurtServer(level, source, amount);
+        if (hurt && this.isAlive()) {
+            Entity attackerEntity = source.getEntity();
+            if (attackerEntity instanceof LivingEntity attacker && attacker != this && this.counterAttackCooldown <= 0) {
+                this.counterAttackCooldown = 25;
+                this.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 80, 0, true, false, true));
+                this.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 0, true, false, true));
+                float retaliationDamage = 4.0F + getRole().id() * 1.5F;
+                attacker.hurtServer(level, level.damageSources().mobAttack(this), retaliationDamage);
+                Vec3 knock = attacker.position().subtract(this.position());
+                if (knock.lengthSqr() > 0.001D) {
+                    Vec3 push = knock.normalize().scale(0.65D);
+                    attacker.push(push.x, 0.28D, push.z);
+                }
+                XuanhuanEffects.talismanActivation(level, this.position());
+                this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.9F, 1.15F);
+            }
+        }
+        return hurt;
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+        this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.SPIRIT_STONE_RAW.get(), 1 + this.random.nextInt(2)));
+        this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.SPIRIT_GRASS.get(), 1 + this.random.nextInt(3)));
+        if (this.random.nextBoolean()) {
+            this.spawnAtLocation(level, TalismanComponent.drawn(new ItemStack(XuanhuanEarth.BASIC_TALISMAN.get())));
+        } else {
+            this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.TALISMAN_PAPER.get(), 1 + this.random.nextInt(2)));
+        }
+        if (getRole() == Role.SECT_STEWARD) {
+            this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.SPIRIT_IRON_BLANK.get(), 1));
+            if (this.random.nextBoolean()) {
+                this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 1));
+            }
+        } else if (getRole() == Role.SPIRIT_SPRING_KEEPER && this.random.nextBoolean()) {
+            this.spawnAtLocation(level, new ItemStack(XuanhuanEarth.QI_RECOVERY_PILL.get(), 1));
+        }
     }
 
     @Override

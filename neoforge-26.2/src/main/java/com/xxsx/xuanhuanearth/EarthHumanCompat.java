@@ -1,5 +1,6 @@
 package com.xxsx.xuanhuanearth;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModList;
@@ -42,6 +43,68 @@ public final class EarthHumanCompat {
 
     public static RecoveryReport recoverBreath(ServerPlayer player, double fatigueReduction, double bodyHeal) {
         return recover(player, fatigueReduction, bodyHeal, BodyTarget.TORSO);
+    }
+
+    /**
+     * Repairs fractures, restores limb/torso integrity, and optionally purifies lung smoke/air quality.
+     */
+    public static void treatFractureAndCleanseAir(ServerPlayer player, double fractureRelief,
+                                                  double bodyHeal, double lungAirRestore,
+                                                  double hydrationBonus, double fatigueReduction) {
+        recoverCore(player, fatigueReduction, bodyHeal);
+        boolean bridged = false;
+        try {
+            Class<?> bodyClass = Class.forName("com.xxsx.earthhuman.HumanBodyStatus");
+            Class<?> statusClass = Class.forName("com.xxsx.earthhuman.HumanStatus");
+            Class<?> netClass = Class.forName("com.xxsx.earthhuman.HumanNetwork");
+
+            Method getBody = bodyClass.getMethod("get", Player.class);
+            Object body = getBody.invoke(null, player);
+            if (fractureRelief > 0.0D) {
+                Method treatFracture = bodyClass.getMethod("treatFracture", ServerPlayer.class, double.class, double.class);
+                treatFracture.invoke(body, player, fractureRelief, bodyHeal);
+            }
+            Method applyFunc = bodyClass.getMethod("applyFunctionalEffects", ServerPlayer.class);
+            applyFunc.invoke(body, player);
+            Method saveBody = bodyClass.getMethod("save", Player.class);
+            saveBody.invoke(body, player);
+            Method syncBody = netClass.getMethod("syncBody", ServerPlayer.class, bodyClass);
+            syncBody.invoke(null, player, body);
+
+            Method getStatus = statusClass.getMethod("get", Player.class);
+            Object status = getStatus.invoke(null, player);
+            if (lungAirRestore > 0.0D) {
+                double air = statusClass.getField("airQuality").getDouble(status);
+                statusClass.getField("airQuality").setDouble(status, Math.max(0.0D, Math.min(100.0D, air + lungAirRestore)));
+            }
+            if (hydrationBonus > 0.0D) {
+                double h = statusClass.getField("hydration").getDouble(status);
+                statusClass.getField("hydration").setDouble(status, Math.max(0.0D, Math.min(100.0D, h + hydrationBonus)));
+            }
+            Method saveStatus = statusClass.getMethod("save", Player.class);
+            saveStatus.invoke(status, player);
+            Method syncStatus = netClass.getMethod("sync", ServerPlayer.class, statusClass);
+            syncStatus.invoke(null, player, status);
+            bridged = true;
+        } catch (Throwable ignored) {
+        }
+        if (!bridged) {
+            CompoundTag data = player.getPersistentData();
+            if (fractureRelief > 0.0D) {
+                double leg = data.getDoubleOr("earth_human.body.injury.leg", 0.0D);
+                double hand = data.getDoubleOr("earth_human.body.injury.right_hand", 0.0D);
+                data.putDouble("earth_human.body.injury.leg", Math.max(0.0D, leg - fractureRelief));
+                data.putDouble("earth_human.body.injury.right_hand", Math.max(0.0D, hand - fractureRelief));
+            }
+            if (lungAirRestore > 0.0D) {
+                double air = data.getDoubleOr("earth_human.air_quality", 100.0D);
+                data.putDouble("earth_human.air_quality", Math.min(100.0D, air + lungAirRestore));
+            }
+            if (hydrationBonus > 0.0D) {
+                double h = data.getDoubleOr("earth_human.hydration", 100.0D);
+                data.putDouble("earth_human.hydration", Math.min(100.0D, h + hydrationBonus));
+            }
+        }
     }
 
     public static boolean isLoaded() {

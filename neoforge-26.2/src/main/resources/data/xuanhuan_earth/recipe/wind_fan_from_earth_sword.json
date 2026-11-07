@@ -1,0 +1,20 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "earth_on_minecraft"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "earth_on_minecraft:iron_sword",
+    "xuanhuan_earth:spirit_crystal_shard",
+    "minecraft:feather",
+    "minecraft:feather"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:wind_fan",
+    "count": 1
+  }
+}

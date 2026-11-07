@@ -11,6 +11,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
@@ -88,6 +91,9 @@ public class ElementalTalismanItem extends GuidedXuanhuanItem {
                     .withStyle(ChatFormatting.RED));
             return InteractionResult.SUCCESS_SERVER;
         }
+        if (!TalismanComponent.isSealed(stack)) {
+            TalismanComponent.drawn(stack);
+        }
         TalismanComponent charge = TalismanComponent.read(stack);
         if (!TalismanCharge.isCharged(charge.chargeAeu())) {
             player.sendSystemMessage(Component.translatable(
@@ -136,6 +142,26 @@ public class ElementalTalismanItem extends GuidedXuanhuanItem {
         SmallFireball fireball = new SmallFireball(level, player, look);
         fireball.setPos(player.getX() + look.x * 0.8D, player.getEyeY() - 0.1D + look.y * 0.8D, player.getZ() + look.z * 0.8D);
         level.addFreshEntity(fireball);
+
+        Vec3 strikePos = player.getEyePosition().add(look.scale(6.0D));
+        AABB box = new AABB(BlockPos.containing(strikePos)).inflate(4.5D);
+        List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class, box,
+                e -> e != player && e.isAlive() && !e.isSpectator()
+                        && !(e instanceof com.xxsx.xuanhuanearth.entity.ContractableSpiritBeastEntity));
+        if (!targets.isEmpty()) {
+            LivingEntity mainTarget = targets.getFirst();
+            LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
+            if (bolt != null) {
+                bolt.setPos(mainTarget.getX(), mainTarget.getY(), mainTarget.getZ());
+                bolt.setCause(player);
+                bolt.setVisualOnly(true);
+                level.addFreshEntity(bolt);
+            }
+            for (LivingEntity target : targets) {
+                target.igniteForSeconds(6);
+                target.hurtServer(level, level.damageSources().playerAttack(player), 8.5F);
+            }
+        }
         level.playSound(null, player.blockPosition(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 0.8F, 1.1F);
         return true;
     }
@@ -148,7 +174,7 @@ public class ElementalTalismanItem extends GuidedXuanhuanItem {
         }
         Vec3 dir = horizontal.normalize();
         Vec3 best = null;
-        for (int step = 6; step >= 1; step--) {
+        for (int step = 8; step >= 1; step--) {
             Vec3 candidate = player.position().add(dir.scale(step));
             BlockPos feet = BlockPos.containing(candidate);
             if (level.noCollision(player, player.getBoundingBox().move(dir.scale(step)))
@@ -158,12 +184,22 @@ public class ElementalTalismanItem extends GuidedXuanhuanItem {
             }
         }
         if (best == null) {
-            player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.wind_talisman.blocked")
-                    .withStyle(ChatFormatting.YELLOW));
-            return false;
+            Vec3 boost = look.normalize().scale(1.65D);
+            player.setDeltaMovement(boost.x, Math.max(0.55D, boost.y * 0.9D + 0.35D), boost.z);
+            player.hurtMarked = true;
+            player.resetFallDistance();
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 160, 1, true, false, true));
+            player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 0, true, false, true));
+            EarthHumanCompat.treatFractureAndCleanseAir(player, 0.0D, 0.0D, 60.0D, 0.0D, 8.0D);
+            level.playSound(null, player.blockPosition(), SoundEvents.BREEZE_WIND_CHARGE_BURST.value(),
+                    SoundSource.PLAYERS, 0.8F, 1.2F);
+            return true;
         }
         player.teleportTo(best.x, best.y, best.z);
         player.fallDistance = 0.0F;
+        player.addEffect(new MobEffectInstance(MobEffects.SPEED, 160, 1, true, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 80, 0, true, false, true));
+        EarthHumanCompat.treatFractureAndCleanseAir(player, 0.0D, 0.0D, 60.0D, 0.0D, 8.0D);
         level.playSound(null, BlockPos.containing(best), SoundEvents.BREEZE_WIND_CHARGE_BURST.value(),
                 SoundSource.PLAYERS, 0.8F, 1.2F);
         return true;
@@ -174,7 +210,8 @@ public class ElementalTalismanItem extends GuidedXuanhuanItem {
         Vec3 look = player.getLookAngle().normalize();
         AABB searchBox = player.getBoundingBox().expandTowards(look.scale(12.0D)).inflate(2.0D);
         List<LivingEntity> candidates = level.getEntitiesOfClass(LivingEntity.class, searchBox,
-                e -> e != player && e.isAlive() && !e.isSpectator());
+                e -> e != player && e.isAlive() && !e.isSpectator()
+                        && !(e instanceof com.xxsx.xuanhuanearth.entity.ContractableSpiritBeastEntity));
         LivingEntity target = candidates.stream()
                 .filter(e -> {
                     Vec3 toEntity = e.getBoundingBox().getCenter().subtract(eye);
@@ -183,13 +220,21 @@ public class ElementalTalismanItem extends GuidedXuanhuanItem {
                 })
                 .min(Comparator.comparingDouble(e -> e.distanceToSqr(player)))
                 .orElse(null);
-        if (target == null) {
-            player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.seal_talisman.no_target")
-                    .withStyle(ChatFormatting.YELLOW));
-            return false;
+        AABB areaBox = player.getBoundingBox().inflate(6.0D);
+        List<LivingEntity> areaTargets = level.getEntitiesOfClass(LivingEntity.class, areaBox,
+                e -> e != player && e.isAlive() && !e.isSpectator()
+                        && !(e instanceof com.xxsx.xuanhuanearth.entity.ContractableSpiritBeastEntity));
+        if (target != null && !areaTargets.contains(target)) {
+            areaTargets.add(target);
         }
-        target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 200, 3, false, true, true));
-        level.playSound(null, target.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.8F, 0.8F);
+        for (LivingEntity e : areaTargets) {
+            e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 200, 4, false, true, true));
+            e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 1, false, true, true));
+            e.hurtServer(level, level.damageSources().playerAttack(player), 6.0F);
+        }
+        player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 240, 1, true, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 240, 2, true, false, true));
+        level.playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.8F, 0.8F);
         return true;
     }
 }

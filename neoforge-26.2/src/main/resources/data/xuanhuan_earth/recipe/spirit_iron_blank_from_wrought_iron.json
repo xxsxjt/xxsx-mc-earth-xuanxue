@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "earth_on_minecraft"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "earth_on_minecraft:wrought_iron",
+    "xuanhuan_earth:spirit_crystal_shard"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:spirit_iron_blank",
+    "count": 2
+  }
+}

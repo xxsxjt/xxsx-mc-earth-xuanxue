@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "xuanhuan_earth:basic_talisman",
+    "minecraft:blaze_powder"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:fire_talisman",
+    "count": 1
+  }
+}

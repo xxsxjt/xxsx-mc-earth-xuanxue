@@ -77,22 +77,27 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
 
     private InteractionResult cast(Level level, Player player, ItemStack stack) {
         ImplementComponent state = ImplementComponent.read(stack);
+        double remainingCharge = state.charge();
         if (state.charge() < kind.costPerCast() - 0.0001D) {
-            player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.implement.empty",
-                    ArcanaPower.format(state.charge()), ArcanaPower.format(kind.costPerCast()))
-                    .withStyle(ChatFormatting.YELLOW));
-            return InteractionResult.SUCCESS_SERVER;
+            double manaFallbackCost = Math.max(4.0D, kind.costPerCast() * 0.12D);
+            if (!ArcanaPower.trySpendMana(player, manaFallbackCost)) {
+                player.sendSystemMessage(Component.translatable("message.xuanhuan_earth.implement.empty",
+                        ArcanaPower.format(state.charge()), ArcanaPower.format(kind.costPerCast()))
+                        .withStyle(ChatFormatting.YELLOW));
+                return InteractionResult.SUCCESS_SERVER;
+            }
+        } else {
+            remainingCharge = Math.max(0.0D, state.charge() - kind.costPerCast());
+            stack.set(XuanhuanEarth.IMPLEMENT_CHARGE, state.withCharge(remainingCharge));
         }
         if (!(level instanceof ServerLevel serverLevel)) {
             return InteractionResult.SUCCESS_SERVER;
         }
-        stack.set(XuanhuanEarth.IMPLEMENT_CHARGE,
-                state.withCharge(state.charge() - kind.costPerCast()));
         kind.apply(serverLevel, player);
         XuanhuanEffects.implementCast(serverLevel, player.position(), kind);
         player.swing(InteractionHand.MAIN_HAND, true);
         player.sendSystemMessage(Component.translatable(kind.messageKey(),
-                ArcanaPower.format(state.charge() - kind.costPerCast()),
+                ArcanaPower.format(remainingCharge),
                 ArcanaPower.format(kind.capacity())).withStyle(ChatFormatting.GOLD));
         return InteractionResult.SUCCESS_SERVER;
     }
@@ -118,32 +123,39 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
             @Override
             public void apply(ServerLevel level, Player player) {
                 Vec3 origin = player.position();
-                for (var entity : level.getEntities(player, player.getBoundingBox().inflate(6.0D))) {
-                    if (entity == player || !(entity instanceof net.minecraft.world.entity.Mob mob)
+                Vec3 look = player.getLookAngle().normalize();
+                player.setDeltaMovement(look.x * 1.15D, Math.max(0.35D, look.y * 0.7D + 0.25D), look.z * 1.15D);
+                player.hurtMarked = true;
+                player.resetFallDistance();
+                for (var entity : level.getEntities(player, player.getBoundingBox().expandTowards(look.scale(9.0D)).inflate(3.5D))) {
+                    if (entity == player || !(entity instanceof net.minecraft.world.entity.LivingEntity mob)
                             || mob instanceof com.xxsx.xuanhuanearth.entity.ContractableSpiritBeastEntity) {
                         continue;
                     }
-                    Vec3 push = mob.position().subtract(origin).normalize().scale(0.9D).add(0.0D, 0.35D, 0.0D);
+                    Vec3 push = mob.position().subtract(origin).normalize().scale(0.95D).add(0.0D, 0.35D, 0.0D);
                     mob.push(push.x, push.y, push.z);
                     mob.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                            net.minecraft.world.effect.MobEffects.SLOWNESS, 60, 1, true, false, true));
-                    mob.hurtServer(level, level.damageSources().playerAttack(player), 2.0F);
+                            net.minecraft.world.effect.MobEffects.SLOWNESS, 80, 1, true, false, true));
+                    mob.hurtServer(level, level.damageSources().playerAttack(player), 6.5F);
                 }
             }
         },
-        /** Grounds the caster: brief resistance and a burst that hurts attackers. */
+        /** Grounds the caster: brief resistance, rock shatter, and a burst that hurts attackers. */
         STONE_SEAL("stone_seal", 200.0D, 50.0D, 80.0D, 8.0D) {
             @Override
             public void apply(ServerLevel level, Player player) {
                 player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        net.minecraft.world.effect.MobEffects.RESISTANCE, 160, 1, true, false, true));
+                        net.minecraft.world.effect.MobEffects.RESISTANCE, 200, 1, true, false, true));
                 player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        net.minecraft.world.effect.MobEffects.ABSORPTION, 160, 1, true, false, true));
-                for (var entity : level.getEntities(player, player.getBoundingBox().inflate(4.0D))) {
-                    if (entity instanceof net.minecraft.world.entity.Mob mob
+                        net.minecraft.world.effect.MobEffects.ABSORPTION, 200, 2, true, false, true));
+                for (var entity : level.getEntities(player, player.getBoundingBox().inflate(5.0D))) {
+                    if (entity instanceof net.minecraft.world.entity.LivingEntity mob
                             && !(mob instanceof com.xxsx.xuanhuanearth.entity.ContractableSpiritBeastEntity)) {
-                        mob.hurtServer(level, level.damageSources().playerAttack(player), 5.0F);
+                        mob.hurtServer(level, level.damageSources().playerAttack(player), 8.0F);
                     }
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    CultivationSkill.applySwordQiAndRockShatter(level, serverPlayer, 4);
                 }
             }
         },
@@ -152,9 +164,9 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
             @Override
             public void apply(ServerLevel level, Player player) {
                 double before = ArcanaPower.getCurrentMana(player);
-                ArcanaPower.setCurrentMana(player, before + 18.0D);
+                ArcanaPower.setCurrentMana(player, before + 24.0D);
                 if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-                    EarthHumanCompat.recoverCore(serverPlayer, 3.0D, 0.10D);
+                    EarthHumanCompat.treatFractureAndCleanseAir(serverPlayer, 0.45D, 2.5D, 35.0D, 15.0D, 12.0D);
                 }
             }
         },

@@ -218,16 +218,34 @@ public class XuanhuanEarth {
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_HERB = material("spirit_herb", "tooltip.xuanhuan_earth.spirit_herb");
     public static final DeferredItem<GuidedXuanhuanItem> CINNABAR_SPIRIT_INK = material("cinnabar_spirit_ink", "tooltip.xuanhuan_earth.cinnabar_spirit_ink");
     public static final DeferredItem<GuidedXuanhuanItem> TALISMAN_PAPER = material("talisman_paper", "tooltip.xuanhuan_earth.talisman_paper");
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
+            net.minecraft.core.component.DataComponentType<SpiritStoneComponent>> SPIRIT_STONE_CHARGE =
+            DATA_COMPONENTS.registerComponentType("spirit_stone_charge", builder -> builder
+                    .persistent(SpiritStoneComponent.CODEC)
+                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.fromCodec(SpiritStoneComponent.CODEC)));
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
+            net.minecraft.core.component.DataComponentType<TalismanComponent>> TALISMAN_CHARGE =
+            DATA_COMPONENTS.registerComponentType("talisman_charge", builder -> builder
+                    .persistent(TalismanComponent.CODEC)
+                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.fromCodec(TalismanComponent.CODEC)));
     public static final DeferredItem<GuidedXuanhuanItem> EMPTY_TALISMAN = item("empty_talisman",
             props -> new GuidedXuanhuanItem(props.stacksTo(16), "tooltip.xuanhuan_earth.empty_talisman"));
     public static final DeferredItem<BasicTalismanItem> BASIC_TALISMAN = item("basic_talisman",
-            props -> new BasicTalismanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.basic_talisman"));
+            props -> new BasicTalismanItem(props.stacksTo(16)
+                    .component(TALISMAN_CHARGE.get(), new TalismanComponent(TalismanCharge.CRAFTED_CHARGE_AEU, TalismanComponent.CURRENT_SCHEMA)),
+                    "tooltip.xuanhuan_earth.basic_talisman"));
     public static final DeferredItem<ElementalTalismanItem> FIRE_TALISMAN = item("fire_talisman",
-            props -> new ElementalTalismanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.fire_talisman", ElementalTalismanItem.Kind.FIRE));
+            props -> new ElementalTalismanItem(props.stacksTo(16)
+                    .component(TALISMAN_CHARGE.get(), new TalismanComponent(TalismanCharge.CRAFTED_CHARGE_AEU, TalismanComponent.CURRENT_SCHEMA)),
+                    "tooltip.xuanhuan_earth.fire_talisman", ElementalTalismanItem.Kind.FIRE));
     public static final DeferredItem<ElementalTalismanItem> WIND_TALISMAN = item("wind_talisman",
-            props -> new ElementalTalismanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.wind_talisman", ElementalTalismanItem.Kind.WIND));
+            props -> new ElementalTalismanItem(props.stacksTo(16)
+                    .component(TALISMAN_CHARGE.get(), new TalismanComponent(TalismanCharge.CRAFTED_CHARGE_AEU, TalismanComponent.CURRENT_SCHEMA)),
+                    "tooltip.xuanhuan_earth.wind_talisman", ElementalTalismanItem.Kind.WIND));
     public static final DeferredItem<ElementalTalismanItem> SEAL_TALISMAN = item("seal_talisman",
-            props -> new ElementalTalismanItem(props.stacksTo(1), "tooltip.xuanhuan_earth.seal_talisman", ElementalTalismanItem.Kind.SEAL));
+            props -> new ElementalTalismanItem(props.stacksTo(16)
+                    .component(TALISMAN_CHARGE.get(), new TalismanComponent(TalismanCharge.CRAFTED_CHARGE_AEU, TalismanComponent.CURRENT_SCHEMA)),
+                    "tooltip.xuanhuan_earth.seal_talisman", ElementalTalismanItem.Kind.SEAL));
     public static final DeferredItem<TalismanBrushItem> TALISMAN_BRUSH = item("talisman_brush",
             props -> new TalismanBrushItem(props.durability(TalismanBrushItem.MAX_DURABILITY), "tooltip.xuanhuan_earth.talisman_brush"));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_CRYSTAL_SHARD = material("spirit_crystal_shard", "tooltip.xuanhuan_earth.spirit_crystal_shard");
@@ -240,16 +258,6 @@ public class XuanhuanEarth {
             props -> new SpiritStoneItem(props.stacksTo(1), "tooltip.xuanhuan_earth.spirit_stone_cracked", true));
     public static final DeferredItem<SpiritStoneCoreItem> SPIRIT_STONE_CORE = item("spirit_stone_core",
             props -> new SpiritStoneCoreItem(props.stacksTo(1), "tooltip.xuanhuan_earth.spirit_stone_core"));
-    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
-            net.minecraft.core.component.DataComponentType<SpiritStoneComponent>> SPIRIT_STONE_CHARGE =
-            DATA_COMPONENTS.registerComponentType("spirit_stone_charge", builder -> builder
-                    .persistent(SpiritStoneComponent.CODEC)
-                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.fromCodec(SpiritStoneComponent.CODEC)));
-    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
-            net.minecraft.core.component.DataComponentType<TalismanComponent>> TALISMAN_CHARGE =
-            DATA_COMPONENTS.registerComponentType("talisman_charge", builder -> builder
-                    .persistent(TalismanComponent.CODEC)
-                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.fromCodec(TalismanComponent.CODEC)));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_IRON_BLANK = material("spirit_iron_blank", "tooltip.xuanhuan_earth.spirit_iron_blank");
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_IRON_INGOT = material("spirit_iron_ingot", "tooltip.xuanhuan_earth.spirit_iron_ingot");
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_GLASS = material("spirit_glass", "tooltip.xuanhuan_earth.spirit_glass");

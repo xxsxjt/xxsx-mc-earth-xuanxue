@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "xuanhuan_earth:basic_talisman",
+    "minecraft:string",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:seal_talisman",
+    "count": 1
+  }
+}
