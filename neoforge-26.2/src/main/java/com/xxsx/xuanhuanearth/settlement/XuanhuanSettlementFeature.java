@@ -362,12 +362,18 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
     }
 
     private static void spring(WorldGenLevel level, BlockPos center, SettlementStyle.Palette palette) {
-        for (int x = -1; x <= 1; x++) {
-            for (int z = -1; z <= 1; z++) {
-                level.setBlock(center.offset(x, 0, z), Blocks.WATER.defaultBlockState(), FLAGS);
+        for (int x = -2; x <= 2; x++) {
+            for (int z = -2; z <= 2; z++) {
+                level.setBlock(center.offset(x, -2, z), palette.floor(), FLAGS);
+                if (Math.abs(x) == 2 || Math.abs(z) == 2) {
+                    level.setBlock(center.offset(x, -1, z), palette.wall(), FLAGS);
+                } else {
+                    level.setBlock(center.offset(x, -1, z), Blocks.WATER.defaultBlockState(), FLAGS);
+                    level.setBlock(center.offset(x, 0, z), Blocks.AIR.defaultBlockState(), FLAGS);
+                }
             }
         }
-        level.setBlock(center.offset(0, -1, 0), XuanhuanEarth.SPIRIT_SPRING_STONE.get().defaultBlockState(), FLAGS);
+        level.setBlock(center.offset(0, -2, 0), XuanhuanEarth.SPIRIT_SPRING_STONE.get().defaultBlockState(), FLAGS);
         for (int x : new int[]{-2, 2}) {
             for (int z : new int[]{-2, 2}) {
                 level.setBlock(center.offset(x, 0, z), palette.post(), FLAGS);
@@ -382,11 +388,11 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
             for (int z = 0; z < 3; z++) {
                 level.setBlock(pos.offset(x, 0, z), palette.wall(), FLAGS);
                 level.setBlock(pos.offset(x, 1, z),
-                        z == 1 ? XuanhuanEarth.SPIRIT_SOIL.get().defaultBlockState()
+                        (z == 1 && x > 0 && x < 3) ? XuanhuanEarth.SPIRIT_SOIL.get().defaultBlockState()
                                 : palette.accent(), FLAGS);
             }
         }
-        level.setBlock(pos.offset(0, 0, 3), Blocks.WATER.defaultBlockState(), FLAGS);
+        level.setBlock(pos.offset(1, 1, 1), Blocks.WATER.defaultBlockState(), FLAGS);
     }
 
     private static void workshop(WorldGenLevel level, BlockPos pos, SettlementStyle.Palette palette,

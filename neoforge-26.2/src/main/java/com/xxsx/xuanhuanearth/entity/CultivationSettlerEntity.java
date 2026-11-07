@@ -4,6 +4,7 @@ import com.xxsx.earthlore.api.LoreApi;
 import com.xxsx.xuanhuanearth.TalismanComponent;
 import com.xxsx.xuanhuanearth.XuanhuanEarth;
 import com.xxsx.xuanhuanearth.XuanhuanEffects;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -30,7 +31,6 @@ import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.LookAtTradingPlayerGoal;
-import net.minecraft.world.entity.ai.goal.PanicGoal;
 import net.minecraft.world.entity.ai.goal.TradeWithPlayerGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.monster.Monster;
@@ -50,7 +50,10 @@ import org.jspecify.annotations.Nullable;
 public final class CultivationSettlerEntity extends AbstractVillager {
     private static final EntityDataAccessor<Integer> DATA_ROLE = SynchedEntityData.defineId(
             CultivationSettlerEntity.class, EntityDataSerializers.INT);
-    private int counterAttackCooldown;
+    @Nullable
+    private LivingEntity combatTarget;
+    private int aggroTicks;
+    private int attackCooldown;
 
     public CultivationSettlerEntity(EntityType<? extends CultivationSettlerEntity> type, Level level) {
         super(type, level);
@@ -67,8 +70,61 @@ public final class CultivationSettlerEntity extends AbstractVillager {
     @Override
     public void aiStep() {
         super.aiStep();
-        if (this.counterAttackCooldown > 0) {
-            this.counterAttackCooldown--;
+        if (this.attackCooldown > 0) {
+            this.attackCooldown--;
+        }
+        if (this.aggroTicks > 0) {
+            this.aggroTicks--;
+        }
+        if (this.level() instanceof ServerLevel serverLevel) {
+            if (this.combatTarget != null && this.combatTarget.isAlive() && this.aggroTicks > 0
+                    && this.distanceToSqr(this.combatTarget) < 576.0D) {
+                this.getLookControl().setLookAt(this.combatTarget, 30.0F, 30.0F);
+                double distSqr = this.distanceToSqr(this.combatTarget);
+                if (distSqr > 12.25D) {
+                    this.getNavigation().moveTo(this.combatTarget, 0.78D);
+                } else {
+                    this.getNavigation().stop();
+                }
+                if (this.attackCooldown <= 0) {
+                    if (distSqr <= 10.24D) {
+                        this.swing(InteractionHand.MAIN_HAND);
+                        float meleeDamage = 5.0F + getRole().id() * 1.5F;
+                        this.combatTarget.hurtServer(serverLevel, serverLevel.damageSources().mobAttack(this), meleeDamage);
+                        serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK,
+                                this.combatTarget.getX(), this.combatTarget.getY(0.5D), this.combatTarget.getZ(),
+                                1, 0.0D, 0.0D, 0.0D, 0.0D);
+                        serverLevel.sendParticles(ParticleTypes.CRIT,
+                                this.combatTarget.getX(), this.combatTarget.getY(0.5D), this.combatTarget.getZ(),
+                                8, 0.25D, 0.25D, 0.25D, 0.08D);
+                        this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 0.9F, 1.1F);
+                        this.attackCooldown = 24;
+                    } else if (distSqr <= 256.0D) {
+                        this.swing(InteractionHand.MAIN_HAND);
+                        Vec3 start = this.position().add(0.0D, this.getBbHeight() * 0.65D, 0.0D);
+                        Vec3 end = this.combatTarget.position().add(0.0D, this.combatTarget.getBbHeight() * 0.55D, 0.0D);
+                        Vec3 dir = end.subtract(start);
+                        double len = dir.length();
+                        if (len > 0.1D) {
+                            Vec3 step = dir.normalize().scale(0.6D);
+                            int steps = Math.min(32, (int) (len / 0.6D));
+                            for (int i = 1; i <= steps; i++) {
+                                Vec3 p = start.add(step.scale(i));
+                                serverLevel.sendParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, 0.02D, 0.02D, 0.02D, 0.01D);
+                                serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, p.x, p.y, p.z, 1, 0.02D, 0.02D, 0.02D, 0.01D);
+                            }
+                        }
+                        if (!this.combatTarget.isBlocking()) {
+                            float qiDamage = 4.0F + getRole().id();
+                            this.combatTarget.hurtServer(serverLevel, serverLevel.damageSources().indirectMagic(this, this), qiDamage);
+                        }
+                        this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 1.0F, 1.3F);
+                        this.attackCooldown = 36;
+                    }
+                }
+            } else if (this.aggroTicks <= 0 || (this.combatTarget != null && !this.combatTarget.isAlive())) {
+                this.combatTarget = null;
+            }
         }
     }
 
@@ -77,19 +133,25 @@ public final class CultivationSettlerEntity extends AbstractVillager {
         boolean hurt = super.hurtServer(level, source, amount);
         if (hurt && this.isAlive()) {
             Entity attackerEntity = source.getEntity();
-            if (attackerEntity instanceof LivingEntity attacker && attacker != this && this.counterAttackCooldown <= 0) {
-                this.counterAttackCooldown = 25;
+            if (attackerEntity instanceof LivingEntity attacker && attacker != this
+                    && !(attacker instanceof CultivationSettlerEntity)) {
+                this.combatTarget = attacker;
+                this.aggroTicks = 400;
+                if (this.attackCooldown <= 0) {
+                    this.attackCooldown = 10;
+                }
                 this.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 80, 0, true, false, true));
                 this.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 0, true, false, true));
-                float retaliationDamage = 4.0F + getRole().id() * 1.5F;
-                attacker.hurtServer(level, level.damageSources().mobAttack(this), retaliationDamage);
-                Vec3 knock = attacker.position().subtract(this.position());
-                if (knock.lengthSqr() > 0.001D) {
-                    Vec3 push = knock.normalize().scale(0.65D);
-                    attacker.push(push.x, 0.28D, push.z);
-                }
                 XuanhuanEffects.talismanActivation(level, this.position());
                 this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.9F, 1.15F);
+                for (CultivationSettlerEntity ally : level.getEntitiesOfClass(
+                        CultivationSettlerEntity.class, this.getBoundingBox().inflate(16.0D))) {
+                    if (ally != this && ally.isAlive() && ally.combatTarget == null) {
+                        ally.combatTarget = attacker;
+                        ally.aggroTicks = 300;
+                        ally.attackCooldown = 14;
+                    }
+                }
             }
         }
         return hurt;
@@ -139,7 +201,6 @@ public final class CultivationSettlerEntity extends AbstractVillager {
         this.goalSelector.addGoal(1, new TradeWithPlayerGoal(this));
         this.goalSelector.addGoal(1, new LookAtTradingPlayerGoal(this));
         this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, Monster.class, 9.0F, 0.7D, 0.8D));
-        this.goalSelector.addGoal(3, new PanicGoal(this, 0.8D));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.62D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
     }
