@@ -1,0 +1,9 @@
+* text=auto
+gradlew text eol=lf
+gradlew.bat text eol=crlf
+*.java text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.bbmodel binary
+*.png binary
+*.jar binary
