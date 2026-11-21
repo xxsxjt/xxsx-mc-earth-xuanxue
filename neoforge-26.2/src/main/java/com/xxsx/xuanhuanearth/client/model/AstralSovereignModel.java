@@ -460,17 +460,21 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         this.head.yRot += state.yRot * Mth.DEG_TO_RAD;
         this.head.xRot += state.xRot * Mth.DEG_TO_RAD;
 
-        // Counter-rotating concentric star halos
-        this.haloInner.zRot += age * 0.06F * speedMul;
-        this.haloOuter.zRot -= age * 0.05F * speedMul;
-        this.haloTier3.visible = state.phase2;
-        this.haloTier3.zRot += age * 0.035F * speedMul;
-
         boolean isTransitioning = state.actionType == AstralSovereignEntity.ACTION_PHASE_TRANSITION;
         float p = state.actionProgress;
         float awakenFactor = isTransitioning
-                ? smoothWindow(p, 0.32F, 0.62F)
+                ? smoothWindow(p, 0.34F, 0.64F)
                 : (state.phase2 ? 1.0F : 0.0F);
+
+        // Counter-rotating concentric star halos (haloTier3 starts HIDDEN in Phase 1 and blooms outward mid-transition!)
+        this.haloInner.zRot += age * 0.06F * speedMul;
+        this.haloOuter.zRot -= age * 0.05F * speedMul;
+        float halo3Scale = isTransitioning ? smoothWindow(p, 0.38F, 0.66F) : (state.phase2 ? 1.0F : 0.0F);
+        this.haloTier3.visible = halo3Scale > 0.02F;
+        if (this.haloTier3.visible) {
+            setUniformScale(this.haloTier3, halo3Scale);
+            this.haloTier3.zRot += age * 0.035F * speedMul;
+        }
 
         // True Phase 2 body evolution: awakened crown horns, shoulder star-blades, blazing chest core & plasma halberd edge
         boolean showAwakenedBody = awakenFactor > 0.02F;
@@ -512,7 +516,7 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         this.vfxSlashArc.visible = false;
         this.vfxMagicCircle.visible = false;
         this.vfxAuraPillars.visible = false;
-        this.vfxWeaponAura.visible = state.phase2 || state.swordBuffActive || state.actionType != AstralSovereignEntity.ACTION_NONE;
+        this.vfxWeaponAura.visible = awakenFactor > 0.55F || state.swordBuffActive || (state.actionType != AstralSovereignEntity.ACTION_NONE && !isTransitioning);
         this.vfxBodyAura.visible = awakenFactor > 0.5F || state.swordBuffActive || state.actionType == AstralSovereignEntity.ACTION_ULTIMATE_JUDGMENT;
 
         // Base breathing & armored walk stride with knee articulation

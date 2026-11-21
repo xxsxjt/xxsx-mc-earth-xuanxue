@@ -202,11 +202,15 @@ public class AstralSovereignEntity extends Monster {
                         this.getX(), this.getY() + 0.15, this.getZ(), 1, 0, 0, 0, 0);
             }
         } else if (tick <= 42) {
-            // Stage 2: Sky-piercing golden-cyan celestial beam pillar & armor unfurl
-            for (int y = 0; y < 8; y++) {
-                serverLevel.sendParticles(y % 2 == 0 ? ParticleTypes.END_ROD : ParticleTypes.SOUL_FIRE_FLAME,
-                        this.getX(), this.getY() + 0.6 + y * 0.9, this.getZ(),
-                        3, 0.45, 0.25, 0.45, 0.05);
+            // Stage 2: Twin ascending golden-violet helical ascension ribbons & armor-cocoon shatter (unique to transition)
+            double progress = (tick - 22) / 20.0D;
+            for (int h = 0; h < 2; h++) {
+                double a = progress * Math.PI * 6.0D + h * Math.PI;
+                double r = 1.65D - progress * 0.45D;
+                double py = this.getY() + 0.5D + progress * 5.2D;
+                serverLevel.sendParticles(h == 0 ? ParticleTypes.TOTEM_OF_UNDYING : ParticleTypes.WITCH,
+                        this.getX() + Math.cos(a) * r, py, this.getZ() + Math.sin(a) * r,
+                        2, 0.08, 0.08, 0.08, 0.02);
             }
             if (tick == 24) {
                 this.playSound(SoundEvents.TRIDENT_THUNDER.value(), 1.35F, 0.85F);
