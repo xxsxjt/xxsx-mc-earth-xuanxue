@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.logging.LogUtils;
 import com.xxsx.earthlore.registry.LoreContent;
 import com.xxsx.xuanhuanearth.client.XuanhuanEarthClient;
+import com.xxsx.xuanhuanearth.entity.AstralSovereignEntity;
 import com.xxsx.xuanhuanearth.entity.ContractableSpiritBeastEntity;
 import com.xxsx.xuanhuanearth.entity.CrystalTurtleEntity;
 import com.xxsx.xuanhuanearth.entity.CultivationSettlerEntity;
@@ -29,7 +30,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -170,6 +173,14 @@ public class XuanhuanEarth {
                     .eyeHeight(1.62F)
                     .clientTrackingRange(10)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id("cultivation_settler"))));
+    public static final DeferredHolder<EntityType<?>, EntityType<AstralSovereignEntity>> ASTRAL_SOVEREIGN =
+            ENTITY_TYPES.register("astral_sovereign", () -> EntityType.Builder
+                    .of(AstralSovereignEntity::new, MobCategory.MONSTER)
+                    .sized(1.4F, 3.6F)
+                    .eyeHeight(3.05F)
+                    .fireImmune()
+                    .clientTrackingRange(12)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id("astral_sovereign"))));
     public static final DeferredBlock<XuanhuanSettlementAnchorBlock> SETTLEMENT_ANCHOR =
             BLOCKS.registerBlock("settlement_anchor", XuanhuanSettlementAnchorBlock::new,
                     () -> stone(MapColor.COLOR_CYAN, 5.0F).noOcclusion());
@@ -339,6 +350,14 @@ public class XuanhuanEarth {
             props -> new SpawnEggItem(props.spawnEgg(EMBER_CRANE.get())));
     public static final DeferredItem<SpawnEggItem> CULTIVATION_SETTLER_SPAWN_EGG = item("cultivation_settler_spawn_egg",
             props -> new SpawnEggItem(props.spawnEgg(CULTIVATION_SETTLER.get())));
+    public static final DeferredItem<SpawnEggItem> ASTRAL_SOVEREIGN_SPAWN_EGG = item("astral_sovereign_spawn_egg",
+            props -> new SpawnEggItem(props.spawnEgg(ASTRAL_SOVEREIGN.get())));
+    public static final DeferredItem<AstralHalberdItem> ASTRAL_FANGTIAN_HALBERD = item("astral_fangtian_halberd",
+            props -> new AstralHalberdItem(
+                    props.sword(ToolMaterial.NETHERITE, 9.0F, -2.6F)
+                            .durability(2500)
+                            .rarity(Rarity.EPIC)
+                            .fireResistant()));
 
     public static final DeferredHolder<Feature<?>, XuanhuanSettlementFeature> WANDERING_MARKET_FEATURE =
             FEATURES.register("wandering_cultivator_market", () -> new XuanhuanSettlementFeature(
@@ -484,6 +503,7 @@ public class XuanhuanEarth {
         event.put(CRYSTAL_TURTLE.get(), CrystalTurtleEntity.createAttributes().build());
         event.put(EMBER_CRANE.get(), EmberCraneEntity.createAttributes().build());
         event.put(CULTIVATION_SETTLER.get(), CultivationSettlerEntity.createAttributes().build());
+        event.put(ASTRAL_SOVEREIGN.get(), AstralSovereignEntity.createAttributes().build());
     }
 
     private void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {

@@ -652,5 +652,10 @@
   "hexagram.xuanhuan_earth.60": "Zhong Fu (Inner Truth)",
   "hexagram.xuanhuan_earth.61": "Xiao Guo (Small Preponderance)",
   "hexagram.xuanhuan_earth.62": "Ji Ji (After Completion)",
-  "hexagram.xuanhuan_earth.63": "Wei Ji (Before Completion)"
+  "hexagram.xuanhuan_earth.63": "Wei Ji (Before Completion)",
+  "entity.xuanhuan_earth.astral_sovereign": "Astral Sovereign",
+  "entity.xuanhuan_earth.astral_sovereign.phase2": "Astral Sovereign - Ten-Thousand Swords",
+  "item.xuanhuan_earth.astral_sovereign_spawn_egg": "Astral Sovereign Spawn Egg",
+  "item.xuanhuan_earth.astral_fangtian_halberd": "Fangtian Astral Halberd",
+  "tooltip.xuanhuan_earth.astral_fangtian_halberd": "Right-click to unleash an Astral Cleave arc blocked by solid terrain."
 }

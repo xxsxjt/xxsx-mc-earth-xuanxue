@@ -652,5 +652,10 @@
   "hexagram.xuanhuan_earth.60": "中孚",
   "hexagram.xuanhuan_earth.61": "小过",
   "hexagram.xuanhuan_earth.62": "既济",
-  "hexagram.xuanhuan_earth.63": "未济"
+  "hexagram.xuanhuan_earth.63": "未济",
+  "entity.xuanhuan_earth.astral_sovereign": "镇岳星君",
+  "entity.xuanhuan_earth.astral_sovereign.phase2": "镇岳星君 · 万剑法相",
+  "item.xuanhuan_earth.astral_sovereign_spawn_egg": "镇岳星君刷怪蛋",
+  "item.xuanhuan_earth.astral_fangtian_halberd": "方天星辰戟",
+  "tooltip.xuanhuan_earth.astral_fangtian_halberd": "右键沿视线挥出星辰戟气，遇墙截断且每目标单次判定。"
 }
