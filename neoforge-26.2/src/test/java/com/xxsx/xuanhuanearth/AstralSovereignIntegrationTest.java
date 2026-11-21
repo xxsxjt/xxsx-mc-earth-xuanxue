@@ -68,6 +68,9 @@ class AstralSovereignIntegrationTest {
         assertTrue(entitySource.contains("isPhase2()"), "Flying sword mechanics must be strictly gated to Phase 2");
         String modelSource = Files.readString(Path.of("src/main/java/com/xxsx/xuanhuanearth/client/model/AstralSovereignModel.java"));
         assertTrue(modelSource.contains("this.astralWings.visible = false;"), "Phase 1 back-wing flying swords must stay hidden");
+        assertTrue(AstralSovereignEntity.PHASE_TRANSITION_DURATION >= 40, "Phase 1 -> Phase 2 awakening transition must animate smoothly");
+        assertTrue(modelSource.contains("cape_mid") && modelSource.contains("cape_lower"), "Cape must use multi-segment cloth articulation");
+        assertTrue(modelSource.contains("tabard_front") && modelSource.contains("p2_pauldron_wing_l"), "Lower armor hinges and Phase 2 physical evolution parts must exist");
 
         // Halberd 3-combo styles
         assertTrue(AstralHalberdItem.OVERHEAD_DAMAGE > AstralHalberdItem.SWEEP_DAMAGE);
