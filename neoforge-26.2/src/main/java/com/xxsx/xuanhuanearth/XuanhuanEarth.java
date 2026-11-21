@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.logging.LogUtils;
 import com.xxsx.earthlore.registry.LoreContent;
 import com.xxsx.xuanhuanearth.client.XuanhuanEarthClient;
+import com.xxsx.xuanhuanearth.entity.AstralFlyingSwordEntity;
 import com.xxsx.xuanhuanearth.entity.AstralSovereignEntity;
 import com.xxsx.xuanhuanearth.entity.ContractableSpiritBeastEntity;
 import com.xxsx.xuanhuanearth.entity.CrystalTurtleEntity;
@@ -181,6 +182,13 @@ public class XuanhuanEarth {
                     .fireImmune()
                     .clientTrackingRange(12)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id("astral_sovereign"))));
+    public static final DeferredHolder<EntityType<?>, EntityType<AstralFlyingSwordEntity>> ASTRAL_FLYING_SWORD =
+            ENTITY_TYPES.register("astral_flying_sword", () -> EntityType.Builder
+                    .<AstralFlyingSwordEntity>of(AstralFlyingSwordEntity::new, MobCategory.MISC)
+                    .sized(0.7F, 0.7F)
+                    .clientTrackingRange(8)
+                    .updateInterval(2)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id("astral_flying_sword"))));
     public static final DeferredBlock<XuanhuanSettlementAnchorBlock> SETTLEMENT_ANCHOR =
             BLOCKS.registerBlock("settlement_anchor", XuanhuanSettlementAnchorBlock::new,
                     () -> stone(MapColor.COLOR_CYAN, 5.0F).noOcclusion());

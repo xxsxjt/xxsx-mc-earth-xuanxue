@@ -1,5 +1,6 @@
 package com.xxsx.xuanhuanearth.client;
 
+import com.xxsx.xuanhuanearth.client.model.AstralFlyingSwordModel;
 import com.xxsx.xuanhuanearth.client.model.AstralSovereignModel;
 import com.xxsx.xuanhuanearth.client.model.CrystalTurtleModel;
 import com.xxsx.xuanhuanearth.client.model.CultivationSettlerModel;
@@ -8,6 +9,7 @@ import com.xxsx.xuanhuanearth.client.model.SpiritFoxModel;
 import com.xxsx.xuanhuanearth.client.model.StonehornGoatModel;
 import com.xxsx.xuanhuanearth.client.model.WindWolfModel;
 import com.xxsx.xuanhuanearth.client.particle.XuanhuanParticleProviders;
+import com.xxsx.xuanhuanearth.client.renderer.AstralFlyingSwordRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.AstralSovereignRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.CultivationSettlerRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.SpiritBeastRenderer;
@@ -83,6 +85,7 @@ public final class XuanhuanEarthClient {
                         XuanhuanEarth.id("textures/entity/ember_crane.png"), 0.42F, 1.0F));
         event.registerEntityRenderer(XuanhuanEarth.CULTIVATION_SETTLER.get(), CultivationSettlerRenderer::new);
         event.registerEntityRenderer(XuanhuanEarth.ASTRAL_SOVEREIGN.get(), AstralSovereignRenderer::new);
+        event.registerEntityRenderer(XuanhuanEarth.ASTRAL_FLYING_SWORD.get(), AstralFlyingSwordRenderer::new);
     }
 
     private static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -93,6 +96,7 @@ public final class XuanhuanEarthClient {
         event.registerLayerDefinition(EmberCraneModel.LAYER_LOCATION, EmberCraneModel::createBodyLayer);
         event.registerLayerDefinition(CultivationSettlerModel.LAYER_LOCATION, CultivationSettlerModel::createBodyLayer);
         event.registerLayerDefinition(AstralSovereignModel.LAYER_LOCATION, AstralSovereignModel::createBodyLayer);
+        event.registerLayerDefinition(AstralFlyingSwordModel.LAYER_LOCATION, AstralFlyingSwordModel::createBodyLayer);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {

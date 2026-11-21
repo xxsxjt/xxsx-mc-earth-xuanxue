@@ -2,6 +2,7 @@ package com.xxsx.xuanhuanearth.client.model;
 
 import com.xxsx.xuanhuanearth.XuanhuanEarth;
 import com.xxsx.xuanhuanearth.client.renderer.AstralSovereignRenderState;
+import com.xxsx.xuanhuanearth.entity.AstralSovereignEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -16,20 +17,15 @@ import net.minecraft.util.Mth;
 /**
  * Unified Phase 1 &amp; Phase 2 EntityModel for Astral Sovereign (镇岳星君).
  *
- * <p>Generated directly from the canonical Phase 1 and Phase 2 Blockbench deliverables,
- * preserving all per-cube rotations as child PartDefinitions so concentric star halos
- * ({@code halo_inner}, {@code halo_outer}, {@code halo_tier3}), angled armor tassets,
- * and cape folds match the authored geometry. Phase 1 reveals {@code astral_wings};
- * Phase 2 hides {@code astral_wings} and activates {@code halo_tier3} plus the
- * 8 orbiting flying swords centered at chest height ({@code Y = -34.0F}). Built-in
- * VFX sub-groups ({@code vfx_slash_arc}, {@code vfx_magic_circle}, {@code vfx_aura_pillars})
- * are gated to active combat/telegraph ticks.</p>
+ * <p>Preserves all 107 rotated Blockbench sub-parts and drives full-body articulated motion
+ * across hips, chest, shoulders, forearms, halberd wrist, knees/shins, cape, star halos,
+ * and gated VFX layers. {@code vfx_slash_arc} is strictly bound to melee combos and never
+ * displayed during Eight-Wastes Astral Judgment (which expands {@code vfx_magic_circle}
+ * as a 360-degree circular shockwave) or Sword Array Empower.</p>
  */
 public final class AstralSovereignModel extends EntityModel<AstralSovereignRenderState> {
     public static final ModelLayerLocation LAYER_LOCATION =
             new ModelLayerLocation(XuanhuanEarth.id("astral_sovereign"), "main");
-
-    private static final float ORBIT_SWORDS_BASE_Y = -34.0F;
 
     private final ModelPart sovereignRoot;
     private final ModelPart body;
@@ -40,14 +36,21 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
     private final ModelPart haloTier3;
     private final ModelPart astralWings;
     private final ModelPart capeRoot;
-    private final ModelPart rightArm;
-    private final ModelPart leftArm;
+    private final ModelPart halberdArm;
+    private final ModelPart halberdForearm;
+    private final ModelPart astralHalberd;
+    private final ModelPart offHandArm;
+    private final ModelPart offHandForearm;
     private final ModelPart rightLeg;
+    private final ModelPart rightShin;
     private final ModelPart leftLeg;
+    private final ModelPart leftShin;
     private final ModelPart orbitingSwordsRoot;
     private final ModelPart vfxMagicCircle;
     private final ModelPart vfxSlashArc;
     private final ModelPart vfxAuraPillars;
+    private final ModelPart vfxWeaponAura;
+    private final ModelPart vfxBodyAura;
 
     public AstralSovereignModel(ModelPart root) {
         super(root, RenderTypes::entityCutout);
@@ -60,10 +63,17 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         this.haloTier3 = this.chest.getChild("halo_tier3");
         this.astralWings = this.chest.getChild("astral_wings");
         this.capeRoot = this.chest.getChild("cape_root");
-        this.rightArm = this.chest.getChild("left_arm");   // +X right-hand halberd arm in Bedrock export
-        this.leftArm = this.chest.getChild("right_arm");   // -X off-hand arm
+        this.halberdArm = this.chest.getChild("left_arm");
+        this.halberdForearm = this.halberdArm.getChild("left_forearm");
+        this.astralHalberd = this.halberdForearm.getChild("astral_halberd");
+        this.vfxWeaponAura = this.astralHalberd.getChild("vfx_weapon_aura");
+        this.vfxBodyAura = this.chest.getChild("vfx_body_aura");
+        this.offHandArm = this.chest.getChild("right_arm");
+        this.offHandForearm = this.offHandArm.getChild("right_forearm");
         this.rightLeg = this.sovereignRoot.getChild("right_leg");
+        this.rightShin = this.rightLeg.getChild("right_shin");
         this.leftLeg = this.sovereignRoot.getChild("left_leg");
+        this.leftShin = this.leftLeg.getChild("left_shin");
         this.orbitingSwordsRoot = this.sovereignRoot.getChild("orbiting_swords_root");
         this.vfxMagicCircle = this.sovereignRoot.getChild("vfx_magic_circle");
         this.vfxSlashArc = this.sovereignRoot.getChild("vfx_slash_arc");
@@ -378,65 +388,241 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
     public void setupAnim(AstralSovereignRenderState state) {
         super.setupAnim(state);
         float age = state.ageInTicks;
-        float speedMul = state.phase2 ? 2.2F : 1.0F;
+        float speedMul = (state.phase2 ? 2.1F : 1.0F) * (state.swordBuffActive ? 2.2F : 1.0F);
 
         // Head tracking
-        this.head.yRot = state.yRot * Mth.DEG_TO_RAD;
-        this.head.xRot = state.xRot * Mth.DEG_TO_RAD;
+        this.head.yRot += state.yRot * Mth.DEG_TO_RAD;
+        this.head.xRot += state.xRot * Mth.DEG_TO_RAD;
 
         // Counter-rotating concentric star halos
-        this.haloInner.zRot = age * 0.06F * speedMul;
-        this.haloOuter.zRot = -age * 0.05F * speedMul;
+        this.haloInner.zRot += age * 0.06F * speedMul;
+        this.haloOuter.zRot -= age * 0.05F * speedMul;
         this.haloTier3.visible = state.phase2;
-        this.haloTier3.zRot = age * 0.035F * speedMul;
+        this.haloTier3.zRot += age * 0.035F * speedMul;
 
-        // Phase 1 fanned back swords vs Phase 2 360-degree orbiting sword array
+        // Phase 1 fanned back swords vs Phase 2 orbiting sword array (preserving PartPose Y = -34.0F)
         this.astralWings.visible = !state.phase2;
-        this.astralWings.xRot = Mth.sin(age * 0.07F) * 0.05F;
-
+        this.astralWings.xRot += Mth.sin(age * 0.07F) * 0.06F;
         this.orbitingSwordsRoot.visible = state.phase2;
-        this.orbitingSwordsRoot.yRot = age * 0.055F;
-        // Preserve base PartPose Y (-34.0F) so the 8 swords float at chest height, not at feet level
-        this.orbitingSwordsRoot.y = ORBIT_SWORDS_BASE_Y + Mth.sin(age * 0.08F) * 1.6F;
+        this.orbitingSwordsRoot.yRot += age * (state.swordBuffActive ? 0.14F : 0.055F);
+        this.orbitingSwordsRoot.y += Mth.sin(age * 0.08F) * 1.6F;
 
-        // Gate authored VFX meshes to active attack / Bagua telegraph windows
-        this.vfxSlashArc.visible = state.attackTicks > 0;
-        this.vfxMagicCircle.visible = state.telegraphTicks > 0;
-        this.vfxMagicCircle.yRot = age * 0.14F;
-        this.vfxAuraPillars.visible = state.phase2 && state.telegraphTicks > 0;
-        this.vfxAuraPillars.yRot = -age * 0.08F;
+        // Default VFX gating (slash arc strictly melee-only; never reused for Ultimate)
+        this.vfxSlashArc.visible = false;
+        this.vfxMagicCircle.visible = false;
+        this.vfxAuraPillars.visible = false;
+        this.vfxWeaponAura.visible = state.phase2 || state.swordBuffActive || state.actionType != AstralSovereignEntity.ACTION_NONE;
+        this.vfxBodyAura.visible = state.swordBuffActive || state.actionType == AstralSovereignEntity.ACTION_ULTIMATE_JUDGMENT;
 
-        // Subtle cape billow
-        this.capeRoot.xRot = 0.06F + Mth.sin(age * 0.09F) * 0.04F + state.walkAnimationSpeed * 0.25F;
-
-        // Armored stride
+        // Base breathing & armored walk stride with knee articulation
+        float breathe = Mth.sin(age * 0.09F);
         float walkPos = state.walkAnimationPos;
         float walkSpeed = state.walkAnimationSpeed;
-        this.rightLeg.xRot = Mth.cos(walkPos * 0.6662F) * 0.55F * walkSpeed;
-        this.leftLeg.xRot = Mth.cos(walkPos * 0.6662F + Mth.PI) * 0.55F * walkSpeed;
+        this.chest.y += breathe * 0.55F;
+        this.capeRoot.xRot += 0.08F + breathe * 0.05F + walkSpeed * 0.30F;
 
-        // Combat poses: Bagua telegraph > Flying-sword cast > Melee halberd cleave > Idle
-        if (state.telegraphTicks > 0) {
-            float pulse = Mth.sin(age * 0.45F) * 0.12F;
-            this.rightArm.xRot = -1.25F + pulse;
-            this.leftArm.xRot = -1.10F - pulse;
-            this.chest.yRot = 0.0F;
-        } else if (state.castTicks > 0) {
-            float castProgress = 1.0F - (state.castTicks / 12.0F);
-            float lift = Mth.sin(castProgress * Mth.PI);
-            this.leftArm.xRot = 0.17F - lift * 1.35F;
-            this.rightArm.xRot = 0.31F + Mth.sin(age * 0.06F) * 0.04F;
-            this.chest.yRot = lift * 0.22F;
-        } else if (state.attackTicks > 0) {
-            float progress = 1.0F - (state.attackTicks / 16.0F);
-            float swing = Mth.sin(progress * Mth.PI);
-            this.rightArm.xRot = 0.31F - swing * 1.45F;
-            this.leftArm.xRot = 0.17F - Mth.sin(age * 0.06F) * 0.04F;
-            this.chest.yRot = -0.35F + swing * 0.75F;
-        } else {
-            this.rightArm.xRot = 0.31F + Mth.sin(age * 0.06F) * 0.04F;
-            this.leftArm.xRot = 0.17F - Mth.sin(age * 0.06F) * 0.04F;
-            this.chest.yRot = 0.0F;
+        float legSwing = Mth.cos(walkPos * 0.6662F) * 0.52F * walkSpeed;
+        this.rightLeg.xRot += legSwing;
+        this.leftLeg.xRot -= legSwing;
+        this.rightShin.xRot += Math.max(0.0F, -legSwing) * 0.55F;
+        this.leftShin.xRot += Math.max(0.0F, legSwing) * 0.55F;
+        this.halberdArm.xRot += breathe * 0.04F;
+        this.offHandArm.xRot -= breathe * 0.04F;
+
+        float p = state.actionProgress;
+        switch (state.actionType) {
+            case AstralSovereignEntity.ACTION_COMBO_SWEEP -> animateComboSweep(p);
+            case AstralSovereignEntity.ACTION_COMBO_OVERHEAD -> animateComboOverhead(p);
+            case AstralSovereignEntity.ACTION_COMBO_THRUST -> animateComboThrust(p);
+            case AstralSovereignEntity.ACTION_SWORD_ARRAY_BUFF -> animateSwordArrayBuff(p, age);
+            case AstralSovereignEntity.ACTION_ULTIMATE_JUDGMENT -> animateUltimateJudgment(p, age);
+            default -> {
+                if (state.swordBuffActive) {
+                    this.vfxMagicCircle.visible = true;
+                    this.vfxMagicCircle.yRot += age * 0.16F;
+                    this.vfxMagicCircle.xScale = 0.68F;
+                    this.vfxMagicCircle.zScale = 0.68F;
+                }
+            }
         }
+    }
+
+    /** Combo 1: Wide horizontal crescent sweep with torso wind-up, whip follow-through, and cape flare. */
+    private void animateComboSweep(float p) {
+        float windup = smoothWindow(p, 0.0F, 0.30F);
+        float strike = smoothWindow(p, 0.25F, 0.65F);
+        float recover = 1.0F - smoothWindow(p, 0.65F, 1.0F);
+        float sweep = (-0.85F * windup * (1.0F - strike)) + (1.25F * strike * recover);
+
+        this.body.yRot += sweep * 0.45F;
+        this.chest.yRot += sweep * 0.72F;
+        this.chest.xRot += 0.14F * strike * recover;
+        this.head.yRot -= sweep * 0.40F;
+
+        this.halberdArm.xRot += -0.65F * windup + 0.55F * strike * recover;
+        this.halberdArm.zRot += -0.55F * windup + 0.95F * strike * recover;
+        this.halberdArm.yRot += sweep * 0.75F;
+        this.halberdForearm.xRot += -0.35F * strike * recover;
+        this.astralHalberd.zRot += -1.05F * strike * recover;
+        this.astralHalberd.xRot += 0.45F * strike * recover;
+
+        this.offHandArm.xRot += 0.45F * strike * recover;
+        this.offHandArm.zRot += -0.45F * strike * recover;
+        this.capeRoot.yRot -= sweep * 0.35F;
+        this.capeRoot.xRot += 0.28F * strike * recover;
+
+        if (p >= 0.28F && p <= 0.76F) {
+            float arcT = (p - 0.28F) / 0.48F;
+            this.vfxSlashArc.visible = true;
+            this.vfxSlashArc.yRot += Mth.lerp(arcT, -1.15F, 1.15F);
+            this.vfxSlashArc.zRot += 0.15F;
+            float s = 0.85F + Mth.sin(arcT * Mth.PI) * 0.45F;
+            this.vfxSlashArc.xScale = s;
+            this.vfxSlashArc.zScale = s;
+        }
+    }
+
+    /** Combo 2: Overhead Sky-Splitter — arch back raising halberd high, then lunge & cleave straight down. */
+    private void animateComboOverhead(float p) {
+        float raise = smoothWindow(p, 0.0F, 0.38F);
+        float slam = smoothWindow(p, 0.38F, 0.64F);
+        float holdRecover = 1.0F - smoothWindow(p, 0.68F, 1.0F);
+        float liftFactor = raise * (1.0F - slam);
+        float slamFactor = slam * holdRecover;
+
+        this.sovereignRoot.y += -2.8F * liftFactor + 3.2F * slamFactor;
+        this.chest.xRot += -0.32F * liftFactor + 0.48F * slamFactor;
+        this.body.xRot += -0.12F * liftFactor + 0.18F * slamFactor;
+
+        this.halberdArm.xRot += -2.15F * liftFactor + 0.95F * slamFactor;
+        this.halberdArm.zRot += -0.25F * liftFactor + 0.18F * slamFactor;
+        this.halberdForearm.xRot += -0.55F * liftFactor + 0.30F * slamFactor;
+        this.astralHalberd.xRot += -0.45F * liftFactor + 1.05F * slamFactor;
+
+        this.offHandArm.xRot += -1.05F * liftFactor + 0.75F * slamFactor;
+        this.offHandArm.zRot += -0.35F * liftFactor - 0.45F * slamFactor;
+        this.rightLeg.xRot += -0.25F * slamFactor;
+        this.rightShin.xRot += 0.38F * slamFactor;
+        this.leftLeg.xRot += 0.25F * slamFactor;
+        this.capeRoot.xRot += 0.42F * slamFactor;
+
+        if (p >= 0.40F && p <= 0.78F) {
+            float arcT = (p - 0.40F) / 0.38F;
+            this.vfxSlashArc.visible = true;
+            this.vfxSlashArc.zRot += Mth.HALF_PI;
+            this.vfxSlashArc.xRot += Mth.lerp(arcT, -0.75F, 0.85F);
+            float s = 0.95F + Mth.sin(arcT * Mth.PI) * 0.45F;
+            this.vfxSlashArc.xScale = s;
+            this.vfxSlashArc.yScale = s;
+            this.vfxSlashArc.zScale = s;
+        }
+    }
+
+    /** Combo 3: Coiled stance -> forward lunging Astral Dragon Thrust -> crisp upward flick. */
+    private void animateComboThrust(float p) {
+        float coil = smoothWindow(p, 0.0F, 0.28F);
+        float thrust = smoothWindow(p, 0.28F, 0.56F);
+        float flick = smoothWindow(p, 0.56F, 0.82F);
+        float endFade = 1.0F - smoothWindow(p, 0.82F, 1.0F);
+        float thrustFactor = thrust * (1.0F - flick * 0.4F) * endFade;
+
+        this.sovereignRoot.z += 3.5F * coil * (1.0F - thrust) - 6.5F * thrustFactor;
+        this.sovereignRoot.y += 1.6F * thrustFactor;
+        this.body.yRot += -0.48F * coil * (1.0F - thrust) + 0.36F * thrustFactor;
+        this.chest.xRot += 0.24F * thrustFactor;
+
+        this.halberdArm.xRot += 0.55F * coil * (1.0F - thrust) - 1.25F * thrustFactor - 0.45F * flick * endFade;
+        this.halberdForearm.xRot += -0.60F * thrustFactor;
+        this.astralHalberd.xRot += 1.25F * thrustFactor - 0.55F * flick * endFade;
+        this.offHandArm.xRot += 0.65F * thrustFactor;
+        this.offHandArm.zRot += -0.55F * thrustFactor;
+
+        this.leftLeg.xRot += -0.42F * thrustFactor;
+        this.rightLeg.xRot += 0.45F * thrustFactor;
+        this.capeRoot.xRot += 0.48F * thrustFactor;
+
+        if (p >= 0.32F && p <= 0.72F) {
+            float arcT = (p - 0.32F) / 0.40F;
+            this.vfxSlashArc.visible = true;
+            this.vfxSlashArc.zRot += 0.62F;
+            this.vfxSlashArc.xScale = 0.65F;
+            this.vfxSlashArc.zScale = 1.35F + Mth.sin(arcT * Mth.PI) * 0.35F;
+        }
+    }
+
+    /** Sword Array Empower cast: heroic open-armed sword-command stance with surging halos & runes. */
+    private void animateSwordArrayBuff(float p, float age) {
+        float bell = Mth.sin(p * Mth.PI);
+        this.sovereignRoot.y -= bell * 4.5F;
+        this.chest.xRot -= bell * 0.24F;
+        this.head.xRot -= bell * 0.18F;
+
+        this.halberdArm.xRot -= bell * 1.45F;
+        this.halberdArm.zRot += bell * 0.55F;
+        this.halberdForearm.xRot -= bell * 0.35F;
+        this.astralHalberd.xRot -= bell * 0.25F;
+
+        this.offHandArm.xRot -= bell * 1.35F;
+        this.offHandArm.zRot -= bell * 0.75F;
+        this.offHandForearm.xRot -= bell * 0.40F;
+        this.capeRoot.xRot += bell * 0.52F + Mth.sin(age * 0.45F) * 0.08F;
+
+        // Ground Bagua seal + aura pillars — NO forward slash arc!
+        this.vfxMagicCircle.visible = true;
+        this.vfxMagicCircle.yRot += age * 0.26F;
+        float s = 0.75F + bell * 0.35F;
+        this.vfxMagicCircle.xScale = s;
+        this.vfxMagicCircle.zScale = s;
+        this.vfxAuraPillars.visible = true;
+        this.vfxAuraPillars.yRot -= age * 0.18F;
+    }
+
+    /** Eight-Wastes Astral Judgment: levitate & gather -> halberd slam -> 360° circular shockwave. */
+    private void animateUltimateJudgment(float p, float age) {
+        float chargePhase = smoothWindow(p, 0.0F, 0.50F);
+        float slamPhase = smoothWindow(p, 0.50F, 0.62F);
+        float recover = 1.0F - smoothWindow(p, 0.78F, 1.0F);
+        float hover = chargePhase * (1.0F - slamPhase);
+        float slam = slamPhase * recover;
+
+        this.sovereignRoot.y += -7.5F * hover + 4.2F * slam;
+        this.chest.xRot += -0.28F * hover + 0.52F * slam;
+        this.head.xRot += -0.22F * hover + 0.15F * slam;
+
+        this.halberdArm.xRot += -2.25F * hover + 0.92F * slam;
+        this.halberdArm.zRot += 0.48F * hover - 0.15F * slam;
+        this.halberdForearm.xRot += -0.45F * hover + 0.35F * slam;
+        this.astralHalberd.xRot += -0.35F * hover + 0.95F * slam;
+
+        this.offHandArm.xRot += -1.85F * hover + 0.55F * slam;
+        this.offHandArm.zRot += -0.82F * hover - 0.35F * slam;
+        this.rightLeg.xRot += 0.18F * hover - 0.32F * slam;
+        this.leftLeg.xRot += 0.18F * hover + 0.30F * slam;
+        this.rightShin.xRot += 0.42F * slam;
+        this.leftShin.xRot += 0.35F * slam;
+        this.capeRoot.xRot += 0.55F * hover + 0.45F * slam;
+
+        // Pure circular Bagua array -> expanding 360-degree shockwave (vfxSlashArc stays strictly FALSE!)
+        this.vfxSlashArc.visible = false;
+        this.vfxMagicCircle.visible = true;
+        this.vfxMagicCircle.yRot += age * (slamPhase > 0.01F ? 0.32F : 0.16F);
+        float circleScale = slamPhase > 0.01F
+                ? (0.95F + smoothWindow(p, 0.52F, 0.88F) * 1.15F)
+                : (0.45F + chargePhase * 0.55F);
+        this.vfxMagicCircle.xScale = circleScale;
+        this.vfxMagicCircle.zScale = circleScale;
+
+        this.vfxAuraPillars.visible = p < 0.86F;
+        this.vfxAuraPillars.yRot -= age * 0.14F;
+        float pillarScale = slamPhase > 0.01F ? (1.0F + smoothWindow(p, 0.52F, 0.85F) * 0.75F) : (0.5F + chargePhase * 0.5F);
+        this.vfxAuraPillars.xScale = pillarScale;
+        this.vfxAuraPillars.zScale = pillarScale;
+    }
+
+    private static float smoothWindow(float value, float start, float end) {
+        if (value <= start) return 0.0F;
+        if (value >= end) return 1.0F;
+        float t = (value - start) / (end - start);
+        return t * t * (3.0F - 2.0F * t);
     }
 }

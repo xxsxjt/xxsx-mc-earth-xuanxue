@@ -657,5 +657,6 @@
   "entity.xuanhuan_earth.astral_sovereign.phase2": "Astral Sovereign - Ten-Thousand Swords",
   "item.xuanhuan_earth.astral_sovereign_spawn_egg": "Astral Sovereign Spawn Egg",
   "item.xuanhuan_earth.astral_fangtian_halberd": "Fangtian Astral Halberd",
-  "tooltip.xuanhuan_earth.astral_fangtian_halberd": "Right-click to unleash an Astral Cleave arc blocked by solid terrain."
+  "tooltip.xuanhuan_earth.astral_fangtian_halberd": "Right-click to unleash an Astral Cleave arc blocked by solid terrain.",
+  "entity.xuanhuan_earth.astral_flying_sword": "Astral Flying Sword"
 }
