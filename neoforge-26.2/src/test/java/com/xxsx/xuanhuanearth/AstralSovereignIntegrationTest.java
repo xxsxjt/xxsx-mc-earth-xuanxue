@@ -50,7 +50,7 @@ class AstralSovereignIntegrationTest {
     }
 
     @Test
-    void combatAndFlyingSwordConstantsStayWithinDesignBounds() {
+    void combatAndFlyingSwordConstantsStayWithinDesignBounds() throws Exception {
         assertTrue(AstralSovereignEntity.SWORD_SUMMON_MAX_RANGE >= 16.0D);
         assertTrue(AstralSovereignEntity.ULTIMATE_TELEGRAPH_DURATION >= 15);
         assertTrue(AstralSovereignEntity.ULTIMATE_SHOCKWAVE_DURATION >= 8);
@@ -62,6 +62,12 @@ class AstralSovereignIntegrationTest {
         assertTrue(AstralFlyingSwordEntity.EMPOWERED_DAMAGE_P1 > AstralFlyingSwordEntity.BASE_DAMAGE);
         assertTrue(AstralFlyingSwordEntity.EMPOWERED_DAMAGE_P2 > AstralFlyingSwordEntity.EMPOWERED_DAMAGE_P1);
         assertTrue(AstralFlyingSwordEntity.DEFLECT_RECOIL_TICKS >= 10);
+
+        // Phase 1 removes all flying swords (Phase 2 exclusive)
+        String entitySource = Files.readString(Path.of("src/main/java/com/xxsx/xuanhuanearth/entity/AstralSovereignEntity.java"));
+        assertTrue(entitySource.contains("isPhase2()"), "Flying sword mechanics must be strictly gated to Phase 2");
+        String modelSource = Files.readString(Path.of("src/main/java/com/xxsx/xuanhuanearth/client/model/AstralSovereignModel.java"));
+        assertTrue(modelSource.contains("this.astralWings.visible = false;"), "Phase 1 back-wing flying swords must stay hidden");
 
         // Halberd 3-combo styles
         assertTrue(AstralHalberdItem.OVERHEAD_DAMAGE > AstralHalberdItem.SWEEP_DAMAGE);

@@ -232,19 +232,22 @@ public class AstralSovereignEntity extends Monster {
             this.shockwaveTicksRemaining--;
         }
 
-        // Active Sword Array Empower buff: aura VFX + frequent waves of empowered short-lived homing swords
+        // Active Sword Array Empower buff (Phase 2 exclusive): aura VFX + frequent waves of empowered short-lived homing swords
         int buffTicks = getSwordBuffTicks();
         if (buffTicks > 0) {
-            this.entityData.set(DATA_SWORD_BUFF_TICKS, buffTicks - 1);
-            if (buffTicks % 4 == 0) {
-                emitSwordBuffAura(serverLevel);
-            }
-            LivingEntity target = this.getTarget();
-            if (target != null && target.isAlive() && canSummonFlyingSwordsAt(target)) {
-                if (--this.buffedWaveCooldown <= 0) {
-                    int count = isPhase2() ? 5 : 4;
-                    spawnFlyingSwordSwarm(serverLevel, target, count, true);
-                    this.buffedWaveCooldown = isPhase2() ? 16 : 20;
+            if (!isPhase2()) {
+                this.entityData.set(DATA_SWORD_BUFF_TICKS, 0);
+            } else {
+                this.entityData.set(DATA_SWORD_BUFF_TICKS, buffTicks - 1);
+                if (buffTicks % 4 == 0) {
+                    emitSwordBuffAura(serverLevel);
+                }
+                LivingEntity target = this.getTarget();
+                if (target != null && target.isAlive() && canSummonFlyingSwordsAt(target)) {
+                    if (--this.buffedWaveCooldown <= 0) {
+                        spawnFlyingSwordSwarm(serverLevel, target, 5, true);
+                        this.buffedWaveCooldown = 16;
+                    }
                 }
             }
         }
@@ -265,28 +268,36 @@ public class AstralSovereignEntity extends Monster {
             return;
         }
 
-        // Skill: Sword Array Empower (boosts sword attack power & spawns abundant short-lived homing swords)
-        if (--this.swordBuffCooldown <= 0 && getActionType() == ACTION_NONE && !isSwordBuffActive()
-                && canSummonFlyingSwordsAt(target)) {
-            activateSwordArrayBuff(serverLevel);
-            this.swordBuffCooldown = isPhase2() ? 210 : 280;
-            return;
-        }
+        // Phase 1 has NO flying swords; all flying sword skills & waves unlock strictly in Phase 2 (万剑法相)
+        if (isPhase2()) {
+            // Skill: Sword Array Empower (boosts sword attack power & spawns abundant short-lived homing swords)
+            if (--this.swordBuffCooldown <= 0 && getActionType() == ACTION_NONE && !isSwordBuffActive()
+                    && canSummonFlyingSwordsAt(target)) {
+                activateSwordArrayBuff(serverLevel);
+                this.swordBuffCooldown = 210;
+                return;
+            }
 
-        // Ambient short-lived homing flying swords (small wave outside buff window)
-        if (!isSwordBuffActive() && --this.ambientSwordCooldown <= 0 && canSummonFlyingSwordsAt(target)) {
-            int ambientCount = isPhase2() ? 3 : 2;
-            spawnFlyingSwordSwarm(serverLevel, target, ambientCount, false);
-            this.ambientSwordCooldown = isPhase2() ? 68 : 96;
+            // Ambient short-lived homing flying swords (small wave outside buff window)
+            if (!isSwordBuffActive() && --this.ambientSwordCooldown <= 0 && canSummonFlyingSwordsAt(target)) {
+                spawnFlyingSwordSwarm(serverLevel, target, 3, false);
+                this.ambientSwordCooldown = 68;
+            }
         }
     }
 
     private boolean canSummonFlyingSwordsAt(LivingEntity target) {
+        if (!isPhase2()) {
+            return false;
+        }
         double maxDistSqr = SWORD_SUMMON_MAX_RANGE * SWORD_SUMMON_MAX_RANGE;
         return this.distanceToSqr(target) <= maxDistSqr && this.getSensing().hasLineOfSight(target);
     }
 
     private void activateSwordArrayBuff(ServerLevel serverLevel) {
+        if (!isPhase2()) {
+            return;
+        }
         this.entityData.set(DATA_SWORD_BUFF_TICKS, SWORD_BUFF_DURATION);
         this.buffedWaveCooldown = 10;
         startAction(ACTION_SWORD_ARRAY_BUFF, 26);

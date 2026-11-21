@@ -400,9 +400,8 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         this.haloTier3.visible = state.phase2;
         this.haloTier3.zRot += age * 0.035F * speedMul;
 
-        // Phase 1 fanned back swords vs Phase 2 orbiting sword array (preserving PartPose Y = -34.0F)
-        this.astralWings.visible = !state.phase2;
-        this.astralWings.xRot += Mth.sin(age * 0.07F) * 0.06F;
+        // Flying swords are strictly Phase 2 exclusive (Phase 1 carries no flying swords)
+        this.astralWings.visible = false;
         this.orbitingSwordsRoot.visible = state.phase2;
         this.orbitingSwordsRoot.yRot += age * (state.swordBuffActive ? 0.14F : 0.055F);
         this.orbitingSwordsRoot.y += Mth.sin(age * 0.08F) * 1.6F;
@@ -447,155 +446,178 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         }
     }
 
-    /** Combo 1: Wide horizontal crescent sweep with torso wind-up, whip follow-through, and cape flare. */
+    /**
+     * Combo 1: Horizontal crescent sweep — mathematically locked to halberd bind pose.
+     * Bind cumulative xRot (MC Y-down, local -Y = halberd spear tip) = -0.314 - 0.698 + 1.396 = +0.384 rad (+22 deg).
+     * Adding delta +1.18 rad levels the halberd shaft straight forward along -Z (+90 deg) while rolling blade flat.
+     */
     private void animateComboSweep(float p) {
-        float windup = smoothWindow(p, 0.0F, 0.30F);
-        float strike = smoothWindow(p, 0.25F, 0.65F);
-        float recover = 1.0F - smoothWindow(p, 0.65F, 1.0F);
-        float sweep = (-0.85F * windup * (1.0F - strike)) + (1.25F * strike * recover);
+        float windup = smoothWindow(p, 0.0F, 0.28F);
+        float strike = smoothWindow(p, 0.24F, 0.62F);
+        float recover = 1.0F - smoothWindow(p, 0.66F, 1.0F);
+        float active = windup * recover;
 
-        this.body.yRot += sweep * 0.45F;
-        this.chest.yRot += sweep * 0.72F;
-        this.chest.xRot += 0.14F * strike * recover;
-        this.head.yRot -= sweep * 0.40F;
+        float sweepYaw = (-0.82F * windup * (1.0F - strike)) + (1.28F * strike * recover);
+        this.sovereignRoot.y += 1.4F * active;
+        this.sovereignRoot.z += 2.0F * windup * (1.0F - strike) - 4.8F * strike * recover;
+        this.body.yRot += sweepYaw * 0.42F;
+        this.chest.yRot += sweepYaw * 0.68F;
+        this.chest.xRot += 0.18F * strike * recover;
+        this.head.yRot -= sweepYaw * 0.45F;
 
-        this.halberdArm.xRot += -0.65F * windup + 0.55F * strike * recover;
-        this.halberdArm.zRot += -0.55F * windup + 0.95F * strike * recover;
-        this.halberdArm.yRot += sweep * 0.75F;
-        this.halberdForearm.xRot += -0.35F * strike * recover;
-        this.astralHalberd.zRot += -1.05F * strike * recover;
-        this.astralHalberd.xRot += 0.45F * strike * recover;
+        // Level halberd horizontally forward (torso +0.18 + bind +0.384 + arm -0.08 + forearm +0.38 + halberd +0.70 = +1.56 rad)
+        // Blade flat-roll uses halberdArm.zRot (-0.88 rad) instead of astralHalberd.yRot to avoid ZYX Euler gimbal twist!
+        this.halberdArm.xRot += -0.08F * active;
+        this.halberdArm.yRot += sweepYaw * 0.72F;
+        this.halberdArm.zRot += -0.88F * active;
+        this.halberdForearm.xRot += 0.38F * active;
+        this.astralHalberd.xRot += 0.70F * active;
 
-        this.offHandArm.xRot += 0.45F * strike * recover;
-        this.offHandArm.zRot += -0.45F * strike * recover;
-        this.capeRoot.yRot -= sweep * 0.35F;
-        this.capeRoot.xRot += 0.28F * strike * recover;
+        this.offHandArm.xRot += -0.35F * windup * (1.0F - strike) + 0.55F * strike * recover;
+        this.offHandArm.zRot += -0.45F * active;
+        this.rightLeg.xRot += -0.32F * strike * recover;
+        this.leftLeg.xRot += 0.34F * strike * recover;
+        this.rightShin.xRot += 0.28F * active;
+        this.capeRoot.yRot -= sweepYaw * 0.35F;
+        this.capeRoot.xRot += 0.32F * strike * recover;
 
-        if (p >= 0.28F && p <= 0.76F) {
-            float arcT = (p - 0.28F) / 0.48F;
+        if (p >= 0.26F && p <= 0.76F) {
+            float arcT = (p - 0.26F) / 0.50F;
             this.vfxSlashArc.visible = true;
             this.vfxSlashArc.yRot += Mth.lerp(arcT, -1.15F, 1.15F);
-            this.vfxSlashArc.zRot += 0.15F;
-            float s = 0.85F + Mth.sin(arcT * Mth.PI) * 0.45F;
+            this.vfxSlashArc.zRot += 0.10F;
+            float s = 0.88F + Mth.sin(arcT * Mth.PI) * 0.42F;
             this.vfxSlashArc.xScale = s;
             this.vfxSlashArc.zScale = s;
         }
     }
 
-    /** Combo 2: Overhead Sky-Splitter — arch back raising halberd high, then lunge & cleave straight down. */
+    /** Combo 2: Overhead Sky-Splitter — raise halberd cleanly behind crown, then drive straight down into ground at -Z. */
     private void animateComboOverhead(float p) {
-        float raise = smoothWindow(p, 0.0F, 0.38F);
-        float slam = smoothWindow(p, 0.38F, 0.64F);
+        float raise = smoothWindow(p, 0.0F, 0.36F);
+        float slam = smoothWindow(p, 0.36F, 0.60F);
         float holdRecover = 1.0F - smoothWindow(p, 0.68F, 1.0F);
         float liftFactor = raise * (1.0F - slam);
         float slamFactor = slam * holdRecover;
 
-        this.sovereignRoot.y += -2.8F * liftFactor + 3.2F * slamFactor;
-        this.chest.xRot += -0.32F * liftFactor + 0.48F * slamFactor;
-        this.body.xRot += -0.12F * liftFactor + 0.18F * slamFactor;
+        this.sovereignRoot.y += -2.6F * liftFactor + 3.4F * slamFactor;
+        this.sovereignRoot.z += 2.2F * liftFactor - 5.2F * slamFactor;
+        this.body.xRot += -0.14F * liftFactor + 0.22F * slamFactor;
+        this.chest.xRot += -0.28F * liftFactor + 0.44F * slamFactor;
+        this.head.xRot += 0.16F * liftFactor - 0.18F * slamFactor;
 
-        this.halberdArm.xRot += -2.15F * liftFactor + 0.95F * slamFactor;
-        this.halberdArm.zRot += -0.25F * liftFactor + 0.18F * slamFactor;
-        this.halberdForearm.xRot += -0.55F * liftFactor + 0.30F * slamFactor;
-        this.astralHalberd.xRot += -0.45F * liftFactor + 1.05F * slamFactor;
+        // Raise: arm high overhead (-2.10), forearm extended (+0.45), halberd angled cleanly up-back (+0.95 -> net -0.32 rad)
+        // Slam: arm drives forward (-0.42), forearm extends (+0.48), halberd whips forward-down (+1.50 -> net +1.94 rad into floor!)
+        this.halberdArm.xRot += -2.10F * liftFactor - 0.42F * slamFactor;
+        this.halberdArm.zRot += -0.18F * liftFactor + 0.12F * slamFactor;
+        this.halberdForearm.xRot += 0.45F * liftFactor + 0.48F * slamFactor;
+        this.astralHalberd.xRot += 0.95F * liftFactor + 1.50F * slamFactor;
 
-        this.offHandArm.xRot += -1.05F * liftFactor + 0.75F * slamFactor;
-        this.offHandArm.zRot += -0.35F * liftFactor - 0.45F * slamFactor;
-        this.rightLeg.xRot += -0.25F * slamFactor;
-        this.rightShin.xRot += 0.38F * slamFactor;
-        this.leftLeg.xRot += 0.25F * slamFactor;
-        this.capeRoot.xRot += 0.42F * slamFactor;
+        this.offHandArm.xRot += -1.05F * liftFactor + 0.72F * slamFactor;
+        this.offHandArm.zRot += -0.28F * liftFactor - 0.42F * slamFactor;
+        this.rightLeg.xRot += -0.28F * slamFactor;
+        this.rightShin.xRot += 0.42F * slamFactor;
+        this.leftLeg.xRot += 0.30F * slamFactor;
+        this.leftShin.xRot += 0.26F * slamFactor;
+        this.capeRoot.xRot += 0.46F * slamFactor;
 
-        if (p >= 0.40F && p <= 0.78F) {
-            float arcT = (p - 0.40F) / 0.38F;
+        if (p >= 0.38F && p <= 0.78F) {
+            float arcT = (p - 0.38F) / 0.40F;
             this.vfxSlashArc.visible = true;
             this.vfxSlashArc.zRot += Mth.HALF_PI;
-            this.vfxSlashArc.xRot += Mth.lerp(arcT, -0.75F, 0.85F);
-            float s = 0.95F + Mth.sin(arcT * Mth.PI) * 0.45F;
+            this.vfxSlashArc.xRot += Mth.lerp(arcT, -0.70F, 0.80F);
+            float s = 0.92F + Mth.sin(arcT * Mth.PI) * 0.42F;
             this.vfxSlashArc.xScale = s;
             this.vfxSlashArc.yScale = s;
             this.vfxSlashArc.zScale = s;
         }
     }
 
-    /** Combo 3: Coiled stance -> forward lunging Astral Dragon Thrust -> crisp upward flick. */
+    /** Combo 3: Coiled stance -> forward lunging Astral Dragon Thrust (halberd spear tip aligned dead straight along -Z). */
     private void animateComboThrust(float p) {
         float coil = smoothWindow(p, 0.0F, 0.28F);
-        float thrust = smoothWindow(p, 0.28F, 0.56F);
-        float flick = smoothWindow(p, 0.56F, 0.82F);
-        float endFade = 1.0F - smoothWindow(p, 0.82F, 1.0F);
-        float thrustFactor = thrust * (1.0F - flick * 0.4F) * endFade;
+        float thrust = smoothWindow(p, 0.26F, 0.56F);
+        float flick = smoothWindow(p, 0.56F, 0.80F);
+        float endFade = 1.0F - smoothWindow(p, 0.80F, 1.0F);
+        float coilOnly = coil * (1.0F - thrust);
+        float thrustFactor = thrust * endFade;
 
-        this.sovereignRoot.z += 3.5F * coil * (1.0F - thrust) - 6.5F * thrustFactor;
-        this.sovereignRoot.y += 1.6F * thrustFactor;
-        this.body.yRot += -0.48F * coil * (1.0F - thrust) + 0.36F * thrustFactor;
-        this.chest.xRot += 0.24F * thrustFactor;
+        this.sovereignRoot.z += 3.6F * coilOnly - 7.0F * thrustFactor;
+        this.sovereignRoot.y += 2.2F * coilOnly + 1.4F * thrustFactor;
+        this.body.yRot += -0.46F * coilOnly + 0.32F * thrustFactor;
+        this.chest.xRot += 0.14F * coilOnly + 0.24F * thrustFactor;
+        this.head.yRot += 0.36F * coilOnly - 0.24F * thrustFactor;
 
-        this.halberdArm.xRot += 0.55F * coil * (1.0F - thrust) - 1.25F * thrustFactor - 0.45F * flick * endFade;
-        this.halberdForearm.xRot += -0.60F * thrustFactor;
-        this.astralHalberd.xRot += 1.25F * thrustFactor - 0.55F * flick * endFade;
-        this.offHandArm.xRot += 0.65F * thrustFactor;
-        this.offHandArm.zRot += -0.55F * thrustFactor;
+        // Thrust aligns halberd dead level forward at chest height, compensating for chest pitch (+0.24 rad):
+        // chest(+0.24) + bind(+0.384) + arm(-0.90) + forearm(+0.64) + halberd(+1.20) = +1.564 rad (-Z horizontal!)
+        this.halberdArm.xRot += 0.18F * coilOnly - 0.90F * thrustFactor - 0.28F * flick * endFade;
+        this.halberdArm.zRot += -0.20F * coilOnly + 0.12F * thrustFactor;
+        this.halberdForearm.xRot += -0.10F * coilOnly + 0.64F * thrustFactor;
+        this.astralHalberd.xRot += 0.96F * coilOnly + 1.20F * thrustFactor - 0.25F * flick * endFade;
 
-        this.leftLeg.xRot += -0.42F * thrustFactor;
-        this.rightLeg.xRot += 0.45F * thrustFactor;
+        this.offHandArm.xRot += -0.35F * coilOnly + 0.65F * thrustFactor;
+        this.offHandArm.zRot += -0.52F * thrustFactor;
+        this.leftLeg.xRot += 0.28F * coilOnly - 0.44F * thrustFactor;
+        this.rightLeg.xRot += -0.28F * coilOnly + 0.46F * thrustFactor;
+        this.leftShin.xRot += 0.36F * (coilOnly + thrustFactor * 0.7F);
         this.capeRoot.xRot += 0.48F * thrustFactor;
 
         if (p >= 0.32F && p <= 0.72F) {
             float arcT = (p - 0.32F) / 0.40F;
             this.vfxSlashArc.visible = true;
             this.vfxSlashArc.zRot += 0.62F;
-            this.vfxSlashArc.xScale = 0.65F;
-            this.vfxSlashArc.zScale = 1.35F + Mth.sin(arcT * Mth.PI) * 0.35F;
+            this.vfxSlashArc.xScale = 0.60F;
+            this.vfxSlashArc.zScale = 1.30F + Mth.sin(arcT * Mth.PI) * 0.35F;
         }
     }
 
-    /** Sword Array Empower cast: heroic open-armed sword-command stance with surging halos & runes. */
+    /** Phase 2 Sword Array Empower cast: heroic open-armed sword-command stance with surging halos & runes. */
     private void animateSwordArrayBuff(float p, float age) {
         float bell = Mth.sin(p * Mth.PI);
         this.sovereignRoot.y -= bell * 4.5F;
-        this.chest.xRot -= bell * 0.24F;
-        this.head.xRot -= bell * 0.18F;
+        this.chest.xRot -= bell * 0.22F;
+        this.head.xRot -= bell * 0.16F;
 
-        this.halberdArm.xRot -= bell * 1.45F;
-        this.halberdArm.zRot += bell * 0.55F;
-        this.halberdForearm.xRot -= bell * 0.35F;
-        this.astralHalberd.xRot -= bell * 0.25F;
+        // Halberd held proudly outward to the side while off-hand casts sword-command seal
+        this.halberdArm.xRot += -0.35F * bell;
+        this.halberdArm.zRot += 0.65F * bell;
+        this.halberdForearm.xRot += 0.28F * bell;
+        this.astralHalberd.xRot += -0.18F * bell;
 
-        this.offHandArm.xRot -= bell * 1.35F;
-        this.offHandArm.zRot -= bell * 0.75F;
-        this.offHandForearm.xRot -= bell * 0.40F;
+        this.offHandArm.xRot += -1.35F * bell;
+        this.offHandArm.zRot += -0.55F * bell;
+        this.offHandForearm.xRot += -0.32F * bell;
         this.capeRoot.xRot += bell * 0.52F + Mth.sin(age * 0.45F) * 0.08F;
 
-        // Ground Bagua seal + aura pillars — NO forward slash arc!
         this.vfxMagicCircle.visible = true;
         this.vfxMagicCircle.yRot += age * 0.26F;
-        float s = 0.75F + bell * 0.35F;
+        float s = 0.78F + bell * 0.35F;
         this.vfxMagicCircle.xScale = s;
         this.vfxMagicCircle.zScale = s;
         this.vfxAuraPillars.visible = true;
         this.vfxAuraPillars.yRot -= age * 0.18F;
     }
 
-    /** Eight-Wastes Astral Judgment: levitate & gather -> halberd slam -> 360° circular shockwave. */
+    /** Eight-Wastes Astral Judgment: levitate & gather -> vertical halberd ground-plunge -> 360-degree circular shockwave. */
     private void animateUltimateJudgment(float p, float age) {
-        float chargePhase = smoothWindow(p, 0.0F, 0.50F);
-        float slamPhase = smoothWindow(p, 0.50F, 0.62F);
+        float chargePhase = smoothWindow(p, 0.0F, 0.48F);
+        float slamPhase = smoothWindow(p, 0.48F, 0.60F);
         float recover = 1.0F - smoothWindow(p, 0.78F, 1.0F);
         float hover = chargePhase * (1.0F - slamPhase);
         float slam = slamPhase * recover;
 
-        this.sovereignRoot.y += -7.5F * hover + 4.2F * slam;
-        this.chest.xRot += -0.28F * hover + 0.52F * slam;
-        this.head.xRot += -0.22F * hover + 0.15F * slam;
+        this.sovereignRoot.y += -7.5F * hover + 4.0F * slam;
+        this.chest.xRot += -0.26F * hover + 0.46F * slam;
+        this.head.xRot += -0.20F * hover + 0.14F * slam;
 
-        this.halberdArm.xRot += -2.25F * hover + 0.92F * slam;
-        this.halberdArm.zRot += 0.48F * hover - 0.15F * slam;
-        this.halberdForearm.xRot += -0.45F * hover + 0.35F * slam;
-        this.astralHalberd.xRot += -0.35F * hover + 0.95F * slam;
+        // Hover: lift halberd skyward cleanly; Slam: plunge halberd shaft straight into the ground
+        this.halberdArm.xRot += -1.95F * hover - 0.52F * slam;
+        this.halberdArm.zRot += 0.36F * hover - 0.10F * slam;
+        this.halberdForearm.xRot += 0.38F * hover + 0.50F * slam;
+        this.astralHalberd.xRot += 0.85F * hover + 1.55F * slam;
 
-        this.offHandArm.xRot += -1.85F * hover + 0.55F * slam;
-        this.offHandArm.zRot += -0.82F * hover - 0.35F * slam;
+        this.offHandArm.xRot += -1.75F * hover + 0.58F * slam;
+        this.offHandArm.zRot += -0.72F * hover - 0.32F * slam;
         this.rightLeg.xRot += 0.18F * hover - 0.32F * slam;
         this.leftLeg.xRot += 0.18F * hover + 0.30F * slam;
         this.rightShin.xRot += 0.42F * slam;
@@ -607,14 +629,13 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         this.vfxMagicCircle.visible = true;
         this.vfxMagicCircle.yRot += age * (slamPhase > 0.01F ? 0.32F : 0.16F);
         float circleScale = slamPhase > 0.01F
-                ? (0.95F + smoothWindow(p, 0.52F, 0.88F) * 1.15F)
+                ? (0.95F + smoothWindow(p, 0.50F, 0.88F) * 1.15F)
                 : (0.45F + chargePhase * 0.55F);
         this.vfxMagicCircle.xScale = circleScale;
         this.vfxMagicCircle.zScale = circleScale;
-
         this.vfxAuraPillars.visible = p < 0.86F;
         this.vfxAuraPillars.yRot -= age * 0.14F;
-        float pillarScale = slamPhase > 0.01F ? (1.0F + smoothWindow(p, 0.52F, 0.85F) * 0.75F) : (0.5F + chargePhase * 0.5F);
+        float pillarScale = slamPhase > 0.01F ? (1.0F + smoothWindow(p, 0.50F, 0.85F) * 0.75F) : (0.5F + chargePhase * 0.5F);
         this.vfxAuraPillars.xScale = pillarScale;
         this.vfxAuraPillars.zScale = pillarScale;
     }
