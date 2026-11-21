@@ -255,8 +255,19 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         head.addOrReplaceChild("wg_neck_guard_b", CubeListBuilder.create().texOffs(384, 0).addBox(-4.40F, -0.50F, -0.60F, 8.80F, 8.00F, 1.40F), PartPose.offsetAndRotation(0.00F, -5.70F, 4.20F, 0.2094F, -0.0000F, 0.0000F));
         head.addOrReplaceChild("wg_wing_l", CubeListBuilder.create().texOffs(416, 0).addBox(-0.20F, -5.70F, -1.50F, 1.20F, 7.00F, 3.50F), PartPose.offsetAndRotation(4.60F, -6.70F, 0.00F, 0.2793F, -0.0000F, -0.3142F));
         head.addOrReplaceChild("wg_wing_r", CubeListBuilder.create().texOffs(416, 0).addBox(-1.00F, -5.70F, -1.50F, 1.20F, 7.00F, 3.50F), PartPose.offsetAndRotation(-4.60F, -6.70F, 0.00F, 0.2793F, -0.0000F, 0.3142F));
-        head.addOrReplaceChild("wg_plume_l", CubeListBuilder.create().texOffs(0, 0).addBox(0.00F, -15.00F, 0.00F, 20.00F, 18.00F, 0.00F), PartPose.offsetAndRotation(1.40F, -12.70F, 0.80F, 0.2094F, 0.4538F, 0.0000F));
-        head.addOrReplaceChild("wg_plume_r", CubeListBuilder.create().texOffs(0, 0).addBox(-20.00F, -15.00F, 0.00F, 20.00F, 18.00F, 0.00F), PartPose.offsetAndRotation(-1.40F, -12.70F, 0.80F, 0.2094F, -0.4538F, 0.0000F));
+        // Sleek 3D curved crimson-gold pheasant-tail warrior plumes (no flat UV(0,0) billboard rectangles!)
+        PartDefinition wg_plume_l = head.addOrReplaceChild("wg_plume_l", CubeListBuilder.create()
+            .texOffs(416, 0).addBox(0.00F, -7.20F, -0.50F, 1.30F, 7.60F, 1.00F)
+            .texOffs(480, 0).addBox(0.80F, -9.00F, -0.20F, 4.80F, 2.20F, 0.90F)
+            .texOffs(416, 32).addBox(5.10F, -9.80F, 0.20F, 5.20F, 1.50F, 0.75F)
+            .texOffs(480, 0).addBox(9.70F, -8.70F, 0.60F, 4.80F, 1.10F, 0.60F)
+            , PartPose.offsetAndRotation(1.40F, -12.20F, 0.80F, 0.22F, 0.42F, 0.14F));
+        PartDefinition wg_plume_r = head.addOrReplaceChild("wg_plume_r", CubeListBuilder.create()
+            .texOffs(416, 0).addBox(-1.30F, -7.20F, -0.50F, 1.30F, 7.60F, 1.00F)
+            .texOffs(480, 0).addBox(-5.60F, -9.00F, -0.20F, 4.80F, 2.20F, 0.90F)
+            .texOffs(416, 32).addBox(-10.30F, -9.80F, 0.20F, 5.20F, 1.50F, 0.75F)
+            .texOffs(480, 0).addBox(-14.50F, -8.70F, 0.60F, 4.80F, 1.10F, 0.60F)
+            , PartPose.offsetAndRotation(-1.40F, -12.20F, 0.80F, 0.22F, -0.42F, -0.14F));
         head.addOrReplaceChild("wg_tassel", CubeListBuilder.create().texOffs(480, 0).addBox(-1.50F, -0.50F, -0.20F, 3.00F, 10.00F, 1.60F), PartPose.offsetAndRotation(0.00F, -8.20F, 4.80F, 0.2793F, -0.0000F, 0.0000F));
         head.addOrReplaceChild("wg_brow_l", CubeListBuilder.create().texOffs(384, 0).addBox(0.00F, -1.30F, -0.55F, 4.50F, 1.30F, 1.15F), PartPose.offsetAndRotation(0.00F, -4.40F, -4.40F, -0.0000F, 0.1396F, 0.2094F));
         head.addOrReplaceChild("wg_brow_r", CubeListBuilder.create().texOffs(384, 0).addBox(-4.50F, -1.30F, -0.55F, 4.50F, 1.30F, 1.15F), PartPose.offsetAndRotation(0.00F, -4.40F, -4.40F, -0.0000F, -0.1396F, -0.2094F));
@@ -318,15 +329,24 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
             .texOffs(448, 0).addBox(-1.50F, -23.30F, -0.70F, 3.00F, 2.60F, 1.40F)
             .texOffs(416, 0).addBox(-1.20F, 21.00F, -1.20F, 2.40F, 2.50F, 2.40F)
             .texOffs(448, 0).addBox(-0.50F, 23.20F, -0.50F, 1.00F, 5.60F, 1.00F)
-            .texOffs(0, 0).addBox(0.00F, -45.50F, -15.40F, 0.00F, 28.00F, 26.00F)
-            .texOffs(0, 0).addBox(-0.30F, -45.50F, -15.40F, 0.00F, 28.00F, 26.00F)
-            .texOffs(0, 0).addBox(0.30F, -45.50F, -15.40F, 0.00F, 28.00F, 26.00F)
+            // Sculpted 3D Fangtian Celestial Halberd spearhead + crescent moon-blades (verified cyan/gold UVs!)
+            .texOffs(448, 32).addBox(-0.70F, -44.00F, -1.50F, 1.40F, 20.00F, 3.00F)
+            .texOffs(448, 32).addBox(-0.45F, -49.50F, -0.90F, 0.90F, 6.00F, 1.80F)
+            .texOffs(416, 0).addBox(-0.95F, -32.00F, -4.60F, 1.90F, 6.80F, 9.20F)
+            // Front crescent moon-blade arc
+            .texOffs(448, 0).addBox(-0.55F, -37.50F, -11.40F, 1.10F, 16.50F, 5.20F)
+            .texOffs(448, 32).addBox(-0.40F, -41.00F, -13.40F, 0.80F, 8.20F, 3.40F)
+            .texOffs(448, 32).addBox(-0.40F, -24.50F, -12.60F, 0.80F, 7.40F, 3.20F)
+            .texOffs(416, 32).addBox(-0.65F, -34.20F, -7.20F, 1.30F, 10.60F, 2.80F)
+            // Rear counterweight crescent spike
+            .texOffs(448, 0).addBox(-0.50F, -34.00F, 4.40F, 1.00F, 11.20F, 4.60F)
+            .texOffs(416, 32).addBox(-0.38F, -36.50F, 7.60F, 0.76F, 5.50F, 2.80F)
             , PartPose.offsetAndRotation(-0.30F, 9.50F, -1.20F, 1.3963F, -0.0000F, 0.0698F));
         astral_halberd.addOrReplaceChild("halb_pommel_fin_f", CubeListBuilder.create().texOffs(416, 0).addBox(-0.40F, -1.00F, -2.00F, 0.80F, 3.70F, 1.70F), PartPose.offsetAndRotation(0.00F, 23.50F, 0.00F, -0.3142F, -0.0000F, 0.0000F));
         astral_halberd.addOrReplaceChild("halb_pommel_fin_b", CubeListBuilder.create().texOffs(416, 0).addBox(-0.40F, -1.00F, 0.30F, 0.80F, 3.70F, 1.70F), PartPose.offsetAndRotation(0.00F, 23.50F, 0.00F, 0.3142F, -0.0000F, 0.0000F));
         PartDefinition vfx_weapon_aura = astral_halberd.addOrReplaceChild("vfx_weapon_aura", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-0.65F, -46.20F, -16.00F, 0.00F, 29.20F, 27.00F)
-            .texOffs(0, 0).addBox(0.65F, -46.20F, -16.00F, 0.00F, 29.20F, 27.00F)
+            .texOffs(384, 32).addBox(-0.85F, -50.20F, -1.80F, 1.70F, 24.00F, 3.60F)
+            .texOffs(416, 32).addBox(-0.55F, -41.50F, -14.20F, 1.10F, 23.50F, 2.20F)
             , PartPose.offsetAndRotation(0.00F, -0.00F, 0.00F, -0.0000F, -0.0000F, 0.0000F));
         PartDefinition p2_halberd_edge = astral_halberd.addOrReplaceChild("p2_halberd_edge", CubeListBuilder.create()
             .texOffs(448, 32).addBox(-0.85F, -50.50F, -1.40F, 1.70F, 11.50F, 2.80F)
@@ -387,64 +407,84 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
             .texOffs(62, 172).addBox(-3.30F, 8.30F, -4.20F, 6.60F, 3.20F, 8.00F)
             .texOffs(93, 172).addBox(-2.50F, 9.30F, -5.00F, 5.00F, 2.20F, 1.20F)
             , PartPose.offsetAndRotation(0.00F, 11.50F, 0.00F, 0.1396F, -0.0000F, -0.1396F));
-        PartDefinition vfx_slash_arc = sovereign_root.addOrReplaceChild("vfx_slash_arc", CubeListBuilder.create()
-            , PartPose.offsetAndRotation(0.00F, -28.00F, -4.00F, -0.0000F, -0.0000F, 0.0000F));
-        vfx_slash_arc.addOrReplaceChild("vfx_slash_ribbon_0", CubeListBuilder.create().texOffs(0, 0).addBox(-11.50F, -0.00F, -52.00F, 23.00F, 0.00F, 20.00F), PartPose.offsetAndRotation(0.00F, -0.00F, 0.00F, -0.0000F, 0.9076F, -0.3491F));
-        vfx_slash_arc.addOrReplaceChild("vfx_slash_ribbon_1", CubeListBuilder.create().texOffs(0, 0).addBox(-11.50F, -0.00F, -52.00F, 23.00F, 0.00F, 20.00F), PartPose.offsetAndRotation(0.00F, -0.00F, 0.00F, -0.0000F, 0.4538F, -0.3491F));
-        vfx_slash_arc.addOrReplaceChild("vfx_slash_ribbon_2", CubeListBuilder.create().texOffs(0, 0).addBox(-11.50F, -0.00F, -52.00F, 23.00F, 0.00F, 20.00F), PartPose.offsetAndRotation(0.00F, -0.00F, 0.00F, -0.0000F, -0.0000F, -0.3491F));
-        vfx_slash_arc.addOrReplaceChild("vfx_slash_ribbon_3", CubeListBuilder.create().texOffs(0, 0).addBox(-11.50F, -0.00F, -52.00F, 23.00F, 0.00F, 20.00F), PartPose.offsetAndRotation(0.00F, -0.00F, 0.00F, -0.0000F, -0.4538F, -0.3491F));
-        vfx_slash_arc.addOrReplaceChild("vfx_slash_ribbon_4", CubeListBuilder.create().texOffs(0, 0).addBox(-11.50F, -0.00F, -52.00F, 23.00F, 0.00F, 20.00F), PartPose.offsetAndRotation(0.00F, -0.00F, 0.00F, -0.0000F, -0.9076F, -0.3491F));
-        PartDefinition vfx_magic_circle = sovereign_root.addOrReplaceChild("vfx_magic_circle", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-48.00F, 0.60F, -48.00F, 96.00F, 0.00F, 96.00F)
-            , PartPose.offsetAndRotation(0.00F, -1.00F, 0.00F, -0.0000F, -0.0000F, 0.0000F));
-        PartDefinition vfx_aura_pillars = sovereign_root.addOrReplaceChild("vfx_aura_pillars", CubeListBuilder.create()
-            , PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_0_0", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(32.91F, 0.00F, 19.00F, -0.0000F, -0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_0_1", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(32.91F, 0.00F, 19.00F, -0.0000F, 0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_1_0", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 38.00F, -0.0000F, -0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_1_1", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 38.00F, -0.0000F, 0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_2_0", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(-32.91F, 0.00F, 19.00F, -0.0000F, -0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_2_1", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(-32.91F, 0.00F, 19.00F, -0.0000F, 0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_3_0", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(-32.91F, 0.00F, -19.00F, -0.0000F, -0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_3_1", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(-32.91F, 0.00F, -19.00F, -0.0000F, 0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_4_0", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(-0.00F, 0.00F, -38.00F, -0.0000F, -0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_4_1", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(-0.00F, 0.00F, -38.00F, -0.0000F, 0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_5_0", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(32.91F, 0.00F, -19.00F, -0.0000F, -0.7854F, 0.0000F));
-        vfx_aura_pillars.addOrReplaceChild("vfx_pillar_5_1", CubeListBuilder.create().texOffs(0, 0).addBox(-6.50F, -58.00F, 0.00F, 13.00F, 58.00F, 0.00F), PartPose.offsetAndRotation(32.91F, 0.00F, -19.00F, -0.0000F, 0.7854F, 0.0000F));
+        // VFX containers kept empty here; dedicated per-skill emissive translucent VFX render in AstralSovereignRenderer!
+        sovereign_root.addOrReplaceChild("vfx_slash_arc", CubeListBuilder.create(), PartPose.offset(0.00F, -28.00F, -4.00F));
+        sovereign_root.addOrReplaceChild("vfx_magic_circle", CubeListBuilder.create(), PartPose.offset(0.00F, -1.00F, 0.00F));
+        sovereign_root.addOrReplaceChild("vfx_aura_pillars", CubeListBuilder.create(), PartPose.ZERO);
         PartDefinition orbiting_swords_root = sovereign_root.addOrReplaceChild("orbiting_swords_root", CubeListBuilder.create()
             , PartPose.offsetAndRotation(0.00F, -34.00F, 0.00F, -0.0000F, -0.0000F, 0.0000F));
-        // Wide majestic Phase 2 orbiting sword halo (radius ~41.5px / 2.6 blocks, staggered heights & radial tilt)
-        PartDefinition orbit_sword_0 = orbiting_swords_root.addOrReplaceChild("orbit_sword_0", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.60F, -10.00F, 0.00F, 7.20F, 20.00F, 0.00F)
-            .texOffs(0, 0).addBox(0.00F, -10.00F, -3.60F, 0.00F, 20.00F, 7.20F)
+        // Wide majestic Phase 2 orbiting 3D celestial sword halo (radius ~41.5px / 2.6 blocks, verified cyan/gold/crimson UVs)
+        orbiting_swords_root.addOrReplaceChild("orbit_sword_0", CubeListBuilder.create()
+            .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+            .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+            .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+            .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+            .texOffs(416, 0).addBox(-3.00F, 1.20F, -0.70F, 6.00F, 1.15F, 1.40F)
+            .texOffs(480, 0).addBox(-0.62F, 2.35F, -0.62F, 1.24F, 4.20F, 1.24F)
+            .texOffs(416, 0).addBox(-0.95F, 6.45F, -0.95F, 1.90F, 1.35F, 1.90F)
             , PartPose.offsetAndRotation(15.88F, -5.00F, -38.34F, -0.18F, 0.0000F, 0.08F));
-        PartDefinition orbit_sword_1 = orbiting_swords_root.addOrReplaceChild("orbit_sword_1", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.60F, -10.00F, 0.00F, 7.20F, 20.00F, 0.00F)
-            .texOffs(0, 0).addBox(0.00F, -10.00F, -3.60F, 0.00F, 20.00F, 7.20F)
+        orbiting_swords_root.addOrReplaceChild("orbit_sword_1", CubeListBuilder.create()
+            .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+            .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+            .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+            .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+            .texOffs(416, 0).addBox(-3.00F, 1.20F, -0.70F, 6.00F, 1.15F, 1.40F)
+            .texOffs(480, 0).addBox(-0.62F, 2.35F, -0.62F, 1.24F, 4.20F, 1.24F)
+            .texOffs(416, 0).addBox(-0.95F, 6.45F, -0.95F, 1.90F, 1.35F, 1.90F)
             , PartPose.offsetAndRotation(38.34F, 1.50F, -15.88F, -0.08F, 0.0000F, 0.18F));
-        PartDefinition orbit_sword_2 = orbiting_swords_root.addOrReplaceChild("orbit_sword_2", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.60F, -10.00F, 0.00F, 7.20F, 20.00F, 0.00F)
-            .texOffs(0, 0).addBox(0.00F, -10.00F, -3.60F, 0.00F, 20.00F, 7.20F)
+        orbiting_swords_root.addOrReplaceChild("orbit_sword_2", CubeListBuilder.create()
+            .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+            .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+            .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+            .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+            .texOffs(416, 0).addBox(-3.00F, 1.20F, -0.70F, 6.00F, 1.15F, 1.40F)
+            .texOffs(480, 0).addBox(-0.62F, 2.35F, -0.62F, 1.24F, 4.20F, 1.24F)
+            .texOffs(416, 0).addBox(-0.95F, 6.45F, -0.95F, 1.90F, 1.35F, 1.90F)
             , PartPose.offsetAndRotation(38.34F, -5.00F, 15.88F, 0.08F, 0.0000F, 0.18F));
-        PartDefinition orbit_sword_3 = orbiting_swords_root.addOrReplaceChild("orbit_sword_3", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.60F, -10.00F, 0.00F, 7.20F, 20.00F, 0.00F)
-            .texOffs(0, 0).addBox(0.00F, -10.00F, -3.60F, 0.00F, 20.00F, 7.20F)
+        orbiting_swords_root.addOrReplaceChild("orbit_sword_3", CubeListBuilder.create()
+            .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+            .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+            .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+            .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+            .texOffs(416, 0).addBox(-3.00F, 1.20F, -0.70F, 6.00F, 1.15F, 1.40F)
+            .texOffs(480, 0).addBox(-0.62F, 2.35F, -0.62F, 1.24F, 4.20F, 1.24F)
+            .texOffs(416, 0).addBox(-0.95F, 6.45F, -0.95F, 1.90F, 1.35F, 1.90F)
             , PartPose.offsetAndRotation(15.88F, 1.50F, 38.34F, 0.18F, 0.0000F, 0.08F));
-        PartDefinition orbit_sword_4 = orbiting_swords_root.addOrReplaceChild("orbit_sword_4", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.60F, -10.00F, 0.00F, 7.20F, 20.00F, 0.00F)
-            .texOffs(0, 0).addBox(0.00F, -10.00F, -3.60F, 0.00F, 20.00F, 7.20F)
+        orbiting_swords_root.addOrReplaceChild("orbit_sword_4", CubeListBuilder.create()
+            .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+            .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+            .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+            .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+            .texOffs(416, 0).addBox(-3.00F, 1.20F, -0.70F, 6.00F, 1.15F, 1.40F)
+            .texOffs(480, 0).addBox(-0.62F, 2.35F, -0.62F, 1.24F, 4.20F, 1.24F)
+            .texOffs(416, 0).addBox(-0.95F, 6.45F, -0.95F, 1.90F, 1.35F, 1.90F)
             , PartPose.offsetAndRotation(-15.88F, -5.00F, 38.34F, 0.18F, 0.0000F, -0.08F));
-        PartDefinition orbit_sword_5 = orbiting_swords_root.addOrReplaceChild("orbit_sword_5", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.60F, -10.00F, 0.00F, 7.20F, 20.00F, 0.00F)
-            .texOffs(0, 0).addBox(0.00F, -10.00F, -3.60F, 0.00F, 20.00F, 7.20F)
+        orbiting_swords_root.addOrReplaceChild("orbit_sword_5", CubeListBuilder.create()
+            .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+            .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+            .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+            .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+            .texOffs(416, 0).addBox(-3.00F, 1.20F, -0.70F, 6.00F, 1.15F, 1.40F)
+            .texOffs(480, 0).addBox(-0.62F, 2.35F, -0.62F, 1.24F, 4.20F, 1.24F)
+            .texOffs(416, 0).addBox(-0.95F, 6.45F, -0.95F, 1.90F, 1.35F, 1.90F)
             , PartPose.offsetAndRotation(-38.34F, 1.50F, 15.88F, 0.08F, 0.0000F, -0.18F));
-        PartDefinition orbit_sword_6 = orbiting_swords_root.addOrReplaceChild("orbit_sword_6", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.60F, -10.00F, 0.00F, 7.20F, 20.00F, 0.00F)
-            .texOffs(0, 0).addBox(0.00F, -10.00F, -3.60F, 0.00F, 20.00F, 7.20F)
+        orbiting_swords_root.addOrReplaceChild("orbit_sword_6", CubeListBuilder.create()
+            .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+            .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+            .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+            .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+            .texOffs(416, 0).addBox(-3.00F, 1.20F, -0.70F, 6.00F, 1.15F, 1.40F)
+            .texOffs(480, 0).addBox(-0.62F, 2.35F, -0.62F, 1.24F, 4.20F, 1.24F)
+            .texOffs(416, 0).addBox(-0.95F, 6.45F, -0.95F, 1.90F, 1.35F, 1.90F)
             , PartPose.offsetAndRotation(-38.34F, -5.00F, -15.88F, -0.08F, 0.0000F, -0.18F));
-        PartDefinition orbit_sword_7 = orbiting_swords_root.addOrReplaceChild("orbit_sword_7", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.60F, -10.00F, 0.00F, 7.20F, 20.00F, 0.00F)
-            .texOffs(0, 0).addBox(0.00F, -10.00F, -3.60F, 0.00F, 20.00F, 7.20F)
+        orbiting_swords_root.addOrReplaceChild("orbit_sword_7", CubeListBuilder.create()
+            .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+            .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+            .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+            .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+            .texOffs(416, 0).addBox(-3.00F, 1.20F, -0.70F, 6.00F, 1.15F, 1.40F)
+            .texOffs(480, 0).addBox(-0.62F, 2.35F, -0.62F, 1.24F, 4.20F, 1.24F)
+            .texOffs(416, 0).addBox(-0.95F, 6.45F, -0.95F, 1.90F, 1.35F, 1.90F)
             , PartPose.offsetAndRotation(-15.88F, 1.50F, -38.34F, -0.18F, 0.0000F, -0.08F));
 
         return LayerDefinition.create(meshdefinition, 512, 512);

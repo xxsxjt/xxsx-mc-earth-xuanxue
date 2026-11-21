@@ -13,8 +13,8 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 
 /**
- * 3D projectile model for {@link com.xxsx.xuanhuanearth.entity.AstralFlyingSwordEntity},
- * UV-mapped to the astral flying-sword sprite region on {@code astral_sovereign_p2.png}.
+ * 3D sculpted celestial flying-sword projectile model for {@link com.xxsx.xuanhuanearth.entity.AstralFlyingSwordEntity},
+ * mapped strictly to opaque cyan-crystal, imperial-gold, and crimson swatches on {@code astral_sovereign_p2.png}.
  */
 public final class AstralFlyingSwordModel extends EntityModel<AstralFlyingSwordRenderState> {
     public static final ModelLayerLocation LAYER_LOCATION =
@@ -31,9 +31,18 @@ public final class AstralFlyingSwordModel extends EntityModel<AstralFlyingSwordR
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         root.addOrReplaceChild("sword_root", CubeListBuilder.create()
-                // Crossed flat starlight sword blade planes matching orbiting sword proportions
-                .texOffs(448, 192).addBox(-3.6F, -10.0F, -0.35F, 7.2F, 20.0F, 0.7F)
-                .texOffs(448, 192).addBox(-0.35F, -10.0F, -3.6F, 0.7F, 20.0F, 7.2F),
+                // Razor-sharp tapered luminous cyan blade pointing toward -Y (aligned to velocity in renderer)
+                .texOffs(448, 32).addBox(-0.85F, -10.50F, -0.35F, 1.70F, 12.00F, 0.70F)
+                .texOffs(448, 0).addBox(-1.35F, -8.50F, -0.22F, 2.70F, 9.50F, 0.44F)
+                .texOffs(448, 32).addBox(-0.45F, -13.50F, -0.28F, 0.90F, 3.20F, 0.56F)
+                // Bright golden central fuller spine
+                .texOffs(416, 32).addBox(-0.32F, -10.20F, -0.52F, 0.64F, 11.40F, 1.04F)
+                // Ornate imperial-gold winged crossguard
+                .texOffs(416, 0).addBox(-3.20F, 1.20F, -0.75F, 6.40F, 1.20F, 1.50F)
+                .texOffs(416, 32).addBox(-1.10F, 0.70F, -0.95F, 2.20F, 1.80F, 1.90F)
+                // Crimson-wrapped hilt & gold pommel
+                .texOffs(480, 0).addBox(-0.65F, 2.40F, -0.65F, 1.30F, 4.40F, 1.30F)
+                .texOffs(416, 0).addBox(-1.00F, 6.60F, -1.00F, 2.00F, 1.40F, 2.00F),
                 PartPose.ZERO);
         return LayerDefinition.create(mesh, 512, 512);
     }
