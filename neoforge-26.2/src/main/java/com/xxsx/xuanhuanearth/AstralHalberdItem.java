@@ -39,7 +39,7 @@ import net.minecraft.world.phys.Vec3;
 public class AstralHalberdItem extends Item {
     public static final int COOLDOWN_TICKS = 36;
     public static final int COMBO_WINDOW_TICKS = 90;
-    public static final double SWEEP_MAX_RANGE = 10.0D;
+    public static final double SWEEP_MAX_RANGE = 12.0D;
     public static final float SWEEP_DAMAGE = 12.0F;
     public static final float OVERHEAD_DAMAGE = 14.5F;
     public static final float THRUST_DAMAGE = 13.0F;

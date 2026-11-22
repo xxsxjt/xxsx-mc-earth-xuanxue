@@ -212,7 +212,7 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         PartDefinition halo_outer = chest.addOrReplaceChild("halo_outer", CubeListBuilder.create()
             .texOffs(416, 32).addBox(-6.66F, -23.81F, -0.50F, 13.32F, 1.79F, 1.10F)
             .texOffs(448, 32).addBox(-1.28F, -29.44F, -0.50F, 2.56F, 5.89F, 1.10F)
-            , PartPose.offsetAndRotation(0.00F, -14.00F, 8.20F, -0.0000F, -0.0000F, 0.0000F));
+            , PartPose.offsetAndRotation(0.00F, -14.00F, 17.80F, -0.0000F, -0.0000F, 0.0000F));
         halo_outer.addOrReplaceChild("halo_out_1", CubeListBuilder.create().texOffs(416, 32).addBox(-6.66F, -23.81F, -0.50F, 13.32F, 1.79F, 1.10F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 0.5236F));
         halo_outer.addOrReplaceChild("halo_out_2", CubeListBuilder.create().texOffs(416, 32).addBox(-6.66F, -23.81F, -0.50F, 13.32F, 1.79F, 1.10F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 1.0472F));
         halo_outer.addOrReplaceChild("halo_ray_2", CubeListBuilder.create().texOffs(448, 32).addBox(-1.28F, -29.44F, -0.50F, 2.56F, 5.89F, 1.10F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 1.0472F));
@@ -231,7 +231,7 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         halo_outer.addOrReplaceChild("halo_out_11", CubeListBuilder.create().texOffs(416, 32).addBox(-6.66F, -23.81F, -0.50F, 13.32F, 1.79F, 1.10F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 5.7596F));
         PartDefinition halo_inner = chest.addOrReplaceChild("halo_inner", CubeListBuilder.create()
             .texOffs(448, 32).addBox(-6.25F, -14.75F, -0.50F, 12.50F, 1.50F, 1.00F)
-            , PartPose.offsetAndRotation(0.00F, -14.00F, 6.80F, -0.0000F, -0.0000F, 0.0000F));
+            , PartPose.offsetAndRotation(0.00F, -14.00F, 15.60F, -0.0000F, -0.0000F, 0.0000F));
         halo_inner.addOrReplaceChild("halo_in_1", CubeListBuilder.create().texOffs(448, 32).addBox(-6.25F, -14.75F, -0.50F, 12.50F, 1.50F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 0.7854F));
         halo_inner.addOrReplaceChild("halo_in_2", CubeListBuilder.create().texOffs(448, 32).addBox(-6.25F, -14.75F, -0.50F, 12.50F, 1.50F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 1.5708F));
         halo_inner.addOrReplaceChild("halo_in_3", CubeListBuilder.create().texOffs(448, 32).addBox(-6.25F, -14.75F, -0.50F, 12.50F, 1.50F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 2.3562F));
@@ -349,9 +349,16 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
             .texOffs(416, 32).addBox(-0.55F, -41.50F, -14.20F, 1.10F, 23.50F, 2.20F)
             , PartPose.offsetAndRotation(0.00F, -0.00F, 0.00F, -0.0000F, -0.0000F, 0.0000F));
         PartDefinition p2_halberd_edge = astral_halberd.addOrReplaceChild("p2_halberd_edge", CubeListBuilder.create()
-            .texOffs(448, 32).addBox(-0.85F, -50.50F, -1.40F, 1.70F, 11.50F, 2.80F)
-            .texOffs(416, 32).addBox(-0.45F, -43.50F, -18.50F, 0.90F, 24.50F, 4.20F)
-            , PartPose.ZERO);
+                .texOffs(408, 256).addBox(-6.0F, -25.6F, -1.65F, 12.0F, 1.3F, 3.3F)
+                .texOffs(408, 256).addBox(-5.2F, -20.8F, -1.55F, 10.4F, 1.2F, 3.1F)
+                .texOffs(440, 260).addBox(-11.4F, -29.2F, -0.75F, 1.8F, 11.2F, 1.5F)
+                .texOffs(440, 260).addBox(9.6F, -29.2F, -0.75F, 1.8F, 11.2F, 1.5F)
+                .texOffs(448, 240).addBox(-1.2F, -42.5F, -0.85F, 2.4F, 8.2F, 1.7F)
+                .texOffs(448, 240).addBox(-0.65F, -47.0F, -0.55F, 1.3F, 5.2F, 1.1F)
+                .texOffs(408, 256).addBox(-1.45F, -13.0F, -1.45F, 2.9F, 1.4F, 2.9F)
+                .texOffs(408, 256).addBox(-1.45F, -1.0F, -1.45F, 2.9F, 1.4F, 2.9F)
+                .texOffs(408, 256).addBox(-1.45F, 12.5F, -1.45F, 2.9F, 1.5F, 2.9F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         PartDefinition vfx_body_aura = chest.addOrReplaceChild("vfx_body_aura", CubeListBuilder.create()
             , PartPose.offsetAndRotation(0.00F, -6.40F, -5.60F, -0.0000F, -0.0000F, 0.0000F));
         vfx_body_aura.addOrReplaceChild("vfx_ba_core", CubeListBuilder.create().texOffs(384, 32).addBox(-3.60F, -3.60F, -1.80F, 7.20F, 7.20F, 2.80F), PartPose.offsetAndRotation(0.00F, -0.00F, 0.00F, -0.0000F, -0.0000F, 0.7854F));
@@ -362,7 +369,7 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         PartDefinition halo_tier3 = chest.addOrReplaceChild("halo_tier3", CubeListBuilder.create()
             .texOffs(448, 32).addBox(-6.49F, -32.69F, -0.50F, 12.98F, 1.42F, 1.00F)
             .texOffs(416, 32).addBox(-0.94F, -38.00F, -0.50F, 1.88F, 5.55F, 1.00F)
-            , PartPose.offsetAndRotation(0.00F, -14.00F, 9.60F, -0.0000F, -0.0000F, 0.0000F));
+            , PartPose.offsetAndRotation(0.00F, -14.00F, 20.20F, -0.0000F, -0.0000F, 0.0000F));
         halo_tier3.addOrReplaceChild("halo3_seg_1", CubeListBuilder.create().texOffs(416, 32).addBox(-6.49F, -32.69F, -0.50F, 12.98F, 1.42F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 0.3927F));
         halo_tier3.addOrReplaceChild("halo3_seg_2", CubeListBuilder.create().texOffs(448, 32).addBox(-6.49F, -32.69F, -0.50F, 12.98F, 1.42F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 0.7854F));
         halo_tier3.addOrReplaceChild("halo3_ray_2", CubeListBuilder.create().texOffs(416, 32).addBox(-0.94F, -38.00F, -0.50F, 1.88F, 5.55F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 0.7854F));
@@ -492,105 +499,90 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
 
     @Override
     public void setupAnim(AstralSovereignRenderState state) {
-        super.setupAnim(state);
+        this.root().getAllParts().forEach(ModelPart::resetPose);
+
         float age = state.ageInTicks;
-        float speedMul = (state.phase2 ? 2.1F : 1.0F) * (state.swordBuffActive ? 2.2F : 1.0F);
-
-        // Head tracking
-        this.head.yRot += state.yRot * Mth.DEG_TO_RAD;
-        this.head.xRot += state.xRot * Mth.DEG_TO_RAD;
-
+        float p = Mth.clamp(state.actionProgress, 0.0F, 1.0F);
         boolean isTransitioning = state.actionType == AstralSovereignEntity.ACTION_PHASE_TRANSITION;
-        float p = state.actionProgress;
         float awakenFactor = isTransitioning
-                ? smoothWindow(p, 0.34F, 0.64F)
+                ? smoothWindow(p, 0.46F, 0.56F)
                 : (state.phase2 ? 1.0F : 0.0F);
+        boolean showPhase2Parts = awakenFactor > 0.02F;
 
-        // Counter-rotating concentric star halos (haloTier3 starts HIDDEN in Phase 1 and blooms outward mid-transition!)
-        this.haloInner.zRot += age * 0.06F * speedMul;
-        this.haloOuter.zRot -= age * 0.05F * speedMul;
-        float halo3Scale = isTransitioning ? smoothWindow(p, 0.38F, 0.66F) : (state.phase2 ? 1.0F : 0.0F);
-        this.haloTier3.visible = halo3Scale > 0.02F;
-        if (this.haloTier3.visible) {
-            setUniformScale(this.haloTier3, halo3Scale);
-            this.haloTier3.zRot += age * 0.035F * speedMul;
-        }
+        this.head.yRot += state.yRot * Mth.DEG_TO_RAD * 0.65F;
+        this.head.xRot += state.xRot * Mth.DEG_TO_RAD * 0.55F;
 
-        // True Phase 2 body evolution: awakened crown horns, shoulder star-blades, blazing chest core & plasma halberd edge
-        boolean showAwakenedBody = awakenFactor > 0.02F;
-        this.p2CrownCrest.visible = showAwakenedBody;
-        this.p2ChestCore.visible = showAwakenedBody;
-        this.p2PauldronL.visible = showAwakenedBody;
-        this.p2PauldronR.visible = showAwakenedBody;
-        this.p2HalberdEdge.visible = showAwakenedBody;
-        if (showAwakenedBody) {
-            float pulse = 1.0F + Mth.sin(age * 0.18F) * 0.06F;
-            setUniformScale(this.p2CrownCrest, awakenFactor);
-            setUniformScale(this.p2PauldronL, awakenFactor);
-            setUniformScale(this.p2PauldronR, awakenFactor);
-            setUniformScale(this.p2HalberdEdge, awakenFactor);
-            setUniformScale(this.p2ChestCore, awakenFactor * pulse);
-            this.p2ChestCore.zRot += age * 0.08F;
-            // Subtle heroic stature expansion + levitating Celestial War-God posture in Phase 2
-            float bodyScale = 1.0F + 0.06F * awakenFactor;
-            setUniformScale(this.sovereignRoot, bodyScale);
-            if (!isTransitioning) {
-                this.sovereignRoot.y -= (3.8F + Mth.sin(age * 0.11F) * 1.1F) * awakenFactor;
-            }
-        }
-        // Forehead third-eye glows brighter & scales up in Phase 2
-        float eyeScale = 0.85F + 0.45F * awakenFactor;
-        setUniformScale(this.faceThirdEye, eyeScale);
+        this.haloInner.visible = true;
+        this.haloInner.zRot += age * (0.042F + awakenFactor * 0.048F);
 
-        // Flying swords are strictly Phase 2 exclusive (Phase 1 carries no flying swords)
-        this.astralWings.visible = false;
-        float swordRingScale = isTransitioning ? smoothWindow(p, 0.56F, 0.82F) : (state.phase2 ? 1.0F : 0.0F);
-        this.orbitingSwordsRoot.visible = swordRingScale > 0.02F;
-        if (this.orbitingSwordsRoot.visible) {
-            setUniformScale(this.orbitingSwordsRoot, swordRingScale);
-            this.orbitingSwordsRoot.yRot += age * (state.swordBuffActive ? 0.14F : 0.055F);
-            this.orbitingSwordsRoot.y += Mth.sin(age * 0.08F) * 1.8F;
-        }
+        this.haloOuter.visible = showPhase2Parts;
+        this.haloOuter.zRot -= age * 0.055F;
+        setUniformScale(this.haloOuter, 0.35F + 0.65F * awakenFactor);
 
-        // Default VFX gating (slash arc strictly melee-only; never reused for Ultimate)
-        this.vfxSlashArc.visible = false;
+        this.haloTier3.visible = showPhase2Parts;
+        this.haloTier3.zRot += age * 0.038F;
+        setUniformScale(this.haloTier3, 0.25F + 0.75F * awakenFactor);
+
+        this.orbitingSwordsRoot.visible = showPhase2Parts;
+        this.orbitingSwordsRoot.yRot += age * 0.095F;
+        this.orbitingSwordsRoot.y += Mth.sin(age * 0.12F) * 1.4F;
+        setUniformScale(this.orbitingSwordsRoot, 0.20F + 0.80F * awakenFactor);
+
+        this.p2CrownCrest.visible = showPhase2Parts;
+        setUniformScale(this.p2CrownCrest, awakenFactor);
+        this.p2ChestCore.visible = showPhase2Parts;
+        setUniformScale(this.p2ChestCore, awakenFactor);
+        this.p2PauldronL.visible = showPhase2Parts;
+        setUniformScale(this.p2PauldronL, awakenFactor);
+        this.p2PauldronR.visible = showPhase2Parts;
+        setUniformScale(this.p2PauldronR, awakenFactor);
+        this.p2HalberdEdge.visible = showPhase2Parts;
+        setUniformScale(this.p2HalberdEdge, awakenFactor);
+
+        this.vfxWeaponAura.visible = false;
+        this.vfxBodyAura.visible = awakenFactor > 0.55F && (state.swordBuffActive || state.actionType == AstralSovereignEntity.ACTION_ULTIMATE_JUDGMENT);
         this.vfxMagicCircle.visible = false;
         this.vfxAuraPillars.visible = false;
-        this.vfxWeaponAura.visible = awakenFactor > 0.55F || state.swordBuffActive || (state.actionType != AstralSovereignEntity.ACTION_NONE && !isTransitioning);
-        this.vfxBodyAura.visible = awakenFactor > 0.5F || state.swordBuffActive || state.actionType == AstralSovereignEntity.ACTION_ULTIMATE_JUDGMENT;
+        this.vfxSlashArc.visible = false;
 
-        // Base breathing & armored walk stride with knee articulation
-        float breathe = Mth.sin(age * 0.09F);
+        float breathe = Mth.sin(age * 0.11F);
+        float sway = Mth.sin(age * 0.065F);
         float walkPos = state.walkAnimationPos;
-        float walkSpeed = state.walkAnimationSpeed;
-        this.chest.y += breathe * 0.55F;
+        float walkSpeed = Math.min(1.0F, state.walkAnimationSpeed);
 
-        float legSwing = Mth.cos(walkPos * 0.6662F) * 0.50F * walkSpeed;
-        if (awakenFactor > 0.5F && walkSpeed < 0.08F && !isTransitioning) {
-            // Phase 2 hovering martial poise
-            this.rightLeg.xRot += 0.14F + Mth.sin(age * 0.09F) * 0.05F;
-            this.leftLeg.xRot += -0.10F - Mth.sin(age * 0.09F) * 0.05F;
-            this.rightShin.xRot += 0.22F;
-            this.leftShin.xRot += 0.14F;
+        this.sovereignRoot.y += -awakenFactor * 4.2F + Mth.sin(age * 0.11F) * (0.55F + awakenFactor * 0.75F);
+        this.body.yRot += sway * 0.075F;
+        this.chest.yRot -= sway * 0.055F;
+        this.chest.xRot += 0.04F + walkSpeed * 0.16F;
+        this.chest.y += breathe * 0.42F;
+
+        float legSwing = Mth.cos(walkPos * 0.72F) * 0.58F * walkSpeed;
+        if (awakenFactor > 0.5F && walkSpeed < 0.12F && !isTransitioning) {
+            this.rightLeg.xRot += 0.18F + Mth.sin(age * 0.10F) * 0.06F;
+            this.leftLeg.xRot += -0.14F - Mth.sin(age * 0.10F) * 0.06F;
+            this.rightShin.xRot += 0.28F;
+            this.leftShin.xRot += 0.16F;
         } else {
             this.rightLeg.xRot += legSwing;
             this.leftLeg.xRot -= legSwing;
-            this.rightShin.xRot += Math.max(0.0F, -legSwing) * 0.55F;
-            this.leftShin.xRot += Math.max(0.0F, legSwing) * 0.55F;
+            this.rightShin.xRot += Math.max(0.0F, -legSwing) * 0.62F;
+            this.leftShin.xRot += Math.max(0.0F, legSwing) * 0.62F;
         }
-        this.halberdArm.xRot += breathe * 0.04F;
-        this.offHandArm.xRot -= breathe * 0.04F;
 
-        // Flowing 3-segment articulated cloth cape (phase-lagged wave propagation + movement billow + Phase 2 updraft)
-        float capeWave1 = Mth.sin(age * 0.14F);
-        float capeWave2 = Mth.sin(age * 0.14F - 0.95F);
-        float capeWave3 = Mth.sin(age * 0.14F - 1.90F);
-        float updraft = awakenFactor * 0.26F + walkSpeed * 0.34F;
-        this.capeRoot.xRot += 0.06F + updraft * 0.55F + capeWave1 * 0.06F;
-        this.capeMid.xRot += 0.08F + updraft * 0.65F + capeWave2 * 0.11F;
-        this.capeLower.xRot += 0.10F + updraft * 0.78F + capeWave3 * 0.16F;
-        this.capeMid.zRot += Mth.sin(age * 0.10F) * 0.04F;
-        this.capeLower.zRot += Mth.sin(age * 0.10F - 1.1F) * 0.07F;
+        this.halberdArm.xRot += -0.12F + breathe * 0.045F - walkSpeed * 0.18F;
+        this.halberdArm.zRot += 0.08F + sway * 0.03F;
+        this.offHandArm.xRot += 0.10F - breathe * 0.05F + walkSpeed * 0.20F;
+        this.offHandArm.zRot += -0.14F - sway * 0.04F;
+
+        float capeWave1 = Mth.sin(age * 0.18F);
+        float capeWave2 = Mth.sin(age * 0.18F - 0.95F);
+        float capeWave3 = Mth.sin(age * 0.18F - 1.90F);
+        float updraft = awakenFactor * 0.32F + walkSpeed * 0.44F;
+        this.capeRoot.xRot += 0.08F + updraft * 0.58F + capeWave1 * 0.08F;
+        this.capeMid.xRot += 0.10F + updraft * 0.72F + capeWave2 * 0.15F;
+        this.capeLower.xRot += 0.12F + updraft * 0.85F + capeWave3 * 0.22F;
+        this.capeMid.zRot += Mth.sin(age * 0.13F) * 0.065F;
+        this.capeLower.zRot += Mth.sin(age * 0.13F - 1.2F) * 0.105F;
 
         switch (state.actionType) {
             case AstralSovereignEntity.ACTION_COMBO_SWEEP -> animateComboSweep(p);
@@ -602,18 +594,17 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
             default -> {
                 if (state.swordBuffActive) {
                     this.vfxMagicCircle.visible = true;
-                    this.vfxMagicCircle.yRot += age * 0.16F;
-                    this.vfxMagicCircle.xScale = 0.68F;
-                    this.vfxMagicCircle.zScale = 0.68F;
+                    this.vfxMagicCircle.yRot += age * 0.18F;
+                    this.vfxMagicCircle.xScale = 0.82F;
+                    this.vfxMagicCircle.zScale = 0.82F;
                 }
             }
         }
 
-        // Anti-clipping lower armor articulation: dynamically kick front tabard & side tassets clear of thighs!
         float forwardThigh = Math.max(0.0F, Math.max(-this.leftLeg.xRot, -this.rightLeg.xRot));
-        this.tabardFront.xRot += -forwardThigh * 1.15F - 0.06F;
-        this.tassetLeft.zRot += Math.abs(this.leftLeg.xRot) * 0.38F + 0.05F;
-        this.tassetRight.zRot += -Math.abs(this.rightLeg.xRot) * 0.38F - 0.05F;
+        this.tabardFront.xRot += -forwardThigh * 1.18F - 0.08F;
+        this.tassetLeft.zRot += Math.abs(this.leftLeg.xRot) * 0.42F + 0.06F;
+        this.tassetRight.zRot += -Math.abs(this.rightLeg.xRot) * 0.42F - 0.06F;
     }
 
     private static void setUniformScale(ModelPart part, float scale) {
@@ -817,42 +808,45 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
 
     /** Phase 1 -> Phase 2 Awakening Transition: Kneel & gather -> Skyward roar & armor unfurl -> Ascended hover settle. */
     private void animatePhaseTransition(float p, float age) {
-        float kneel = smoothWindow(p, 0.0F, 0.28F) * (1.0F - smoothWindow(p, 0.28F, 0.46F));
-        float ascend = smoothWindow(p, 0.30F, 0.58F);
-        float burst = smoothWindow(p, 0.54F, 0.72F) * (1.0F - smoothWindow(p, 0.78F, 1.0F));
-        float hoverSettle = smoothWindow(p, 0.58F, 1.0F);
+        float coil = smoothWindow(p, 0.0F, 0.09F) * (1.0F - smoothWindow(p, 0.10F, 0.18F));
+        float rise = smoothWindow(p, 0.10F, 0.42F);
+        float dive = whipWindow(p, 0.71F, 0.80F);
+        float airborne = rise * (1.0F - dive);
+        float apexBurst = smoothWindow(p, 0.44F, 0.58F) * (1.0F - smoothWindow(p, 0.68F, 0.76F));
+        float hoist = smoothWindow(p, 0.56F, 0.71F) * (1.0F - smoothWindow(p, 0.78F, 0.86F));
+        float slamImpact = smoothWindow(p, 0.78F, 0.82F) * (1.0F - smoothWindow(p, 0.88F, 0.99F));
 
-        this.sovereignRoot.y += 5.2F * kneel - 10.5F * ascend * (1.0F - hoverSettle * 0.55F);
-        this.body.xRot += 0.26F * kneel - 0.18F * burst;
-        this.chest.xRot += 0.34F * kneel - 0.32F * burst;
-        this.head.xRot += 0.36F * kneel - 0.42F * burst;
+        this.sovereignRoot.y += 4.2F * coil - 54.0F * airborne + 5.8F * slamImpact;
+        this.body.xRot += 0.28F * coil - 0.22F * apexBurst + 0.36F * slamImpact;
+        this.chest.xRot += 0.32F * coil - 0.28F * apexBurst + 0.38F * slamImpact;
+        this.head.xRot += 0.25F * coil - 0.38F * apexBurst + 0.20F * slamImpact;
 
-        // Kneel plants halberd down; Burst throws both arms & halberd wide open roaring skyward
-        this.halberdArm.xRot += -0.32F * kneel - 0.85F * burst;
-        this.halberdArm.zRot += -0.15F * kneel + 0.92F * burst;
-        this.halberdForearm.xRot += 0.35F * kneel + 0.20F * burst;
-        this.astralHalberd.xRot += 0.82F * kneel - 0.28F * burst;
+        this.halberdArm.xRot += -0.35F * coil - 0.95F * apexBurst - 1.95F * hoist + 1.15F * slamImpact;
+        this.halberdArm.zRot += -0.15F * coil + 0.88F * apexBurst - 0.12F * slamImpact;
+        this.halberdForearm.xRot += 0.35F * coil + 0.25F * apexBurst + 0.42F * slamImpact;
+        this.astralHalberd.xRot += 0.65F * coil - 0.35F * apexBurst + 1.18F * slamImpact;
 
-        this.offHandArm.xRot += 0.35F * kneel - 0.95F * burst;
-        this.offHandArm.zRot += 0.18F * kneel - 0.98F * burst;
+        this.offHandArm.xRot += 0.35F * coil - 0.92F * apexBurst - 0.55F * hoist + 0.85F * slamImpact;
+        this.offHandArm.zRot += 0.18F * coil - 0.96F * apexBurst - 0.42F * slamImpact;
 
-        this.rightLeg.xRot += -0.52F * kneel + 0.18F * ascend;
-        this.rightShin.xRot += 0.88F * kneel + 0.24F * ascend;
-        this.leftLeg.xRot += 0.38F * kneel - 0.12F * ascend;
-        this.leftShin.xRot += 0.52F * kneel + 0.18F * ascend;
+        this.rightLeg.xRot += -0.45F * coil + 0.24F * airborne - 0.65F * slamImpact;
+        this.rightShin.xRot += 0.82F * coil + 0.36F * airborne + 1.10F * slamImpact;
+        this.leftLeg.xRot += 0.34F * coil - 0.16F * airborne + 0.42F * slamImpact;
+        this.leftShin.xRot += 0.48F * coil + 0.22F * airborne + 0.68F * slamImpact;
 
-        // Cape erupts upward in astral wind during awakening
-        this.capeRoot.xRot += 0.32F * kneel + 0.65F * burst;
-        this.capeMid.xRot += 0.45F * burst;
-        this.capeLower.xRot += 0.58F * burst;
+        this.capeRoot.xRot += 0.28F * coil + 0.72F * airborne + 0.58F * slamImpact;
+        this.capeMid.xRot += 0.52F * airborne + 0.48F * slamImpact;
+        this.capeLower.xRot += 0.64F * airborne + 0.52F * slamImpact;
 
-        this.vfxMagicCircle.visible = true;
-        this.vfxMagicCircle.yRot += age * 0.28F;
-        float mcScale = 0.55F + 1.35F * smoothWindow(p, 0.48F, 0.85F);
-        this.vfxMagicCircle.xScale = mcScale;
-        this.vfxMagicCircle.zScale = mcScale;
-        this.vfxAuraPillars.visible = p >= 0.28F && p <= 0.92F;
-        this.vfxAuraPillars.yRot -= age * 0.22F;
+        this.vfxMagicCircle.visible = false;
+        this.vfxAuraPillars.visible = false;
+    }
+
+    private static float whipWindow(float value, float start, float end) {
+        if (value <= start) return 0.0F;
+        if (value >= end) return 1.0F;
+        float t = (value - start) / (end - start);
+        return t * t * t;
     }
 
     private static float smoothWindow(float value, float start, float end) {

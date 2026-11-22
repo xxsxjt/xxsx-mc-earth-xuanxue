@@ -57,11 +57,18 @@ public class XuanhuanBlock extends Block {
                         SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS,
                         0.28F, 1.15F + random.nextFloat() * 0.2F, false);
             }
-        } else if (state.is(XuanhuanEarth.SPIRIT_VEIN_NODE.get()) && random.nextInt(3) == 0) {
+        } else if (state.is(XuanhuanEarth.SPIRIT_VEIN_NODE.get())) {
             double x = pos.getX() + 0.15D + random.nextDouble() * 0.7D;
             double y = pos.getY() + 0.2D + random.nextDouble() * 0.8D;
             double z = pos.getZ() + 0.15D + random.nextDouble() * 0.7D;
-            level.addParticle(XuanhuanParticles.QI_SPARK.get(), x, y, z, 0.0D, 0.015D, 0.0D);
+            level.addParticle(XuanhuanParticles.QI_SPARK.get(), x, y, z, 0.0D, 0.024D, 0.0D);
+            if (random.nextInt(6) == 0) {
+                level.addParticle(XuanhuanParticles.SEAL_RING.get(), pos.getX() + 0.5D, pos.getY() + 1.05D, pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D);
+            }
+        } else if (state.is(XuanhuanEarth.ARRAY_PILLAR.get()) && random.nextInt(2) == 0) {
+            level.addParticle(net.minecraft.core.particles.ParticleTypes.END_ROD, pos.getX() + 0.5D, pos.getY() + 1.12D, pos.getZ() + 0.5D, 0.0D, 0.025D, 0.0D);
+        } else if (state.is(XuanhuanEarth.SPIRIT_SOIL.get()) && random.nextInt(3) == 0) {
+            level.addParticle(XuanhuanParticles.QI_SPARK.get(), pos.getX() + random.nextDouble(), pos.getY() + 1.02D, pos.getZ() + random.nextDouble(), 0.0D, 0.018D, 0.0D);
         }
     }
 

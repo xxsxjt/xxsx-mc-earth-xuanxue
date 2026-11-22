@@ -44,6 +44,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -328,6 +329,9 @@ public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
     public boolean doHurtTarget(net.minecraft.server.level.ServerLevel level,
                                 net.minecraft.world.entity.Entity target) {
         boolean hit = super.doHurtTarget(level, target);
+        if (hit) {
+            triggerSpeciesCombatArt(level, target);
+        }
         // Fighting is the other half of training, so a beast that hunts with its owner
         // progresses without needing to be hand-fed everything.
         if (hit && this.isTame() && getRank() < MAX_RANK && this.random.nextFloat() < 0.35F) {
@@ -339,6 +343,44 @@ public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
             }
         }
         return hit;
+    }
+
+
+    private void triggerSpeciesCombatArt(ServerLevel level, net.minecraft.world.entity.Entity target) {
+        Vec3 pos = target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D);
+        switch (kind) {
+            case SPIRIT_FOX -> {
+                level.sendParticles(XuanhuanParticles.SEAL_RING.get(), pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y, pos.z, 10, 0.5, 0.4, 0.5, 0.04);
+                if (target instanceof net.minecraft.world.entity.LivingEntity le) {
+                    le.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 80, 0));
+                    le.addEffect(new MobEffectInstance(MobEffects.GLOWING, 80, 0));
+                }
+            }
+            case WIND_WOLF -> {
+                level.sendParticles(XuanhuanParticles.QI_RING.get(), pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK, pos.x, pos.y + 0.2, pos.z, 3, 0.4, 0.2, 0.4, 0.0);
+                this.addEffect(new MobEffectInstance(MobEffects.SPEED, 60, 1, true, false, false));
+            }
+            case STONEHORN_GOAT -> {
+                level.sendParticles(XuanhuanParticles.SEAL_RING.get(), this.getX(), this.getY() + 0.15, this.getZ(), 1, 0, 0, 0, 0);
+                level.sendParticles(XuanhuanParticles.EMBER_SPARK.get(), pos.x, pos.y, pos.z, 14, 0.65, 0.35, 0.65, 0.08);
+                Vec3 dir = target.position().subtract(this.position());
+                double len = Math.max(0.01D, dir.horizontalDistance());
+                target.push((dir.x / len) * 0.85D, 0.38D, (dir.z / len) * 0.85D);
+                target.hurtMarked = true;
+            }
+            case CRYSTAL_TURTLE -> {
+                level.sendParticles(XuanhuanParticles.QI_RING.get(), this.getX(), this.getY() + 0.5, this.getZ(), 1, 0, 0, 0, 0);
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 12, 0.6, 0.4, 0.6, 0.05);
+                this.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 80, 0, true, false, false));
+            }
+            case EMBER_CRANE -> {
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME, pos.x, pos.y, pos.z, 16, 0.55, 0.45, 0.55, 0.06);
+                level.sendParticles(XuanhuanParticles.EMBER_SPARK.get(), pos.x, pos.y, pos.z, 10, 0.5, 0.4, 0.5, 0.05);
+                target.igniteForSeconds(3.0F);
+            }
+        }
     }
 
     private void applyOwnerSupport(ServerPlayer owner) {

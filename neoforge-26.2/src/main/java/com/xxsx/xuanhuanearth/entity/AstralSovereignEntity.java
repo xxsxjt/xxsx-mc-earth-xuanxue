@@ -58,7 +58,7 @@ public class AstralSovereignEntity extends Monster {
     public static final double SWORD_SUMMON_MAX_RANGE = 22.0D;
     public static final int ULTIMATE_TELEGRAPH_DURATION = 20;
     public static final int ULTIMATE_SHOCKWAVE_DURATION = 12;
-    public static final double ULTIMATE_MAX_RADIUS = 12.0D;
+    public static final double ULTIMATE_MAX_RADIUS = 15.5D;
     public static final int SWORD_BUFF_DURATION = 120;
 
     public static final int ACTION_NONE = 0;
@@ -186,64 +186,101 @@ public class AstralSovereignEntity extends Monster {
     private void tickPhaseTransitionVfx(ServerLevel serverLevel, int tick) {
         this.setDeltaMovement(Vec3.ZERO);
         this.getNavigation().stop();
-        if (tick <= 22) {
-            // Stage 1: Kneel & pull converging starlight inward toward chest core
-            double r = 4.6D * (1.0D - (tick / 24.0D));
-            for (int i = 0; i < 6; i++) {
-                double a = (Math.PI * 2.0 * i / 6.0) + tick * 0.28;
-                serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
+        // Stage 1 (ticks 1..30): High Aerial Ascent — converging golden spirit tethers rising from 8 octagon talismans
+        if (tick <= 30) {
+            double progress = tick / 30.0D;
+            double liftY = this.getY() + 0.8D + progress * 3.6D;
+            for (int i = 0; i < 8; i++) {
+                double a = (Math.PI * 2.0 * i / 8.0) + tick * 0.08;
+                double r = 5.0D * (1.0D - progress * 0.72D);
+                serverLevel.sendParticles(i % 2 == 0 ? XuanhuanParticles.QI_SPARK.get() : ParticleTypes.END_ROD,
                         this.getX() + Math.cos(a) * r,
-                        this.getY() + 0.8 + (tick * 0.06),
+                        liftY,
                         this.getZ() + Math.sin(a) * r,
-                        1, 0.04, 0.04, 0.04, 0.02);
+                        1, 0.05, 0.08, 0.05, 0.02);
             }
-            if (tick == 12) {
+            if (tick == 10) {
+                this.playSound(SoundEvents.ELYTRA_FLYING, 1.15F, 0.92F);
                 serverLevel.sendParticles(XuanhuanParticles.SEAL_RING.get(),
                         this.getX(), this.getY() + 0.15, this.getZ(), 1, 0, 0, 0, 0);
             }
-        } else if (tick <= 42) {
-            // Stage 2: Twin ascending golden-violet helical ascension ribbons & armor-cocoon shatter (unique to transition)
-            double progress = (tick - 22) / 20.0D;
-            for (int h = 0; h < 2; h++) {
-                double a = progress * Math.PI * 6.0D + h * Math.PI;
-                double r = 1.65D - progress * 0.45D;
-                double py = this.getY() + 0.5D + progress * 5.2D;
-                serverLevel.sendParticles(h == 0 ? ParticleTypes.TOTEM_OF_UNDYING : ParticleTypes.WITCH,
-                        this.getX() + Math.cos(a) * r, py, this.getZ() + Math.sin(a) * r,
-                        2, 0.08, 0.08, 0.08, 0.02);
-            }
-            if (tick == 24) {
-                this.playSound(SoundEvents.TRIDENT_THUNDER.value(), 1.35F, 0.85F);
+        } else if (tick <= 48) {
+            // Stage 2 (ticks 31..48): Apex Mid-Air Cocoon Shatter (tick 34) & Phase 2 Celestial Awakening!
+            double apexY = this.getY() + 4.3D;
+            if (tick == 34) {
+                this.playSound(SoundEvents.TRIDENT_THUNDER.value(), 1.55F, 0.78F);
+                this.playSound(SoundEvents.GLASS_BREAK, 1.4F, 0.65F);
                 serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(),
-                        this.getX(), this.getY() + 2.0, this.getZ(), 1, 0, 0, 0, 0);
+                        this.getX(), apexY, this.getZ(), 1, 0, 0, 0, 0);
+                for (int i = 0; i < 28; i++) {
+                    double a = (Math.PI * 2.0 * i) / 28.0;
+                    double elev = ((i % 5) - 2) * 0.35;
+                    serverLevel.sendParticles(i % 2 == 0 ? ParticleTypes.TOTEM_OF_UNDYING : ParticleTypes.WITCH,
+                            this.getX() + Math.cos(a) * 1.4,
+                            apexY + elev,
+                            this.getZ() + Math.sin(a) * 1.4,
+                            2, Math.cos(a) * 0.45, elev * 0.25, Math.sin(a) * 0.45, 0.12);
+                }
+            } else if (tick % 3 == 0) {
+                double a = tick * 0.55;
+                serverLevel.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,
+                        this.getX() + Math.cos(a) * 1.8, apexY, this.getZ() + Math.sin(a) * 1.8,
+                        2, 0.08, 0.12, 0.08, 0.03);
             }
-        } else if (tick == 43) {
-            // Stage 3: Awakening 360-degree shockwave burst + safe radial knockback
-            this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1.25F, 0.82F);
+        } else if (tick < 54) {
+            // Stage 3a (ticks 49..53): Blazing Meteor Dive trail downward from apex to earth
+            double diveFrac = (tick - 48) / 6.0D;
+            double py = this.getY() + 4.2D * (1.0D - diveFrac);
+            serverLevel.sendParticles(ParticleTypes.FLAME,
+                    this.getX(), py, this.getZ(), 10, 0.35, 0.45, 0.35, 0.05);
+            serverLevel.sendParticles(XuanhuanParticles.EMBER_SPARK.get(),
+                    this.getX(), py, this.getZ(), 8, 0.45, 0.45, 0.45, 0.08);
+        } else if (tick == 54) {
+            // Stage 3b (tick 54): CATACLYSMIC GROUND-SLAM IMPACT SHOCKWAVE (13-block 360° blast!)
+            this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1.9F, 0.58F);
+            this.playSound(SoundEvents.TRIDENT_THUNDER.value(), 1.65F, 0.62F);
+            serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
+                    this.getX(), this.getY() + 0.6, this.getZ(), 2, 0.8, 0.3, 0.8, 0.0);
             serverLevel.sendParticles(XuanhuanParticles.SEAL_RING.get(),
-                    this.getX(), this.getY() + 0.2, this.getZ(), 1, 0, 0, 0, 0);
+                    this.getX(), this.getY() + 0.18, this.getZ(), 1, 0, 0, 0, 0);
             serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(),
-                    this.getX(), this.getY() + 1.8, this.getZ(), 1, 0, 0, 0, 0);
-            for (int i = 0; i < 32; i++) {
-                double a = (Math.PI * 2.0 * i) / 32.0;
-                serverLevel.sendParticles(i % 2 == 0 ? ParticleTypes.END_ROD : XuanhuanParticles.EMBER_SPARK.get(),
-                        this.getX() + Math.cos(a) * 3.8,
-                        this.getY() + 1.6,
-                        this.getZ() + Math.sin(a) * 3.8,
-                        2, 0.15, 0.2, 0.15, 0.12);
+                    this.getX(), this.getY() + 0.9, this.getZ(), 1, 0, 0, 0, 0);
+            for (int ray = 0; ray < 8; ray++) {
+                double ang = (Math.PI * 2.0 * ray) / 8.0;
+                double cx = Math.cos(ang), cz = Math.sin(ang);
+                for (int step = 2; step <= 12; step += 2) {
+                    serverLevel.sendParticles(XuanhuanParticles.EMBER_SPARK.get(),
+                            this.getX() + cx * step, this.getY() + 0.35, this.getZ() + cz * step,
+                            4, 0.25, 0.45, 0.25, 0.08);
+                    serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                            this.getX() + cx * step, this.getY() + 0.2, this.getZ() + cz * step,
+                            2, 0.2, 0.25, 0.2, 0.04);
+                }
             }
-            AABB area = this.getBoundingBox().inflate(7.5D, 3.5D, 7.5D);
+            AABB area = this.getBoundingBox().inflate(13.0D, 4.5D, 13.0D);
             for (LivingEntity target : serverLevel.getEntitiesOfClass(LivingEntity.class, area,
                     e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
                 double dx = target.getX() - this.getX();
                 double dz = target.getZ() - this.getZ();
-                double len = Math.sqrt(dx * dx + dz * dz);
-                if (len > 1.0E-4D) {
-                    target.push((dx / len) * 1.15D, 0.35D, (dz / len) * 1.15D);
+                double dist = Math.sqrt(dx * dx + dz * dz);
+                if (dist <= 13.0D) {
+                    target.hurtServer(serverLevel, this.damageSources().mobAttack(this), 14.0F);
+                    if (dist > 1.0E-4D) {
+                        double strength = 1.65D * Math.max(0.45D, 1.0D - dist / 15.0D);
+                        target.push((dx / dist) * strength, 0.62D, (dz / dist) * strength);
+                        target.hurtMarked = true;
+                    }
                 }
             }
-        } else if (tick == PHASE_TRANSITION_DURATION - 4) {
-            // Stage 4: Transition completes -> unleash awakened Phase 2 flying sword aura
+        } else if (tick == 58 || tick == 62) {
+            double r = tick == 58 ? 7.5D : 11.5D;
+            for (int i = 0; i < 24; i++) {
+                double a = (Math.PI * 2.0 * i) / 24.0;
+                serverLevel.sendParticles(i % 2 == 0 ? XuanhuanParticles.EMBER_SPARK.get() : ParticleTypes.END_ROD,
+                        this.getX() + Math.cos(a) * r, this.getY() + 0.45, this.getZ() + Math.sin(a) * r,
+                        2, 0.15, 0.25, 0.15, 0.06);
+            }
+        } else if (tick == PHASE_TRANSITION_DURATION - 3) {
             this.entityData.set(DATA_SWORD_BUFF_TICKS, SWORD_BUFF_DURATION);
             this.buffedWaveCooldown = 12;
         }
@@ -278,9 +315,10 @@ public class AstralSovereignEntity extends Monster {
             if (currentAction == ACTION_PHASE_TRANSITION) {
                 tickPhaseTransitionVfx(serverLevel, nextTick);
             } else if (currentAction == ACTION_ULTIMATE_JUDGMENT) {
+                this.getNavigation().stop();
                 if (nextTick <= ULTIMATE_TELEGRAPH_DURATION) {
                     emitUltimateTelegraph(serverLevel, nextTick);
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.45D, 1.0D, 0.45D));
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.30D, 1.0D, 0.30D));
                 }
                 if (nextTick == ULTIMATE_TELEGRAPH_DURATION) {
                     beginUltimateCircularShockwave(serverLevel);
@@ -438,20 +476,37 @@ public class AstralSovereignEntity extends Monster {
     }
 
     private void emitUltimateTelegraph(ServerLevel serverLevel, int tick) {
-        if (tick == 1 || tick == 10 || tick == 18) {
-            serverLevel.sendParticles(XuanhuanParticles.SEAL_RING.get(),
-                    this.getX(), this.getY() + 0.14, this.getZ(), 1, 0, 0, 0, 0);
-            serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(),
-                    this.getX(), this.getY() + 0.45, this.getZ(), 1, 0, 0, 0, 0);
+        double ringRadius = 4.5 + (tick / (double) ULTIMATE_TELEGRAPH_DURATION) * 11.0;
+        for (int i = 0; i < 20; i++) {
+            double a = (Math.PI * 2.0 * i / 20.0) + tick * 0.14;
+            serverLevel.sendParticles(i % 2 == 0 ? XuanhuanParticles.QI_SPARK.get() : ParticleTypes.END_ROD,
+                    this.getX() + Math.cos(a) * ringRadius,
+                    this.getY() + 0.35 + (tick % 4) * 0.18,
+                    this.getZ() + Math.sin(a) * ringRadius,
+                    1, 0.04, 0.08, 0.04, 0.02);
         }
-        double radius = 2.2 + (tick / (double) ULTIMATE_TELEGRAPH_DURATION) * 3.8;
-        for (int i = 0; i < 8; i++) {
-            double angle = (Math.PI * 2.0 * i / 8.0) + tick * 0.18;
-            double px = this.getX() + Math.cos(angle) * radius;
-            double pz = this.getZ() + Math.sin(angle) * radius;
-            serverLevel.sendParticles(
-                    i % 2 == 0 ? XuanhuanParticles.RUNE_GLYPH_B.get() : ParticleTypes.END_ROD,
-                    px, this.getY() + 0.35 + (tick * 0.08), pz, 1, 0.05, 0.08, 0.05, 0.01);
+        // Plunging fiery astral meteors rain onto the 15.5-block arena during telegraph
+        if (tick % 4 == 0) {
+            int meteorIdx = tick / 4;
+            for (int k = 0; k < 2; k++) {
+                double ma = ((meteorIdx * 2 + k) * Math.PI * 2.0) / 8.0 + 0.35;
+                double mr = 5.5 + ((meteorIdx + k) % 3) * 3.2;
+                double mx = this.getX() + Math.cos(ma) * mr;
+                double mz = this.getZ() + Math.sin(ma) * mr;
+                for (int s = 0; s < 8; s++) {
+                    double frac = s / 7.0;
+                    serverLevel.sendParticles(s < 4 ? ParticleTypes.FLAME : XuanhuanParticles.EMBER_SPARK.get(),
+                            mx + Math.cos(ma) * frac * 3.0, this.getY() + 0.4 + frac * 11.0, mz + Math.sin(ma) * frac * 3.0,
+                            3, 0.25, 0.25, 0.25, 0.04);
+                }
+                serverLevel.sendParticles(ParticleTypes.EXPLOSION, mx, this.getY() + 0.5, mz, 2, 0.6, 0.3, 0.6, 0.0);
+                AABB meteorBox = new AABB(mx - 3.0, this.getY() - 1.0, mz - 3.0, mx + 3.0, this.getY() + 3.5, mz + 3.0);
+                for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, meteorBox,
+                        e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                    le.hurtServer(serverLevel, this.damageSources().mobAttack(this), isPhase2() ? 10.0F : 7.5F);
+                }
+            }
+            this.playSound(SoundEvents.FIRECHARGE_USE, 1.4F, 0.72F);
         }
     }
 
@@ -525,6 +580,12 @@ public class AstralSovereignEntity extends Monster {
      */
     @Override
     public boolean doHurtTarget(ServerLevel serverLevel, Entity target) {
+        int active = getActionType();
+        if (active == ACTION_PHASE_TRANSITION
+                || active == ACTION_ULTIMATE_JUDGMENT
+                || active == ACTION_SWORD_ARRAY_BUFF) {
+            return false;
+        }
         int combo = this.meleeComboIndex % 3;
         this.meleeComboIndex++;
 
@@ -551,78 +612,98 @@ public class AstralSovereignEntity extends Monster {
         }
         Vec3 right = new Vec3(-horizForward.z, 0.0, horizForward.x);
         double baseY = this.getY() + 1.85;
+        boolean p2 = isPhase2();
 
         if (combo == 0) {
-            // Combo 1: Wide 140-degree Horizontal Starlight Crescent Sweep
-            this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.35F, 0.78F);
-            for (int i = -10; i <= 10; i++) {
-                double ang = Math.toRadians(i * 7.0);
-                Vec3 dir = horizForward.scale(Math.cos(ang)).add(right.scale(Math.sin(ang)));
-                for (double r : new double[]{2.4, 3.6, 4.4}) {
-                    Vec3 p = new Vec3(this.getX(), baseY, this.getZ()).add(dir.scale(r));
-                    serverLevel.sendParticles(r > 4.0 ? ParticleTypes.END_ROD : XuanhuanParticles.QI_SPARK.get(),
-                            p.x, p.y, p.z, 1, 0.04, 0.06, 0.04, 0.02);
-                }
-                if (i % 4 == 0) {
-                    Vec3 p = new Vec3(this.getX(), baseY, this.getZ()).add(dir.scale(3.4));
-                    serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-                }
-            }
-            // Cleave bonus damage to secondary targets inside the horizontal arc
-            AABB arcBox = this.getBoundingBox().inflate(4.4, 1.8, 4.4);
-            for (LivingEntity extra : serverLevel.getEntitiesOfClass(LivingEntity.class, arcBox,
-                    e -> e != this && e != primaryTarget && e.isAlive())) {
-                Vec3 toExtra = extra.position().subtract(this.position());
-                Vec3 flat = new Vec3(toExtra.x, 0.0, toExtra.z);
-                if (flat.lengthSqr() > 1.0E-4 && flat.normalize().dot(horizForward) > 0.25) {
-                    extra.hurtServer(serverLevel, this.damageSources().mobAttack(this), 9.0F);
+            // Combo 1: P1 6.2m cold-silver arc -> P2 8.5m 180° Twin-Moon Golden-Crimson Sweep + 2 Chasing Swords!
+            double sweepRadius = p2 ? 8.5D : 6.2D;
+            double maxDot = p2 ? -0.10D : 0.15D;
+            int arcPts = p2 ? 24 : 14;
+            for (int i = 0; i < arcPts; i++) {
+                double frac = (double) i / (arcPts - 1);
+                double ang = (frac - 0.5) * (p2 ? Math.PI * 1.05 : Math.PI * 0.78);
+                double ca = Math.cos(ang), sa = Math.sin(ang);
+                Vec3 dir = horizForward.scale(ca).add(right.scale(sa));
+                serverLevel.sendParticles(p2 ? XuanhuanParticles.EMBER_SPARK.get() : ParticleTypes.END_ROD,
+                        this.getX() + dir.x * (sweepRadius * 0.72), baseY + 0.12, this.getZ() + dir.z * (sweepRadius * 0.72),
+                        2, 0.12, 0.10, 0.12, 0.03);
+                if (p2) {
+                    serverLevel.sendParticles(ParticleTypes.FLAME,
+                            this.getX() + dir.x * (sweepRadius * 0.92), baseY + 0.45, this.getZ() + dir.z * (sweepRadius * 0.92),
+                            1, 0.1, 0.1, 0.1, 0.02);
                 }
             }
+            AABB box = this.getBoundingBox().inflate(sweepRadius, 2.5D, sweepRadius);
+            for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, box,
+                    e -> e != this && e != primaryTarget && e.isAlive() && !this.isAlliedTo(e))) {
+                Vec3 to = new Vec3(le.getX() - this.getX(), 0.0, le.getZ() - this.getZ());
+                double dist = to.length();
+                if (dist <= sweepRadius && dist > 0.01 && to.normalize().dot(horizForward) >= maxDot) {
+                    le.hurtServer(serverLevel, this.damageSources().mobAttack(this), p2 ? 12.5F : 8.5F);
+                    le.push(to.x / dist * (p2 ? 1.15 : 0.75), p2 ? 0.42 : 0.25, to.z / dist * (p2 ? 1.15 : 0.75));
+                    le.hurtMarked = true;
+                }
+            }
+            if (p2 && primaryTarget instanceof LivingEntity living && canSummonFlyingSwordsAt(living)) {
+                spawnFlyingSwordSwarm(serverLevel, living, 2, true);
+            }
+            this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.35F, p2 ? 0.78F : 0.95F);
         } else if (combo == 1) {
-            // Combo 2: Overhead Sky-Splitter Vertical Crescent + Ground Impact Wave
-            this.playSound(SoundEvents.TRIDENT_THUNDER.value(), 0.7F, 1.25F);
-            for (int i = 0; i <= 14; i++) {
-                double t = i / 14.0;
-                double pitchAng = Math.toRadians(75.0 - t * 115.0);
-                double r = 3.5;
-                Vec3 p = new Vec3(this.getX(), this.getY() + 2.2, this.getZ())
-                        .add(horizForward.scale(Math.cos(pitchAng) * r))
-                        .add(0.0, Math.sin(pitchAng) * r, 0.0);
-                serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, p.x, p.y, p.z, 1, 0.05, 0.05, 0.05, 0.02);
-                serverLevel.sendParticles(XuanhuanParticles.EMBER_SPARK.get(), p.x, p.y, p.z, 1, 0.06, 0.06, 0.06, 0.03);
+            // Combo 2: P1 7.0m single fissure -> P2 9.5m TRIPLE-LANE Branching Fan Fissures (0°, ±28°)!
+            double laneLen = p2 ? 9.5D : 7.0D;
+            double[] laneAngles = p2 ? new double[]{0.0, 0.48, -0.48} : new double[]{0.0};
+            for (double la : laneAngles) {
+                Vec3 lDir = horizForward.scale(Math.cos(la)).add(right.scale(Math.sin(la)));
+                for (int step = 2; step <= (int) laneLen; step++) {
+                    double px = this.getX() + lDir.x * step;
+                    double pz = this.getZ() + lDir.z * step;
+                    serverLevel.sendParticles(p2 ? XuanhuanParticles.EMBER_SPARK.get() : XuanhuanParticles.QI_SPARK.get(),
+                            px, this.getY() + 0.35, pz, 3, 0.22, 0.55, 0.22, 0.05);
+                    if (step % 2 == 0) {
+                        serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                                px, this.getY() + 0.18, pz, 2, 0.18, 0.35, 0.18, 0.03);
+                    }
+                    AABB segBox = new AABB(px - 1.35, this.getY() - 0.5, pz - 1.35, px + 1.35, this.getY() + 2.8, pz + 1.35);
+                    for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, segBox,
+                            e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                        le.hurtServer(serverLevel, this.damageSources().mobAttack(this), p2 ? 11.5F : 8.5F);
+                        le.push(lDir.x * 0.65, p2 ? 0.58 : 0.38, lDir.z * 0.65);
+                        le.hurtMarked = true;
+                    }
+                }
             }
-            Vec3 impactPos = new Vec3(this.getX(), this.getY() + 0.15, this.getZ()).add(horizForward.scale(3.2));
-            serverLevel.sendParticles(XuanhuanParticles.SEAL_RING.get(),
-                    impactPos.x, impactPos.y, impactPos.z, 1, 0, 0, 0, 0);
-            if (primaryTarget instanceof LivingEntity le && le.isAlive()) {
-                le.hurtServer(serverLevel, this.damageSources().mobAttack(this), 4.0F);
-            }
+            this.playSound(SoundEvents.TRIDENT_THUNDER.value(), 1.25F, p2 ? 0.85F : 1.08F);
         } else {
-            // Combo 3: Astral Dragon Spiral Piercing Thrust + Upward Flick
-            this.playSound(SoundEvents.TRIDENT_THROW.value(), 1.2F, 0.85F);
-            for (int step = 1; step <= 14; step++) {
-                double dist = step * 0.42;
-                double spiral = step * 0.7;
-                double rad = 0.55 * (1.0 - step / 18.0);
-                Vec3 center = new Vec3(this.getX(), baseY - 0.1, this.getZ()).add(horizForward.scale(dist));
-                Vec3 spiralOffset = right.scale(Math.cos(spiral) * rad).add(0.0, Math.sin(spiral) * rad, 0.0);
-                serverLevel.sendParticles(ParticleTypes.END_ROD,
-                        center.x + spiralOffset.x, center.y + spiralOffset.y, center.z + spiralOffset.z,
-                        1, 0.02, 0.02, 0.02, 0.01);
-                serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
-                        center.x - spiralOffset.x, center.y - spiralOffset.y, center.z - spiralOffset.z,
-                        1, 0.02, 0.02, 0.02, 0.02);
+            // Combo 3: P1 8.5m cyan lance -> P2 12.5m Golden-Crimson Dragon Lance + 4.5m Tip Star-Nova Detonation!
+            double lanceLen = p2 ? 12.5D : 8.5D;
+            for (int step = 1; step <= (int) lanceLen; step++) {
+                double px = this.getX() + horizForward.x * step;
+                double pz = this.getZ() + horizForward.z * step;
+                serverLevel.sendParticles(p2 ? XuanhuanParticles.EMBER_SPARK.get() : ParticleTypes.END_ROD,
+                        px, baseY, pz, p2 ? 3 : 2, 0.18, 0.18, 0.18, 0.04);
+                AABB segBox = new AABB(px - 1.4, baseY - 1.4, pz - 1.4, px + 1.4, baseY + 1.6, pz + 1.4);
+                for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, segBox,
+                        e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                    le.hurtServer(serverLevel, this.damageSources().mobAttack(this), p2 ? 12.0F : 9.0F);
+                    le.push(horizForward.x * 0.95, 0.32, horizForward.z * 0.95);
+                    le.hurtMarked = true;
+                }
             }
-            Vec3 tipPos = new Vec3(this.getX(), baseY, this.getZ()).add(horizForward.scale(4.6));
-            serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(),
-                    tipPos.x, tipPos.y, tipPos.z, 1, 0, 0, 0, 0);
+            if (p2) {
+                double tx = this.getX() + horizForward.x * lanceLen;
+                double tz = this.getZ() + horizForward.z * lanceLen;
+                serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER, tx, baseY, tz, 1, 0.4, 0.4, 0.4, 0.0);
+                serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(), tx, baseY, tz, 1, 0, 0, 0, 0);
+                AABB novaBox = new AABB(tx - 4.5, this.getY() - 1.0, tz - 4.5, tx + 4.5, this.getY() + 3.5, tz + 4.5);
+                for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, novaBox,
+                        e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                    le.hurtServer(serverLevel, this.damageSources().mobAttack(this), 13.0F);
+                    le.push(horizForward.x * 1.1, 0.45, horizForward.z * 1.1);
+                    le.hurtMarked = true;
+                }
+            }
+            this.playSound(SoundEvents.TRIDENT_THROW.value(), 1.35F, p2 ? 0.72F : 0.95F);
         }
-    }
-
-    @Override
-    public void setCustomName(@Nullable Component name) {
-        super.setCustomName(name);
-        syncBossBarAppearance();
     }
 
     @Override

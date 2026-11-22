@@ -140,6 +140,25 @@ public class MeditationCushionBlock extends Block {
         return null;
     }
 
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, net.minecraft.util.RandomSource random) {
+        double cx = pos.getX() + 0.5D;
+        double cy = pos.getY() + 0.28D;
+        double cz = pos.getZ() + 0.5D;
+        boolean occ = state.getValue(OCCUPIED);
+        if (occ || random.nextInt(3) == 0) {
+            double ang = (level.getGameTime() * 0.16D) + random.nextDouble() * Math.PI * 2.0D;
+            double r = occ ? 0.65D : 0.42D;
+            level.addParticle(com.xxsx.xuanhuanearth.particle.XuanhuanParticles.QI_SPARK.get(),
+                    cx + Math.cos(ang) * r, cy + random.nextDouble() * 0.45D, cz + Math.sin(ang) * r,
+                    -Math.cos(ang) * 0.015D, 0.025D, -Math.sin(ang) * 0.015D);
+            if (occ && random.nextInt(3) == 0) {
+                level.addParticle(com.xxsx.xuanhuanearth.particle.XuanhuanParticles.QI_RING.get(), cx, cy + 0.12D, cz, 0.0D, 0.0D, 0.0D);
+            }
+        }
+    }
+
     public static boolean performSeatedMeditation(ServerLevel level, BlockPos pos, ServerPlayer serverPlayer, boolean quietCooldown) {
         return CultivationPractice.perform(level, pos, serverPlayer,
                 CultivationPractice.Support.CUSHION, quietCooldown);
