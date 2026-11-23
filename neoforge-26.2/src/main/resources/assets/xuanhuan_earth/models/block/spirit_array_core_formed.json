@@ -1,9 +1,9 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "xuanhuan_earth:block/spirit_array_core_formed",
-    "side": "xuanhuan_earth:block/spirit_array_core_formed",
-    "top": "xuanhuan_earth:block/spirit_array_core_top",
+    "particle": "xuanhuan_earth:block/spirit_array_core_side",
+    "side": "xuanhuan_earth:block/spirit_array_core_side",
+    "top": "xuanhuan_earth:block/spirit_array_core_top_active",
     "jade": "xuanhuan_earth:block/jade_crystal",
     "bronze": "xuanhuan_earth:block/bronze_cauldron"
   },

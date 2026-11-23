@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "xuanhuan_earth:block/alchemy_furnace_active",
-    "front": "xuanhuan_earth:block/alchemy_furnace_active",
+    "particle": "xuanhuan_earth:block/alchemy_furnace_front_active",
+    "front": "xuanhuan_earth:block/alchemy_furnace_front_active",
     "top": "xuanhuan_earth:block/alchemy_furnace_top",
     "bronze": "xuanhuan_earth:block/bronze_cauldron",
     "knob": "xuanhuan_earth:block/lantern_jade_core"

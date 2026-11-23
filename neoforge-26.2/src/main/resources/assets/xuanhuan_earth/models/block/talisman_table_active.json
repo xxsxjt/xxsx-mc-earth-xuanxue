@@ -2,7 +2,7 @@
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "xuanhuan_earth:block/talisman_table_side",
-    "top": "xuanhuan_earth:block/talisman_table_top",
+    "top": "xuanhuan_earth:block/talisman_table_top_active",
     "side": "xuanhuan_earth:block/talisman_table_side",
     "jade": "xuanhuan_earth:block/jade_crystal",
     "bronze": "xuanhuan_earth:block/bronze_cauldron"

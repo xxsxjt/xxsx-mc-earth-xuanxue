@@ -1,9 +1,9 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "xuanhuan_earth:block/array_pillar_side",
-    "side": "xuanhuan_earth:block/array_pillar_side",
-    "top": "xuanhuan_earth:block/array_pillar_top",
+    "particle": "xuanhuan_earth:block/array_pillar",
+    "side": "xuanhuan_earth:block/array_pillar",
+    "top": "xuanhuan_earth:block/array_pillar",
     "jade": "xuanhuan_earth:block/jade_crystal",
     "bronze": "xuanhuan_earth:block/bronze_cauldron"
   },
