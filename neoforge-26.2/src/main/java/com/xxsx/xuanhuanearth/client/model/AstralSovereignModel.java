@@ -512,17 +512,28 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         this.head.yRot += state.yRot * Mth.DEG_TO_RAD * 0.65F;
         this.head.xRot += state.xRot * Mth.DEG_TO_RAD * 0.55F;
 
+        float swordArrayExpand = state.actionType == AstralSovereignEntity.ACTION_SWORD_ARRAY_BUFF
+                ? (Mth.sin(p * Mth.PI) * 0.72F + 0.22F)
+                : (state.swordBuffActive ? 0.34F : 0.0F);
+        float haloBoost = 1.0F + swordArrayExpand;
+        float haloBackShift = swordArrayExpand * 6.5F;
+
         this.haloInner.visible = true;
-        this.haloInner.zRot += age * (0.042F + awakenFactor * 0.048F);
+        this.haloInner.z += haloBackShift * 0.65F;
+        this.haloInner.zRot += age * (0.042F + awakenFactor * 0.048F + swordArrayExpand * 0.06F);
+        setUniformScale(this.haloInner, 1.0F + swordArrayExpand * 0.52F);
 
         this.haloOuter.visible = showPhase2Parts;
-        this.haloOuter.zRot -= age * 0.055F;
-        setUniformScale(this.haloOuter, 0.35F + 0.65F * awakenFactor);
+        this.haloOuter.z += haloBackShift * 0.90F;
+        this.haloOuter.zRot -= age * (0.055F + swordArrayExpand * 0.075F);
+        setUniformScale(this.haloOuter, (0.35F + 0.65F * awakenFactor) * haloBoost);
 
         this.haloTier3.visible = showPhase2Parts;
-        this.haloTier3.zRot += age * 0.038F;
-        setUniformScale(this.haloTier3, 0.25F + 0.75F * awakenFactor);
+        this.haloTier3.z += haloBackShift * 1.25F;
+        this.haloTier3.zRot += age * (0.038F + swordArrayExpand * 0.065F);
+        setUniformScale(this.haloTier3, (0.25F + 0.75F * awakenFactor) * (1.0F + swordArrayExpand * 0.88F));
 
+        this.astralWings.visible = false;
         this.orbitingSwordsRoot.visible = showPhase2Parts;
         this.orbitingSwordsRoot.yRot += age * 0.095F;
         this.orbitingSwordsRoot.y += Mth.sin(age * 0.12F) * 1.4F;

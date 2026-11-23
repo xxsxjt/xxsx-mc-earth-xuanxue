@@ -19,10 +19,37 @@ class AstralSovereignIntegrationTest {
         Path resources = Path.of("src/main/resources");
         assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/entity/astral_sovereign_p1.png")));
         assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/entity/astral_sovereign_p2.png")));
+        assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/entity/astral_vfx_beam.png")));
+        assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/entity/astral_vfx_ribbon.png")));
+        assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/entity/astral_vfx_talisman.png")));
+        assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/entity/astral_vfx_sword_gate.png")));
+        assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/entity/astral_vfx_halberd_trail.png")));
+        assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/entity/astral_vfx_sweep.png")));
         assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/item/astral_fangtian_halberd.png")));
         assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/item/astral_sovereign_spawn_egg.png")));
         assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/items/astral_fangtian_halberd.json")));
         assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/items/astral_sovereign_spawn_egg.json")));
+
+        for (String model : new String[] {
+                "alchemy_furnace.json", "alchemy_furnace_active.json",
+                "talisman_table.json", "talisman_table_active.json",
+                "spirit_array_core.json", "spirit_array_core_active.json", "spirit_array_core_formed.json",
+                "array_pillar.json", "meditation_cushion.json", "spirit_vein_node.json",
+                "spirit_spring_stone.json", "settlement_anchor.json", "spirit_soil.json"
+        }) {
+            Path p = resources.resolve("assets/xuanhuan_earth/models/block/" + model);
+            assertTrue(Files.exists(p), "Missing block model: " + model);
+            String json = Files.readString(p);
+            if (!model.equals("spirit_soil.json")) {
+                assertTrue(json.contains("\"elements\""), "Block model must use sculpted 3D elements: " + model);
+            }
+        }
+        for (String tex : new String[] {
+                "jade_crystal.png", "bronze_cauldron.png", "spirit_water_pool.png",
+                "spirit_soil_top.png", "lantern_jade_core.png"
+        }) {
+            assertTrue(Files.exists(resources.resolve("assets/xuanhuan_earth/textures/block/" + tex)), "Missing block texture: " + tex);
+        }
 
         JsonObject zh = JsonParser.parseString(
                 Files.readString(resources.resolve("assets/xuanhuan_earth/lang/zh_cn.json"))).getAsJsonObject();
@@ -45,8 +72,8 @@ class AstralSovereignIntegrationTest {
         assertTrue(content.contains("xuanhuan_earth:spirit_stone_core"));
         assertTrue(content.contains("xuanhuan_earth:jade_array_plate"));
         assertTrue(content.contains("xuanhuan_earth:breakthrough_pill"));
-        assertFalse(content.contains("astral_sovereign:"), "No standalone prototype namespace leaks");
-        assertFalse(content.contains("minecraft:nether_star"), "Vanilla nether star replaced by xuanhuan progression drops");
+        assertFalse(content.contains("astral_sovereign:"));
+        assertFalse(content.contains("minecraft:nether_star"));
     }
 
     @Test
@@ -57,23 +84,27 @@ class AstralSovereignIntegrationTest {
         assertTrue(AstralSovereignEntity.ULTIMATE_MAX_RADIUS >= 10.0D);
         assertTrue(AstralSovereignEntity.SWORD_BUFF_DURATION >= 100);
 
-        // Short-lived homing flying swords & stronger empowered damage
-        assertTrue(AstralFlyingSwordEntity.BASE_LIFETIME_TICKS > 40 && AstralFlyingSwordEntity.BASE_LIFETIME_TICKS <= 100);
+        assertTrue(AstralFlyingSwordEntity.BASE_LIFETIME_TICKS >= 100 && AstralFlyingSwordEntity.BASE_LIFETIME_TICKS <= 180);
+        assertTrue(AstralFlyingSwordEntity.EMPOWERED_LIFETIME_TICKS > AstralFlyingSwordEntity.BASE_LIFETIME_TICKS);
+        assertTrue(AstralFlyingSwordEntity.PIERCE_CURVE_TICKS >= 8);
+        assertTrue(AstralFlyingSwordEntity.PER_TARGET_COOLDOWN_TICKS >= 10);
         assertTrue(AstralFlyingSwordEntity.EMPOWERED_DAMAGE_P1 > AstralFlyingSwordEntity.BASE_DAMAGE);
         assertTrue(AstralFlyingSwordEntity.EMPOWERED_DAMAGE_P2 > AstralFlyingSwordEntity.EMPOWERED_DAMAGE_P1);
         assertTrue(AstralFlyingSwordEntity.DEFLECT_RECOIL_TICKS >= 10);
 
-        // Phase 1 removes all flying swords (Phase 2 exclusive)
         String entitySource = Files.readString(Path.of("src/main/java/com/xxsx/xuanhuanearth/entity/AstralSovereignEntity.java"));
-        assertTrue(entitySource.contains("isPhase2()"), "Flying sword mechanics must be strictly gated to Phase 2");
-        String modelSource = Files.readString(Path.of("src/main/java/com/xxsx/xuanhuanearth/client/model/AstralSovereignModel.java"));
-        assertTrue(modelSource.contains("this.astralWings.visible = false;"), "Phase 1 back-wing flying swords must stay hidden");
-        assertTrue(AstralSovereignEntity.PHASE_TRANSITION_DURATION >= 40, "Phase 1 -> Phase 2 awakening transition must animate smoothly");
-        assertTrue(modelSource.contains("cape_mid") && modelSource.contains("cape_lower"), "Cape must use multi-segment cloth articulation");
-        assertTrue(modelSource.contains("tabard_front") && modelSource.contains("p2_pauldron_wing_l"), "Lower armor hinges and Phase 2 physical evolution parts must exist");
+        assertTrue(entitySource.contains("isPhase2()"));
+        assertTrue(entitySource.contains("ARMOR_TOUGHNESS"));
 
-        // Halberd 3-combo styles
-        assertTrue(AstralHalberdItem.OVERHEAD_DAMAGE > AstralHalberdItem.SWEEP_DAMAGE);
+        String modelSource = Files.readString(Path.of("src/main/java/com/xxsx/xuanhuanearth/client/model/AstralSovereignModel.java"));
+        assertTrue(modelSource.contains("this.astralWings.visible = false;"));
+        assertTrue(AstralSovereignEntity.PHASE_TRANSITION_DURATION >= 40);
+        assertTrue(modelSource.contains("cape_mid") && modelSource.contains("cape_lower"));
+        assertTrue(modelSource.contains("tabard_front") && modelSource.contains("p2_pauldron_wing_l"));
+
+        assertTrue(AstralHalberdItem.CLEAVE_DAMAGE > AstralHalberdItem.SWEEP_DAMAGE);
         assertTrue(AstralHalberdItem.COOLDOWN_TICKS >= 20);
+        String halberdSource = Files.readString(Path.of("src/main/java/com/xxsx/xuanhuanearth/AstralHalberdItem.java"));
+        assertFalse(halberdSource.contains("SEAL_RING"));
     }
 }

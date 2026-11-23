@@ -37,11 +37,11 @@ import net.minecraft.world.phys.Vec3;
  * parry/deflect incoming {@link AstralFlyingSwordEntity} projectiles.</p>
  */
 public class AstralHalberdItem extends Item {
-    public static final int COOLDOWN_TICKS = 36;
+    public static final int COOLDOWN_TICKS = 34;
     public static final int COMBO_WINDOW_TICKS = 90;
     public static final double SWEEP_MAX_RANGE = 12.0D;
     public static final float SWEEP_DAMAGE = 12.0F;
-    public static final float OVERHEAD_DAMAGE = 14.5F;
+    public static final float CLEAVE_DAMAGE = 14.0F;
     public static final float THRUST_DAMAGE = 13.0F;
 
     private static final Map<UUID, ComboMemory> PLAYER_COMBOS = new HashMap<>();
@@ -51,6 +51,19 @@ public class AstralHalberdItem extends Item {
 
     public AstralHalberdItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void hurtEnemy(net.minecraft.world.item.ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        super.hurtEnemy(stack, target, attacker);
+        if (attacker.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
+                    target.getX(), target.getY() + target.getBbHeight() * 0.55, target.getZ(),
+                    8, 0.35, 0.35, 0.35, 0.08);
+            serverLevel.sendParticles(ParticleTypes.END_ROD,
+                    target.getX(), target.getY() + target.getBbHeight() * 0.55, target.getZ(),
+                    4, 0.25, 0.25, 0.25, 0.05);
+        }
     }
 
     @Override
@@ -77,7 +90,7 @@ public class AstralHalberdItem extends Item {
             if (style == 0) {
                 executeHorizontalStarSweep(serverLevel, player, origin, look, Math.min(effectiveRange, 7.5D));
             } else if (style == 1) {
-                executeOverheadSkySplitter(serverLevel, player, origin, look, effectiveRange);
+                executeAerialDiagonalCleave(serverLevel, player, origin, look, effectiveRange);
             } else {
                 executeSpiralDragonThrust(serverLevel, player, origin, look, effectiveRange);
             }
@@ -117,7 +130,7 @@ public class AstralHalberdItem extends Item {
         }
     }
 
-    private void executeOverheadSkySplitter(
+    private void executeAerialDiagonalCleave(
             ServerLevel level, Player player, Vec3 origin, Vec3 look, double range
     ) {
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -131,13 +144,13 @@ public class AstralHalberdItem extends Item {
             Vec3 p = origin.add(look.scale(s)).add(0.0, verticalArc, 0.0);
             level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, p.x, p.y, p.z, 2, 0.08, 0.35, 0.08, 0.02);
             level.sendParticles(XuanhuanParticles.EMBER_SPARK.get(), p.x, p.y - 0.35, p.z, 2, 0.08, 0.2, 0.08, 0.03);
-            damageAndParryInBox(level, player, p, 1.5, OVERHEAD_DAMAGE, look, 0.55D, alreadyHit);
+            damageAndParryInBox(level, player, p, 1.5, CLEAVE_DAMAGE, look, 0.55D, alreadyHit);
         }
 
-        // Terminal impact seal ring
-        Vec3 impact = origin.add(look.scale(range));
-        level.sendParticles(XuanhuanParticles.SEAL_RING.get(), impact.x, impact.y - 0.8, impact.z, 1, 0, 0, 0, 0);
-        level.sendParticles(XuanhuanParticles.QI_RING.get(), impact.x, impact.y - 0.4, impact.z, 1, 0, 0, 0, 0);
+        // Aerial crescent burst at cleave tip (NO ground slam crater ring)
+        Vec3 tip = origin.add(look.scale(range)).add(0.0, 0.35, 0.0);
+        level.sendParticles(XuanhuanParticles.QI_RING.get(), tip.x, tip.y, tip.z, 1, 0, 0, 0, 0);
+        level.sendParticles(ParticleTypes.END_ROD, tip.x, tip.y, tip.z, 6, 0.25, 0.25, 0.25, 0.06);
     }
 
     private void executeSpiralDragonThrust(

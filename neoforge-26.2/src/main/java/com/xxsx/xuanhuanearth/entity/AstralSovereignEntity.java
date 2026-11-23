@@ -107,6 +107,7 @@ public class AstralSovereignEntity extends Monster {
                 .add(Attributes.MOVEMENT_SPEED, 0.28D)
                 .add(Attributes.ATTACK_DAMAGE, 14.0D)
                 .add(Attributes.ARMOR, 10.0D)
+                .add(Attributes.ARMOR_TOUGHNESS, 6.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.85D)
                 .add(Attributes.FOLLOW_RANGE, 48.0D);
     }
@@ -452,11 +453,14 @@ public class AstralSovereignEntity extends Monster {
         Vec3 right = new Vec3(forward.z, 0.0, -forward.x).normalize();
 
         for (int i = 0; i < count; i++) {
-            double arcAngle = (Math.PI * 2.0 * i) / count + (this.tickCount * 0.17);
-            double spreadRadius = empowered ? 3.85 : 3.15;
-            double heightOffset = 2.05 + Math.sin(arcAngle) * 0.95;
-            Vec3 ringOffset = right.scale(Math.cos(arcAngle) * spreadRadius)
-                    .add(forward.scale(-0.65 + Math.sin(arcAngle) * 0.55));
+            // Align flying sword spawns with the 2-tier rear Celestial Sword-Vault Portals (星渊八卦剑门)
+            boolean outerTier = (i % 2 == 0);
+            double frac = count > 1 ? ((double) i / (count - 1)) * 2.0 - 1.0 : 0.0;
+            double fanAngle = frac * (outerTier ? 1.20 : 0.85);
+            double spreadRadius = outerTier ? (empowered ? 4.35 : 3.45) : (empowered ? 3.20 : 2.65);
+            double heightOffset = (outerTier ? 2.45 : 3.65) + Math.cos(fanAngle) * (outerTier ? 1.35 : 0.85);
+            Vec3 ringOffset = right.scale(Math.sin(fanAngle) * spreadRadius)
+                    .add(forward.scale(-(empowered ? 2.15 : 1.55) - Math.abs(frac) * 0.55));
             Vec3 spawnPos = new Vec3(this.getX(), this.getY() + heightOffset, this.getZ()).add(ringOffset);
             Vec3 outwardDir = ringOffset.add(0.0, 0.25, 0.0).normalize();
 

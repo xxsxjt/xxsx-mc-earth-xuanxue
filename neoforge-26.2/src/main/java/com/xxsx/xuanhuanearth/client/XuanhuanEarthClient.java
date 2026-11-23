@@ -11,6 +11,8 @@ import com.xxsx.xuanhuanearth.client.model.WindWolfModel;
 import com.xxsx.xuanhuanearth.client.particle.XuanhuanParticleProviders;
 import com.xxsx.xuanhuanearth.client.renderer.AstralFlyingSwordRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.AstralSovereignRenderer;
+import com.xxsx.xuanhuanearth.client.renderer.HalberdSwingVfx;
+import com.xxsx.xuanhuanearth.client.renderer.XuanhuanMachineBlockEntityRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.CultivationSettlerRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.SpiritBeastRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.SpiritFoxRenderer;
@@ -61,6 +63,7 @@ public final class XuanhuanEarthClient {
         modBus.addListener(XuanhuanEarthClient::registerKeyMappings);
         modBus.addListener(XuanhuanParticleProviders::register);
         NeoForge.EVENT_BUS.addListener(XuanhuanEarthClient::clientTick);
+        HalberdSwingVfx.register();
         NeoForge.EVENT_BUS.addListener(CultivationPlayerAnimations::renderPlayer);
     }
 
@@ -86,6 +89,7 @@ public final class XuanhuanEarthClient {
         event.registerEntityRenderer(XuanhuanEarth.CULTIVATION_SETTLER.get(), CultivationSettlerRenderer::new);
         event.registerEntityRenderer(XuanhuanEarth.ASTRAL_SOVEREIGN.get(), AstralSovereignRenderer::new);
         event.registerEntityRenderer(XuanhuanEarth.ASTRAL_FLYING_SWORD.get(), AstralFlyingSwordRenderer::new);
+        event.registerBlockEntityRenderer(XuanhuanEarth.XUANHUAN_MACHINE_BLOCK_ENTITY.get(), XuanhuanMachineBlockEntityRenderer::new);
     }
 
     private static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {

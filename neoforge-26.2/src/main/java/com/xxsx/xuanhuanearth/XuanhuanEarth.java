@@ -113,14 +113,14 @@ public class XuanhuanEarth {
     private static final List<DeferredBlock<XuanhuanMachineBlock>> MACHINE_BLOCKS = new ArrayList<>();
 
     public static final DeferredBlock<XuanhuanBlock> SPIRIT_VEIN_NODE = block("spirit_vein_node",
-            () -> stone(MapColor.COLOR_PURPLE, 4.0F), "message.xuanhuan_earth.block.spirit_vein_node");
+            () -> stone(MapColor.COLOR_PURPLE, 4.0F).noOcclusion(), "message.xuanhuan_earth.block.spirit_vein_node");
     public static final DeferredBlock<XuanhuanBlock> SPIRIT_SPRING_STONE = block("spirit_spring_stone",
-            () -> stone(MapColor.WATER, 2.5F), "message.xuanhuan_earth.block.spirit_spring_stone");
+            () -> stone(MapColor.WATER, 2.5F).noOcclusion(), "message.xuanhuan_earth.block.spirit_spring_stone");
     public static final DeferredBlock<XuanhuanBlock> SPIRIT_SOIL = block("spirit_soil",
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(0.6F).sound(SoundType.GRAVEL),
             "message.xuanhuan_earth.block.spirit_soil");
     public static final DeferredBlock<XuanhuanBlock> ARRAY_PILLAR = block("array_pillar",
-            () -> stone(MapColor.COLOR_CYAN, 3.0F), "message.xuanhuan_earth.block.array_pillar");
+            () -> stone(MapColor.COLOR_CYAN, 3.0F).noOcclusion(), "message.xuanhuan_earth.block.array_pillar");
     public static final DeferredBlock<MeditationCushionBlock> MEDITATION_CUSHION = meditationBlock("meditation_cushion",
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(0.25F).sound(SoundType.WOOL).noOcclusion());
     public static final DeferredHolder<EntityType<?>, EntityType<MeditationSeatEntity>> MEDITATION_SEAT =
@@ -193,12 +193,12 @@ public class XuanhuanEarth {
             BLOCKS.registerBlock("settlement_anchor", XuanhuanSettlementAnchorBlock::new,
                     () -> stone(MapColor.COLOR_CYAN, 5.0F).noOcclusion());
     public static final DeferredBlock<XuanhuanMachineBlock> ALCHEMY_FURNACE = machineBlock("alchemy_furnace",
-            XuanhuanMachineBlock.Kind.ALCHEMY_FURNACE, () -> stone(MapColor.TERRACOTTA_BLACK, 3.5F));
+            XuanhuanMachineBlock.Kind.ALCHEMY_FURNACE, () -> stone(MapColor.TERRACOTTA_BLACK, 3.5F).noOcclusion());
     public static final DeferredBlock<XuanhuanMachineBlock> TALISMAN_TABLE = machineBlock("talisman_table",
             XuanhuanMachineBlock.Kind.TALISMAN_TABLE,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F, 3.0F).sound(SoundType.WOOD));
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F, 3.0F).sound(SoundType.WOOD).noOcclusion());
     public static final DeferredBlock<XuanhuanMachineBlock> SPIRIT_ARRAY_CORE = machineBlock("spirit_array_core",
-            XuanhuanMachineBlock.Kind.SPIRIT_ARRAY_CORE, () -> stone(MapColor.COLOR_CYAN, 4.0F));
+            XuanhuanMachineBlock.Kind.SPIRIT_ARRAY_CORE, () -> stone(MapColor.COLOR_CYAN, 4.0F).noOcclusion());
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<XuanhuanMachineBlockEntity>> XUANHUAN_MACHINE_BLOCK_ENTITY =
             BLOCK_ENTITY_TYPES.register("xuanhuan_machine", () -> new BlockEntityType<>(
