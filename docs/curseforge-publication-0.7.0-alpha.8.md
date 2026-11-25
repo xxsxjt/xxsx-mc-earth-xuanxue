@@ -3,7 +3,7 @@
 - Project: Xuanhuan Earth
 - Project ID: 1617745
 - File ID: 8876884
-- Artifact: xuanhuan-earth-neoforge-26.2-0.7.0-alpha.8.jar
+- Artifact: earth-xuanxue-neoforge-26.1.2-0.7.0-alpha.8.jar
 - SHA256: CEE82C33945ACC3C1B07E9ADF1940E169AAACB66846AF3F0E341D0C938246E48
 - Target: Minecraft 26.2 / NeoForge 26.2.0.7-beta / Client + Server / Java 25
 - Submitted: 2026-09-14 11:32:41 +08:00

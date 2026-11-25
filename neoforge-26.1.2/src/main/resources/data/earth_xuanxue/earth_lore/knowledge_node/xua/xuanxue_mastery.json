@@ -1,0 +1,71 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 10,
+  "gate": "cap",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/spirit_transformation"
+    },
+    {
+      "all": "earth_xuanxue:xua/herbal_formulas"
+    },
+    {
+      "all": "earth_xuanxue:xua/fire_talisman"
+    },
+    {
+      "all": "earth_xuanxue:xua/seal_talisman"
+    },
+    {
+      "all": "earth_xuanxue:xua/array_functions"
+    },
+    {
+      "all": "earth_xuanxue:xua/jade_slips"
+    },
+    {
+      "all": "earth_xuanxue:xua/dragon_vein_seeking"
+    },
+    {
+      "all": "earth_xuanxue:xua/bone_oracle"
+    },
+    {
+      "all": "earth_xuanxue:xua/spirit_beasts"
+    },
+    {
+      "all": "earth_xuanxue:xua/spirit_farming"
+    },
+    {
+      "all": "earth_xuanxue:xua/spell_graphs"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "capstone": "earth_lore:xua"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:spirit_stone_core",
+        "count": 4
+      },
+      {
+        "ingredient": "earth_xuanxue:jade_slip",
+        "count": 2
+      },
+      {
+        "ingredient": "earth_xuanxue:breakthrough_pill",
+        "count": 2
+      }
+    ],
+    "ticks": 16800
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.xuanxue_mastery",
+  "desc_key": "lore.earth_xuanxue.xua.xuanxue_mastery.desc"
+}

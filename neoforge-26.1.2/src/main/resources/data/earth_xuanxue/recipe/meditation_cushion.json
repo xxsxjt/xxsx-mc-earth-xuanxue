@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " W ",
+    "SPS",
+    " W "
+  ],
+  "key": {
+    "W": "#minecraft:wool",
+    "S": "earth_xuanxue:spirit_grass",
+    "P": "#minecraft:planks"
+  },
+  "result": {
+    "id": "earth_xuanxue:meditation_cushion"
+  }
+}

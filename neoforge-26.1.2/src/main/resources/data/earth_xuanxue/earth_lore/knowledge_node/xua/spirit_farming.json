@@ -1,0 +1,49 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 3,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/spirit_stones"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:spirit_herb"
+    },
+    {
+      "item": "earth_xuanxue:spirit_spring_bottle"
+    },
+    {
+      "block": "earth_xuanxue:spirit_soil"
+    },
+    {
+      "item": "earth_xuanxue:spirit_soil"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:dirt",
+        "count": 8
+      },
+      {
+        "ingredient": "minecraft:bone_meal",
+        "count": 8
+      },
+      {
+        "ingredient": "minecraft:glass_bottle",
+        "count": 2
+      }
+    ],
+    "ticks": 2400
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.spirit_farming",
+  "desc_key": "lore.earth_xuanxue.xua.spirit_farming.desc"
+}

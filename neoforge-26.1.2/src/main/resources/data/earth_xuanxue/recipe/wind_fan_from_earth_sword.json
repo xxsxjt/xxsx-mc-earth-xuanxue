@@ -1,0 +1,20 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "earth_core"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "earth_core:iron_sword",
+    "earth_xuanxue:spirit_crystal_shard",
+    "minecraft:feather",
+    "minecraft:feather"
+  ],
+  "result": {
+    "id": "earth_xuanxue:wind_fan",
+    "count": 1
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "earth_xuanxue:item/cultivation_settler_spawn_egg" }
+}

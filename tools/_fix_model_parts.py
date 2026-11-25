@@ -1,8 +1,8 @@
 import io
 from pathlib import Path
 
-MODELS = Path(r'D:\AGENT\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth'
-              r'\neoforge-26.2\src\main\java\com\xxsx\xuanhuanearth\client\model')
+MODELS = Path(r'D:\AGENT\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue'
+              r'\neoforge-26.1.2\src\main\java\com\xxsx\earth\xuanxue\client\model')
 
 # Crane: head is registered under neck > upper.
 p = MODELS / 'EmberCraneModel.java'

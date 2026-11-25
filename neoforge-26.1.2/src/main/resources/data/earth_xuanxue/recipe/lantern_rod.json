@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "earth_xuanxue:spirit_iron_blank",
+    "minecraft:glowstone_dust",
+    "minecraft:glowstone_dust",
+    "minecraft:glowstone_dust"
+  ],
+  "result": {
+    "id": "earth_xuanxue:lantern_rod",
+    "count": 1
+  }
+}

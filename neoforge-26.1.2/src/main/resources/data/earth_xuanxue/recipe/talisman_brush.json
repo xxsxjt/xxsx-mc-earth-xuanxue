@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "  F",
+    " S ",
+    "C  "
+  ],
+  "key": {
+    "F": "minecraft:feather",
+    "S": "minecraft:stick",
+    "C": "earth_xuanxue:spirit_crystal_shard"
+  },
+  "result": {
+    "id": "earth_xuanxue:talisman_brush",
+    "count": 1
+  }
+}

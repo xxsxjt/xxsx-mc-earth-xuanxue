@@ -2,7 +2,7 @@
 
 状态：源码实现、回归测试、静态门禁与资源打包已通过；游戏内运行与服务器重载尚未验证。
 
-本契约与 `earth-series/fantasy_earth` 的 `AetherChunkField`/`ArcanaPower` 共享同一组不变量。单位、效率和字段含义必须由两侧回归测试共同约束；不建立强制运行时公共 Mod。
+本契约与 `earth-series/earth_magic` 的 `AetherChunkField`/`ArcanaPower` 共享同一组不变量。单位、效率和字段含义必须由两侧回归测试共同约束；不建立强制运行时公共 Mod。
 
 ## 1. 物理层与超凡层
 
@@ -110,7 +110,7 @@
 
 - 图 = 声明源 + 单条管线 + 显式汇。节点不再兼任 source，避免“第二个 source 其实是 buffer”的错误建模。
 - 每个节点同时有 `costAeu` 与 `costMana`；合计为零的图被 `free_spell` 拒绝。
-- `SpellGraphLoader` 从 `data/xuanhuan_earth/spell_graph` 读取，只接受白名单枚举，文件内 `id` 必须与路径一致，坏图逐条拒绝并记录日志。它监听的是游戏总线的 `AddServerReloadListenersEvent`；若挂到 mod 总线则整个数据层永不加载。
+- `SpellGraphLoader` 从 `data/earth_xuanxue/spell_graph` 读取，只接受白名单枚举，文件内 `id` 必须与路径一致，坏图逐条拒绝并记录日志。它监听的是游戏总线的 `AddServerReloadListenersEvent`；若挂到 mod 总线则整个数据层永不加载。
 - `SpellExecutor` 执行前先按 id 查 `SpellGraphLoader.find`，命中数据图就用数据图，否则回退到 `SpellCatalog` 内置图。数据包可以改数值，但不能引入新代码。
 - 符案产出护体符时写入 `talisman_charge` 组件（24 AEU）；聚落箱子里的符同样在放置时封存。空符（无组件或 `charge_aeu` 为 0）在 `SpellExecutor.plan` 阶段即被 `talisman_empty` 拒绝，且不会被消耗。
 

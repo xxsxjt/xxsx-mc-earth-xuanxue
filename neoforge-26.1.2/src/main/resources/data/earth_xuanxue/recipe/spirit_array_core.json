@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GCG",
+    "CSC",
+    "GCG"
+  ],
+  "key": {
+    "G": "minecraft:gold_nugget",
+    "C": "earth_xuanxue:spirit_crystal_shard",
+    "S": "earth_xuanxue:spirit_vein_node"
+  },
+  "result": {
+    "id": "earth_xuanxue:spirit_array_core"
+  }
+}

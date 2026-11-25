@@ -1,0 +1,61 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 3,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/spirit_stones"
+    },
+    {
+      "any": [
+        "earth_core:med/materia_medica",
+        "earth_xuanxue:xua/herb_tasting"
+      ]
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "block": "earth_xuanxue:alchemy_furnace"
+    },
+    {
+      "item": "earth_xuanxue:alchemy_furnace"
+    },
+    {
+      "ability": "earth_xuanxue:alchemy_furnace"
+    },
+    {
+      "item": "earth_xuanxue:cinnabar_spirit_ink"
+    },
+    {
+      "item": "earth_xuanxue:pill_residue"
+    },
+    {
+      "item": "earth_xuanxue:failed_pill"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:spirit_herb",
+        "count": 4
+      },
+      {
+        "ingredient": "earth_xuanxue:spirit_crystal_shard",
+        "count": 2
+      },
+      {
+        "ingredient": "minecraft:coal",
+        "count": 4
+      }
+    ],
+    "ticks": 2400
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.pill_refining",
+  "desc_key": "lore.earth_xuanxue.xua.pill_refining.desc"
+}

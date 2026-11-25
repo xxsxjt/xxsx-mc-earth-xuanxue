@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "earth_xuanxue:basic_talisman",
+    "minecraft:feather",
+    "minecraft:feather"
+  ],
+  "result": {
+    "id": "earth_xuanxue:wind_talisman",
+    "count": 1
+  }
+}

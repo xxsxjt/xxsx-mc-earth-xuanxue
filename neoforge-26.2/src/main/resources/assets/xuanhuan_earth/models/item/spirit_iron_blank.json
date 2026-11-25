@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "xuanhuan_earth:item/spirit_iron_blank"
-  }
-}

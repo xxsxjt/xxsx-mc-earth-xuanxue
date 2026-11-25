@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "earth_core"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "JRJ"
+  ],
+  "key": {
+    "J": "minecraft:amethyst_shard",
+    "R": "earth_xuanxue:array_rune_stone"
+  },
+  "result": {
+    "id": "earth_xuanxue:jade_array_plate",
+    "count": 1
+  }
+}

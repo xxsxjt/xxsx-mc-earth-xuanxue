@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": ["earth_xuanxue:wandering_cultivator_market"],
+  "step": "surface_structures"
+}

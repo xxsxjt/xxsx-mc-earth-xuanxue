@@ -11,7 +11,7 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2')
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2')
 LOG = Path(r'C:\Users\xxsx\AppData\Local\Temp\opencode\resident_check.log')
 HOST, PORT, PASSWORD = '127.0.0.1', 25575, 'earthtest'
 
@@ -85,19 +85,19 @@ def main() -> None:
     if client is not None:
         client.cmd('forceload add -128 -128 128 128')
         for kind, x, z in PLACES:
-            client.cmd(f'place feature xuanhuan_earth:{kind} {x} 100 {z}')
+            client.cmd(f'place feature earth_xuanxue:{kind} {x} 100 {z}')
         # Let the anchors finish their 40-tick warmup, then count residents.
         time.sleep(15)
         for kind, x, z in PLACES:
             out = client.cmd(
-                f'execute as @e[type=xuanhuan_earth:cultivation_settler,'
+                f'execute as @e[type=earth_xuanxue:cultivation_settler,'
                 f'distance=..40] run data get entity @s Role 2>/dev/null')
             count = client.cmd(
-                f'execute positioned {x} 100 {z} run data get entity @e[type=xuanhuan_earth:cultivation_settler,'
+                f'execute positioned {x} 100 {z} run data get entity @e[type=earth_xuanxue:cultivation_settler,'
                 f'limit=1,sort=nearest,distance=..40]')
             residents = client.cmd(
                 f'execute positioned {x} 100 {z} run data get entity '
-                f'@e[type=xuanhuan_earth:cultivation_settler,limit=5,sort=nearest,distance=..40]')
+                f'@e[type=earth_xuanxue:cultivation_settler,limit=5,sort=nearest,distance=..40]')
             report.append((kind, (residents or '').strip()[:220]))
         time.sleep(4)
         client.cmd('save-all')

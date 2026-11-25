@@ -1,8 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "#minecraft:is_forest",
-  "features": [
-    "xuanhuan_earth:spirit_beast_keeper_camp"
-  ],
-  "step": "surface_structures"
-}

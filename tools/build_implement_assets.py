@@ -11,9 +11,9 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\resources')
-DATA = ROOT / 'data' / 'xuanhuan_earth'
-ASSETS = ROOT / 'assets' / 'xuanhuan_earth'
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\resources')
+DATA = ROOT / 'data' / 'earth_xuanxue'
+ASSETS = ROOT / 'assets' / 'earth_xuanxue'
 LANG = ASSETS / 'lang'
 ITEMS = ASSETS / 'items'
 MODELS = ASSETS / 'models' / 'item'
@@ -114,10 +114,10 @@ def draw_implement(name: str, base, accent) -> Image.Image:
 
 
 RECIPES = {
-    'wind_fan': [('xuanhuan_earth:spirit_iron_blank', 2), ('minecraft:feather', 2)],
-    'stone_seal': [('xuanhuan_earth:spirit_iron_blank', 2), ('minecraft:stone_bricks', 3)],
-    'gather_orb': [('xuanhuan_earth:spirit_iron_blank', 1), ('xuanhuan_earth:spirit_crystal_shard', 3)],
-    'lantern_rod': [('xuanhuan_earth:spirit_iron_blank', 1), ('minecraft:glowstone_dust', 3)],
+    'wind_fan': [('earth_xuanxue:spirit_iron_blank', 2), ('minecraft:feather', 2)],
+    'stone_seal': [('earth_xuanxue:spirit_iron_blank', 2), ('minecraft:stone_bricks', 3)],
+    'gather_orb': [('earth_xuanxue:spirit_iron_blank', 1), ('earth_xuanxue:spirit_crystal_shard', 3)],
+    'lantern_rod': [('earth_xuanxue:spirit_iron_blank', 1), ('minecraft:glowstone_dust', 3)],
 }
 
 
@@ -129,44 +129,44 @@ def main() -> None:
 
     for impl_id, spec in IMPLEMENTS.items():
         zh_name, en_name, zh_tip, en_tip, zh_msg, en_msg, base, accent = spec
-        zh[f'item.xuanhuan_earth.{impl_id}'] = zh_name
-        zh[f'tooltip.xuanhuan_earth.{impl_id}'] = zh_tip
-        zh[f'message.xuanhuan_earth.implement.cast.{impl_id}'] = zh_msg
-        en[f'item.xuanhuan_earth.{impl_id}'] = en_name
-        en[f'tooltip.xuanhuan_earth.{impl_id}'] = en_tip
-        en[f'message.xuanhuan_earth.implement.cast.{impl_id}'] = en_msg
+        zh[f'item.earth_xuanxue.{impl_id}'] = zh_name
+        zh[f'tooltip.earth_xuanxue.{impl_id}'] = zh_tip
+        zh[f'message.earth_xuanxue.implement.cast.{impl_id}'] = zh_msg
+        en[f'item.earth_xuanxue.{impl_id}'] = en_name
+        en[f'tooltip.earth_xuanxue.{impl_id}'] = en_tip
+        en[f'message.earth_xuanxue.implement.cast.{impl_id}'] = en_msg
 
         io.open(ITEMS / f'{impl_id}.json', 'w', encoding='utf-8', newline='\n').write(
             json.dumps({"model": {"type": "minecraft:model",
-                                  "model": f"xuanhuan_earth:item/{impl_id}"}}, indent=2) + '\n')
+                                  "model": f"earth_xuanxue:item/{impl_id}"}}, indent=2) + '\n')
         io.open(MODELS / f'{impl_id}.json', 'w', encoding='utf-8', newline='\n').write(
             json.dumps({"parent": "minecraft:item/handheld",
-                        "textures": {"layer0": f"xuanhuan_earth:item/{impl_id}"}}, indent=2) + '\n')
+                        "textures": {"layer0": f"earth_xuanxue:item/{impl_id}"}}, indent=2) + '\n')
         draw_implement(impl_id, base, accent).save(TEX / f'{impl_id}.png')
 
         recipe = {
             "type": "minecraft:crafting_shapeless",
             "category": "equipment",
             "ingredients": [item for item, count in RECIPES[impl_id] for _ in range(count)],
-            "result": {"id": f"xuanhuan_earth:{impl_id}", "count": 1},
+            "result": {"id": f"earth_xuanxue:{impl_id}", "count": 1},
         }
         io.open(DATA / 'recipe' / f'{impl_id}.json', 'w', encoding='utf-8', newline='\n').write(
             json.dumps(recipe, indent=2) + '\n')
         print('implement', impl_id)
 
-    zh['tooltip.xuanhuan_earth.implement.charge'] = '法器储能：%s / %s AEU，每次施放消耗 %s AEU'
-    zh['tooltip.xuanhuan_earth.implement.use'] = '右键施放；潜行右键从当前灵气场充能。'
-    zh['message.xuanhuan_earth.implement.full'] = '法器已经充满，无需继续吸纳灵气。'
-    zh['message.xuanhuan_earth.implement.no_field'] = '当前灵气场过于稀薄，无法为法器充能。'
-    zh['message.xuanhuan_earth.implement.charged'] = '法器充能：吸纳 %s AEU（%s/%s）。'
-    zh['message.xuanhuan_earth.implement.empty'] = '法器储能不足：需要 %s AEU，当前 %s AEU。'
+    zh['tooltip.earth_xuanxue.implement.charge'] = '法器储能：%s / %s AEU，每次施放消耗 %s AEU'
+    zh['tooltip.earth_xuanxue.implement.use'] = '右键施放；潜行右键从当前灵气场充能。'
+    zh['message.earth_xuanxue.implement.full'] = '法器已经充满，无需继续吸纳灵气。'
+    zh['message.earth_xuanxue.implement.no_field'] = '当前灵气场过于稀薄，无法为法器充能。'
+    zh['message.earth_xuanxue.implement.charged'] = '法器充能：吸纳 %s AEU（%s/%s）。'
+    zh['message.earth_xuanxue.implement.empty'] = '法器储能不足：需要 %s AEU，当前 %s AEU。'
 
-    en['tooltip.xuanhuan_earth.implement.charge'] = 'Implement charge: %s / %s AEU; each cast costs %s AEU'
-    en['tooltip.xuanhuan_earth.implement.use'] = 'Right-click to cast; sneak-right-click to charge from the local qi field.'
-    en['message.xuanhuan_earth.implement.full'] = 'The implement is already fully charged.'
-    en['message.xuanhuan_earth.implement.no_field'] = 'The local qi field is too thin to charge the implement.'
-    en['message.xuanhuan_earth.implement.charged'] = 'Implement charged: drew %s AEU (%s/%s).'
-    en['message.xuanhuan_earth.implement.empty'] = 'Not enough charge: needs %s AEU, has %s AEU.'
+    en['tooltip.earth_xuanxue.implement.charge'] = 'Implement charge: %s / %s AEU; each cast costs %s AEU'
+    en['tooltip.earth_xuanxue.implement.use'] = 'Right-click to cast; sneak-right-click to charge from the local qi field.'
+    en['message.earth_xuanxue.implement.full'] = 'The implement is already fully charged.'
+    en['message.earth_xuanxue.implement.no_field'] = 'The local qi field is too thin to charge the implement.'
+    en['message.earth_xuanxue.implement.charged'] = 'Implement charged: drew %s AEU (%s/%s).'
+    en['message.earth_xuanxue.implement.empty'] = 'Not enough charge: needs %s AEU, has %s AEU.'
 
     io.open(LANG / 'zh_cn.json', 'w', encoding='utf-8', newline='\n').write(
         json.dumps(zh, ensure_ascii=False, indent=2) + '\n')

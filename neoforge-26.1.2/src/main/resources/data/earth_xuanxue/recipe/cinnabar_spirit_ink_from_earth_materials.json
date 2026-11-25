@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "earth_core"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#earth_core:spiritual_mineral_substrates",
+    "minecraft:ink_sac",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "id": "earth_xuanxue:cinnabar_spirit_ink",
+    "count": 3
+  }
+}

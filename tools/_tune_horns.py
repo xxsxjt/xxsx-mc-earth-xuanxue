@@ -1,6 +1,6 @@
 import io
 
-p = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\tools\rebuild_beast_models.py'
+p = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\tools\rebuild_beast_models.py'
 s = io.open(p, encoding='utf-8').read()
 
 # Goat horns were stacking three 3.4/2.8/2.2 tall segments almost straight up, which pushed

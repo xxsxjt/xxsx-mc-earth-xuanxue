@@ -1,0 +1,19 @@
+{
+  "feature": "earth_xuanxue:wandering_cultivator_market",
+  "placement": [
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 720
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "MOTION_BLOCKING"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

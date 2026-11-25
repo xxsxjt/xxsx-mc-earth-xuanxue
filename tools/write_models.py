@@ -19,12 +19,12 @@ from gen_model_layers import emit_layer  # noqa: E402
 from uv_layout import PartSpec, build  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-MODELS = ROOT / "neoforge-26.2" / "src" / "main" / "java" / "com" / "xxsx" / "xuanhuanearth" / "client" / "model"
+MODELS = ROOT / "neoforge-26.1.2" / "src" / "main" / "java" / "com" / "xxsx" / "earth" / "xuanxue" / "client" / "model"
 
-HEADER = """package com.xxsx.xuanhuanearth.client.model;
+HEADER = """package com.xxsx.earth.xuanxue.client.model;
 
-import com.xxsx.xuanhuanearth.XuanhuanEarth;
-import com.xxsx.xuanhuanearth.client.renderer.{state};
+import com.xxsx.earth.xuanxue.XuanhuanEarth;
+import com.xxsx.earth.xuanxue.client.renderer.{state};
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;

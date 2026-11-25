@@ -1,8 +1,8 @@
 import io
 
 # Fix SpiritImplementItem compile errors.
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\SpiritImplementItem.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\SpiritImplementItem.java')
 s = io.open(p, encoding='utf-8').read()
 
 s = s.replace(
@@ -34,8 +34,8 @@ io.open(p, 'w', encoding='utf-8', newline='\n').write(s)
 print('SpiritImplementItem patched')
 
 # Add implementCast to XuanhuanEffects.
-p2 = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-      r'\com\xxsx\xuanhuanearth\XuanhuanEffects.java')
+p2 = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+      r'\com\xxsx\earth\xuanxue\XuanhuanEffects.java')
 s2 = io.open(p2, encoding='utf-8').read()
 anchor = '    /** Pill swallowed: a small upward puff plus a jade ring at the feet. */'
 addition = '''    /** Implement cast: a colour-coded burst matching the implement's element. */

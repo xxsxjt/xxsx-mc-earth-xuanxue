@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:raw_iron" }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "earth_xuanxue:spirit_crystal_shard" }],
+      "conditions": [{ "condition": "minecraft:random_chance", "chance": 0.34 }]
+    }
+  ],
+  "random_sequence": "earth_xuanxue:entities/stonehorn_goat"
+}

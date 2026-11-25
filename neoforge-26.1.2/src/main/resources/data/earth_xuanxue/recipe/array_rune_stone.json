@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:stone",
+    "minecraft:stone",
+    "earth_xuanxue:cinnabar_spirit_ink"
+  ],
+  "result": {
+    "id": "earth_xuanxue:array_rune_stone",
+    "count": 2
+  }
+}

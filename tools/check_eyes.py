@@ -12,7 +12,7 @@ from uv_layout import build, face_rects  # noqa: E402
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-ENTITY = ROOT / 'neoforge-26.2' / 'src' / 'main' / 'resources' / 'assets' / 'xuanhuan_earth' / 'textures' / 'entity'
+ENTITY = ROOT / 'neoforge-26.1.2' / 'src' / 'main' / 'resources' / 'assets' / 'earth_xuanxue' / 'textures' / 'entity'
 
 TARGETS = {
     'spirit_fox': (spec.fox, 'head', 'skull'),

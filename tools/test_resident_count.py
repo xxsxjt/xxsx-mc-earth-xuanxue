@@ -11,7 +11,7 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2')
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2')
 LOG = Path(r'C:\Users\xxsx\AppData\Local\Temp\opencode\resident_count.log')
 HOST, PORT, PASSWORD = '127.0.0.1', 25575, 'earthtest'
 
@@ -85,22 +85,22 @@ def main() -> None:
     if client is not None:
         client.cmd('forceload add -128 -128 128 128')
         for kind, x, z in PLACES:
-            client.cmd(f'place feature xuanhuan_earth:{kind} {x} 100 {z}')
+            client.cmd(f'place feature earth_xuanxue:{kind} {x} 100 {z}')
         time.sleep(18)
 
         for kind, x, z in PLACES:
             total = client.cmd(
                 f'execute positioned {x} 100 {z} run execute if entity '
-                f'@e[type=xuanhuan_earth:cultivation_settler,distance=..24]')
+                f'@e[type=earth_xuanxue:cultivation_settler,distance=..24]')
             # Count via a scoreboard-free trick: summon check through tag query is awkward,
             # so use the "execute if entity" success text plus an explicit nearest probe.
             nearest = client.cmd(
                 f'execute positioned {x} 100 {z} run data get entity '
-                f'@e[type=xuanhuan_earth:cultivation_settler,limit=1,sort=nearest,distance=..24] '
+                f'@e[type=earth_xuanxue:cultivation_settler,limit=1,sort=nearest,distance=..24] '
                 f'PersistenceRequired')
             beasts = client.cmd(
                 f'execute positioned {x} 100 {z} run execute if entity '
-                f'@e[type=#xuanhuan_earth:spirit_beasts,distance=..24]')
+                f'@e[type=#earth_xuanxue:spirit_beasts,distance=..24]')
             results.append((kind, total.strip()[:80], nearest.strip()[:80], beasts.strip()[:60]))
 
         time.sleep(4)

@@ -1,6 +1,6 @@
 import io
 
-p = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\tools\rebuild_beast_models.py'
+p = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\tools\rebuild_beast_models.py'
 s = io.open(p, encoding='utf-8').read()
 
 # Goat horns: curl backward and outward like a ram, not straight up like antlers.

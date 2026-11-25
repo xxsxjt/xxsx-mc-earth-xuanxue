@@ -1,0 +1,64 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 3,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/circulation"
+    },
+    {
+      "all": "earth_xuanxue:xua/spirit_stones"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:talisman_paper"
+    },
+    {
+      "item": "earth_xuanxue:empty_talisman"
+    },
+    {
+      "item": "earth_xuanxue:basic_talisman"
+    },
+    {
+      "item": "earth_xuanxue:talisman_brush"
+    },
+    {
+      "block": "earth_xuanxue:talisman_table"
+    },
+    {
+      "item": "earth_xuanxue:talisman_table"
+    },
+    {
+      "ability": "earth_xuanxue:talisman_craft"
+    },
+    {
+      "ability": "earth_xuanxue:talisman_activate"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:paper",
+        "count": 8
+      },
+      {
+        "ingredient": "earth_xuanxue:spirit_dust",
+        "count": 4
+      },
+      {
+        "ingredient": "earth_xuanxue:cinnabar_spirit_ink",
+        "count": 1
+      }
+    ],
+    "ticks": 2400
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.talisman_basics",
+  "desc_key": "lore.earth_xuanxue.xua.talisman_basics.desc"
+}

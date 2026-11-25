@@ -1,6 +1,6 @@
 # Xuanhuan Earth / 玄幻地球
 
-公开名称、工作空间、构建产物和主技术命名空间统一为 `Xuanhuan Earth / 玄幻地球`、`xuanhuan_earth`。旧 `earth_online_xuanhuan` 注册项由 NeoForge registry alias 自动迁移，旧 `earth_online_arcana.*` 玩家数据首次读取后迁移为 `earth_arcana.*`。
+公开名称、工作空间、构建产物和主技术命名空间统一为 `Xuanhuan Earth / 玄幻地球`、`earth_xuanxue`。旧 `earth_online_xuanhuan` 注册项由 NeoForge registry alias 自动迁移，旧 `earth_online_arcana.*` 玩家数据首次读取后迁移为 `earth_arcana.*`。
 
 这是一个可独立安装、独立完成入门与成长闭环的玄幻大型模组，面向“Minecraft 世界叠加玄幻规律”的玩法。安装《我的地球》《地球人》或《魔幻地球》时会自动获得材料、人体与共享法力联动，但任何联动都不是游玩前置。
 
@@ -23,10 +23,10 @@
 
 已生成第一版 NeoForge 26.1.2 独立模块：
 
-- 模块：`neoforge-26.2`（目录名沿用生态内其他仓库的约定，实际目标版本以 `build.gradle` 为准）
+- 模块：`neoforge-26.1.2`（目录名沿用生态内其他仓库的约定，实际目标版本以 `build.gradle` 为准）
 - 目标：Minecraft 26.1.2 / NeoForge 26.1.2.124 / JDK 25
 - 当前版本：`0.7.0-alpha.15`
-- 产物：`xuanhuan-earth-neoforge-26.1.2-0.7.0-alpha.15.jar`
+- 产物：`earth-xuanxue-neoforge-26.1.2-0.7.0-alpha.15.jar`
 
 当前测试版已有寻灵罗盘、区块灵气场、灵脉/灵泉/灵土、丹炉、符案、正式聚灵阵、JEI 分类、双语手册、功法、丹药、五种灵兽、三类居民与三种实体聚落；地球人身体联动保持可选。
 
@@ -44,7 +44,7 @@
 
 `0.7.0-alpha.7` 将模组图标的方形深色背景改为真实透明背景，保留原有青玉地球、鎏金灵环、紫晶和附属光效，使图标能自然适配 NeoForge 模组列表的不同背景。
 
-`0.7.0-alpha.8` 将公开品牌、工作空间、GitHub 仓库、Java 包、资源命名空间、模组 ID 和 jar 统一为 `Xuanhuan Earth / 玄幻地球` 与 `xuanhuan_earth`；旧注册表 ID 与共享玩家数据保留一次迁移兼容。
+`0.7.0-alpha.8` 将公开品牌、工作空间、GitHub 仓库、Java 包、资源命名空间、模组 ID 和 jar 统一为 `Xuanhuan Earth / 玄幻地球` 与 `earth_xuanxue`；旧注册表 ID 与共享玩家数据保留一次迁移兼容。
 
 `0.7.0-alpha.9` 把目标版本对齐到生态当前的 MC 26.1.2 / NeoForge 26.1.2.124 线，并加入超凡能量契约 v1：灵石成为可充放能的持久物品（120 AEU、充能 80%、释放 90%、10 AEU = 1 法力），区块场扣除改为只按实际吸收量结算，符箓在符案产出时封存 24 AEU，术式图改为数据包 JSON 并接受逐条校验与坏图拒绝。专用服务器实测已加载 5 个聚落定义与 2 个术式图。
 
@@ -76,7 +76,7 @@
 ## 构建
 
 ```powershell
-cd D:\AGENT\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2
+cd D:\AGENT\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2
 .\gradlew.bat build --no-daemon --offline
 ```
 

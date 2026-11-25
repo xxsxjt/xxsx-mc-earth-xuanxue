@@ -15,8 +15,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\resources')
-TEX = ROOT / 'assets' / 'xuanhuan_earth' / 'textures' / 'item'
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\resources')
+TEX = ROOT / 'assets' / 'earth_xuanxue' / 'textures' / 'item'
 
 COLORS = {
     'foundation_pill': ((212, 202, 232), (104, 70, 156)),

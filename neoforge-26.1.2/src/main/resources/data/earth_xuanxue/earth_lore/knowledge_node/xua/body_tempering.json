@@ -1,0 +1,37 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 3,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/circulation"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:marrow_pill"
+    }
+  ],
+  "literature": [
+    "notes",
+    "manual"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:bone_meal",
+        "count": 8
+      },
+      {
+        "ingredient": "earth_xuanxue:spirit_herb",
+        "count": 2
+      }
+    ],
+    "ticks": 2400
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.body_tempering",
+  "desc_key": "lore.earth_xuanxue.xua.body_tempering.desc"
+}

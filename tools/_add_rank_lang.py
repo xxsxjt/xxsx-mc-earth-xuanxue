@@ -1,27 +1,27 @@
 import io, json, collections
 
-LANG = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\resources\assets\xuanhuan_earth\lang'
+LANG = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\resources\assets\earth_xuanxue\lang'
 
 ZH = {
-    'beast_rank.xuanhuan_earth.1': '一阶',
-    'beast_rank.xuanhuan_earth.2': '二阶',
-    'beast_rank.xuanhuan_earth.3': '三阶',
-    'beast_rank.xuanhuan_earth.4': '四阶',
-    'beast_rank.xuanhuan_earth.5': '五阶',
-    'message.xuanhuan_earth.beast.rank_up': '%s 晋升为%s（%s 阶），体魄与攻伐随之增长。',
-    'message.xuanhuan_earth.beast.rank_progress': '%s 的修行进度：%s，%s/%s。',
-    'message.xuanhuan_earth.beast.rank_max': '%s 已达五阶，无法再以灵晶精进。',
+    'beast_rank.earth_xuanxue.1': '一阶',
+    'beast_rank.earth_xuanxue.2': '二阶',
+    'beast_rank.earth_xuanxue.3': '三阶',
+    'beast_rank.earth_xuanxue.4': '四阶',
+    'beast_rank.earth_xuanxue.5': '五阶',
+    'message.earth_xuanxue.beast.rank_up': '%s 晋升为%s（%s 阶），体魄与攻伐随之增长。',
+    'message.earth_xuanxue.beast.rank_progress': '%s 的修行进度：%s，%s/%s。',
+    'message.earth_xuanxue.beast.rank_max': '%s 已达五阶，无法再以灵晶精进。',
 }
 
 EN = {
-    'beast_rank.xuanhuan_earth.1': 'Rank I',
-    'beast_rank.xuanhuan_earth.2': 'Rank II',
-    'beast_rank.xuanhuan_earth.3': 'Rank III',
-    'beast_rank.xuanhuan_earth.4': 'Rank IV',
-    'beast_rank.xuanhuan_earth.5': 'Rank V',
-    'message.xuanhuan_earth.beast.rank_up': '%s advanced to %s (rank %s); its body and attack grew.',
-    'message.xuanhuan_earth.beast.rank_progress': '%s growth: %s, %s/%s.',
-    'message.xuanhuan_earth.beast.rank_max': '%s is already rank V and cannot advance further.',
+    'beast_rank.earth_xuanxue.1': 'Rank I',
+    'beast_rank.earth_xuanxue.2': 'Rank II',
+    'beast_rank.earth_xuanxue.3': 'Rank III',
+    'beast_rank.earth_xuanxue.4': 'Rank IV',
+    'beast_rank.earth_xuanxue.5': 'Rank V',
+    'message.earth_xuanxue.beast.rank_up': '%s advanced to %s (rank %s); its body and attack grew.',
+    'message.earth_xuanxue.beast.rank_progress': '%s growth: %s, %s/%s.',
+    'message.earth_xuanxue.beast.rank_max': '%s is already rank V and cannot advance further.',
 }
 
 for loc, entries in (('zh_cn', ZH), ('en_us', EN)):

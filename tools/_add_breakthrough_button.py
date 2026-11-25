@@ -1,7 +1,7 @@
 import io
 
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\client\CultivationScreen.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\client\CultivationScreen.java')
 s = io.open(p, encoding='utf-8').read()
 
 # 1. Field for the breakthrough button.
@@ -16,17 +16,17 @@ else:
 
 # 2. Create the button next to the technique button.
 old_btn = '''        primaryActionButton = addRenderableWidget(Button.builder(
-                        Component.translatable("screen.xuanhuan_earth.cultivation.practice"),
+                        Component.translatable("screen.earth_xuanxue.cultivation.practice"),
                         ignored -> performPrimaryAction())
                 .bounds(left + 10, top + panelHeight() - 28, buttonWidth, 20)
                 .build());'''
 new_btn = '''        breakthroughButton = addRenderableWidget(Button.builder(
-                        Component.translatable("screen.xuanhuan_earth.cultivation.breakthrough"),
+                        Component.translatable("screen.earth_xuanxue.cultivation.breakthrough"),
                         ignored -> XuanhuanEarthClient.requestBreakthrough())
                 .bounds(left + 10, top + panelHeight() - 72, buttonWidth, 18)
                 .build());
         primaryActionButton = addRenderableWidget(Button.builder(
-                        Component.translatable("screen.xuanhuan_earth.cultivation.practice"),
+                        Component.translatable("screen.earth_xuanxue.cultivation.practice"),
                         ignored -> performPrimaryAction())
                 .bounds(left + 10, top + panelHeight() - 28, buttonWidth, 20)
                 .build());'''

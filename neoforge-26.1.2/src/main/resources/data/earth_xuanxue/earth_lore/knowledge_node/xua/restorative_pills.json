@@ -1,0 +1,43 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 4,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/pill_refining"
+    }
+  ],
+  "item_requires": [
+    {
+      "hold": "earth_xuanxue:alchemy_furnace"
+    }
+  ],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:qi_recovery_pill"
+    },
+    {
+      "item": "earth_xuanxue:detox_pill"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:spirit_herb",
+        "count": 4
+      },
+      {
+        "ingredient": "earth_xuanxue:spirit_spring_bottle",
+        "count": 2
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.restorative_pills",
+  "desc_key": "lore.earth_xuanxue.xua.restorative_pills.desc"
+}
