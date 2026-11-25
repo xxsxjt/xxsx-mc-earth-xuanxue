@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MODELS = ROOT / "neoforge-26.2" / "src" / "main" / "java" / "com" / "xxsx" / "xuanhuanearth" / "client" / "model"
+MODELS = ROOT / "neoforge-26.1.2" / "src" / "main" / "java" / "com" / "xxsx" / "earth" / "xuanxue" / "client" / "model"
 GENERATED = ROOT / "tmp" / "generated_layers.txt"
 
 

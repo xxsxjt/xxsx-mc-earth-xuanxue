@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "earth_xuanxue:block/talisman_table_top",
+    "down": "minecraft:block/dark_oak_planks",
+    "up": "earth_xuanxue:block/talisman_table_top",
+    "north": "earth_xuanxue:block/talisman_table_front",
+    "south": "earth_xuanxue:block/talisman_table_side",
+    "west": "earth_xuanxue:block/talisman_table_side",
+    "east": "earth_xuanxue:block/talisman_table_side"
+  }
+}

@@ -1,14 +1,14 @@
 import io
 
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\XuanhuanEarth.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\XuanhuanEarth.java')
 s = io.open(p, encoding='utf-8').read()
 
 old = '''    public static final DeferredItem<QiRecoveryPillItem> QI_RECOVERY_PILL = item("qi_recovery_pill",
-            props -> new QiRecoveryPillItem(props, "tooltip.xuanhuan_earth.qi_recovery_pill"));'''
+            props -> new QiRecoveryPillItem(props, "tooltip.earth_xuanxue.qi_recovery_pill"));'''
 
 new = '''    public static final DeferredItem<QiRecoveryPillItem> QI_RECOVERY_PILL = item("qi_recovery_pill",
-            props -> new QiRecoveryPillItem(props, "tooltip.xuanhuan_earth.qi_recovery_pill"));
+            props -> new QiRecoveryPillItem(props, "tooltip.earth_xuanxue.qi_recovery_pill"));
     public static final DeferredItem<XuanhuanPillItem> FOUNDATION_PILL = pill(XuanhuanPills.FOUNDATION);
     public static final DeferredItem<XuanhuanPillItem> IRONBODY_PILL = pill(XuanhuanPills.IRONBODY);
     public static final DeferredItem<XuanhuanPillItem> CLOUDBREATH_PILL = pill(XuanhuanPills.CLOUDBREATH);

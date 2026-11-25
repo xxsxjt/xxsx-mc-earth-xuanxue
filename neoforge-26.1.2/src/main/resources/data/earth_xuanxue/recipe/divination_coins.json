@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:copper_ingot",
+    "minecraft:copper_ingot",
+    "minecraft:copper_ingot",
+    "earth_xuanxue:cinnabar_spirit_ink"
+  ],
+  "result": {
+    "id": "earth_xuanxue:divination_coins",
+    "count": 1
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "earth_xuanxue:spirit_grass",
+    "earth_xuanxue:spirit_grass",
+    "minecraft:wheat",
+    "minecraft:bowl"
+  ],
+  "result": {
+    "id": "earth_xuanxue:grainfast_pill",
+    "count": 1
+  }
+}

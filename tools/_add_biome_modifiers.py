@@ -1,19 +1,19 @@
 import io, json, os
 
-base = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2'
-        r'\src\main\resources\data\xuanhuan_earth\neoforge\biome_modifier')
+base = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2'
+        r'\src\main\resources\data\earth_xuanxue\neoforge\biome_modifier')
 
 SPECS = {
     'add_mountain_spirit_shrines.json': {
         "type": "neoforge:add_features",
         "biomes": "#minecraft:is_mountain",
-        "features": ["xuanhuan_earth:mountain_spirit_shrine"],
+        "features": ["earth_xuanxue:mountain_spirit_shrine"],
         "step": "surface_structures",
     },
     'add_spirit_beast_keeper_camps.json': {
         "type": "neoforge:add_features",
         "biomes": "#minecraft:is_forest",
-        "features": ["xuanhuan_earth:spirit_beast_keeper_camp"],
+        "features": ["earth_xuanxue:spirit_beast_keeper_camp"],
         "step": "surface_structures",
     },
 }

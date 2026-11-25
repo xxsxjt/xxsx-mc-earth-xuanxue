@@ -2,22 +2,22 @@
 
 ## 当前已验证项目
 
-- `earth_on_minecraft`：现实材料与地质本体，当前审查版本 `0.1.16`（本体目标 MC 26.1.2 / NeoForge 26.1.2.124）。
+- `earth_core`：现实材料与地质本体，当前审查版本 `0.1.16`（本体目标 MC 26.1.2 / NeoForge 26.1.2.124）。
 - `earth_human`：独立人物状态模组，当前审查版本 `0.1.20`。
-- `fantasy_earth`：独立可玩的《魔幻地球》，同时安装时与玄幻共享法力值。
+- `earth_magic`：独立可玩的《魔幻地球》，同时安装时与玄幻共享法力值。
 
 所有联动保持可选；未安装其他项目时，玄幻路线必须仍可独立完成入门闭环。
 
-> 版本线提醒：玄幻地球自 `0.7.0-alpha.9` 起目标版本线已对齐至 `MC 26.1.2 / NeoForge 26.1.2.124`（模块目录名仍沿用 `neoforge-26.2`，实际目标以 `neoforge-26.2/build.gradle` 为准），与上述生态本体处于同一 `26.1.2` 版本线。严禁将旧 `26.2` 预览构建产物与 `26.1.2` 模组混装，也不得把 `optional` 依赖当成跨 MC/NeoForge 版本兼容；同版本组合完整实测通过前，本节版本号仍代表源码与接口契约基线。
+> 版本线提醒：玄幻地球自 `0.7.0-alpha.9` 起目标版本线已对齐至 `MC 26.1.2 / NeoForge 26.1.2.124`（模块目录名仍沿用 `neoforge-26.1.2`，实际目标以 `neoforge-26.1.2/build.gradle` 为准），与上述生态本体处于同一 `26.1.2` 版本线。严禁将旧 `26.2` 预览构建产物与 `26.1.2` 模组混装，也不得把 `optional` 依赖当成跨 MC/NeoForge 版本兼容；同版本组合完整实测通过前，本节版本号仍代表源码与接口契约基线。
 
 ## 我的地球材料接口
 
 设施和配方通过下列物品标签读取现实材料，不依赖本体 Java 类：
 
-- `#earth_on_minecraft:spiritual_mineral_substrates`
-- `#earth_on_minecraft:arcana_geology_catalysts`
-- `#earth_on_minecraft:mana_conductors`
-- `#earth_on_minecraft:aether_crystal_substrates`
+- `#earth_core:spiritual_mineral_substrates`
+- `#earth_core:arcana_geology_catalysts`
+- `#earth_core:mana_conductors`
+- `#earth_core:aether_crystal_substrates`
 
 标签为空时，对应增强路线不进入设施 JEI；原版回退配方继续可用。
 

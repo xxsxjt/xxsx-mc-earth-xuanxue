@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "earth_xuanxue:talisman_paper",
+    "earth_xuanxue:cinnabar_spirit_ink"
+  ],
+  "result": {
+    "id": "earth_xuanxue:empty_talisman",
+    "count": 2
+  }
+}

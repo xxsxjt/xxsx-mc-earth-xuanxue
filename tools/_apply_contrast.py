@@ -1,6 +1,6 @@
 import io
 
-path = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\tools\uv_layout.py'
+path = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\tools\uv_layout.py'
 s = io.open(path, encoding='utf-8').read()
 
 start = s.index('def paint_box(')

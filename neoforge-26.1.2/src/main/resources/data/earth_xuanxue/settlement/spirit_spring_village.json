@@ -1,0 +1,11 @@
+{
+  "display_name": "settlement.earth_xuanxue.spirit_spring_village",
+  "category": "village",
+  "generation_status": "enabled",
+  "weight": 5,
+  "min_distance_chunks": 36,
+  "biomes": ["#minecraft:is_forest", "#minecraft:is_hill"],
+  "buildings": ["spring_house", "herb_terrace", "communal_hall", "spirit_storehouse"],
+  "residents": ["spring_keeper", "herb_grower", "village_elder", "spirit_beast_keeper"],
+  "outputs": ["earth_xuanxue:spirit_spring_bottle", "earth_xuanxue:spirit_grass", "earth_xuanxue:spirit_soil"]
+}

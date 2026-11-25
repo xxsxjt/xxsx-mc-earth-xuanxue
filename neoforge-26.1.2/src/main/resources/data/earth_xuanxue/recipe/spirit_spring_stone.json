@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PBP",
+    "PPP"
+  ],
+  "key": {
+    "P": "minecraft:prismarine",
+    "B": "earth_xuanxue:spirit_spring_bottle"
+  },
+  "result": {
+    "id": "earth_xuanxue:spirit_spring_stone"
+  }
+}

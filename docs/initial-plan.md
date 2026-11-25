@@ -9,7 +9,7 @@
 - 独立基底：默认使用 MC 原版与本模组资源完成闭环；检测到《我的地球》后启用更丰富的现实材料映射。
 - 玄幻叠层：灵气、灵脉、功法、异象、灵植、妖兽、秘境、阵法、炼丹、炼器、符箓。
 - 玩法便利：复刻内容和体系，不复刻痛苦难度。
-- 独立仓库：不污染 `earth_on_minecraft` 本体，也不承担 `earth_human` 的人物难度模拟。
+- 独立仓库：不污染 `earth_core` 本体，也不承担 `earth_human` 的人物难度模拟。
 - 与魔幻分支互通：灵力与魔力统一显示为法力值，两条路线贡献直接相加。
 
 ## 2. 与其他分支的边界
@@ -116,26 +116,26 @@
 
 ## 6. 技术初始方案
 
-目标版本暂按 `NeoForge 26.2.0.7-beta / MC 26.2 / JDK 25`，与 `earth_on_minecraft` 当前主线一致。
+目标版本暂按 `NeoForge 26.2.0.7-beta / MC 26.2 / JDK 25`，与 `earth_core` 当前主线一致。
 
 初始包名建议：
 
 ```text
-com.xxsx.xuanhuanearth
+com.xxsx.earth.xuanxue
 ```
 
 mod id 建议：
 
 ```text
-xuanhuan_earth
+earth_xuanxue
 ```
 
 模块结构建议：
 
 ```text
-xuanhuan_earth/
+earth_xuanxue/
 ├── docs/
-├── neoforge-26.2/
+├── neoforge-26.1.2/
 │   ├── build.gradle
 │   ├── settings.gradle
 │   └── src/main/
@@ -144,8 +144,8 @@ xuanhuan_earth/
 
 依赖策略：
 
-- 第一阶段可独立运行，不硬依赖 `earth_on_minecraft`。
-- 第二阶段添加软联动：如果检测到 `earth_on_minecraft`，启用材料兼容、矿物联动和 JEI 路线扩展。
+- 第一阶段可独立运行，不硬依赖 `earth_core`。
+- 第二阶段添加软联动：如果检测到 `earth_core`，启用材料兼容、矿物联动和 JEI 路线扩展。
 - 第三阶段与 `earth_human` 联动，但不把人物系统写进本 mod。
 
 ## 7. 第一轮开发顺序
@@ -162,6 +162,6 @@ xuanhuan_earth/
 ## 8. 风险点
 
 - 玄幻系统容易膨胀，必须先做少量闭环。
-- 与 `earth_on_minecraft` 联动不要变成硬依赖，否则独立仓库失去意义。
+- 与 `earth_core` 联动不要变成硬依赖，否则独立仓库失去意义。
 - 不要把 `earth_human` 的真实人体难度提前混进来。
 - 世界生成仍要按 26.2 Codec 规则验证，不能只靠 JSON 语法检查。

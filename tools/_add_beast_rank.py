@@ -1,7 +1,7 @@
 import io
 
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\entity\ContractableSpiritBeastEntity.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\entity\ContractableSpiritBeastEntity.java')
 s = io.open(p, encoding='utf-8').read()
 
 # 1. Rank data accessors alongside affinity.
@@ -127,7 +127,7 @@ growth = '''    public int getRank() {
     }
 
     public Component rankName() {
-        return Component.translatable("beast_rank.xuanhuan_earth." + getRank());
+        return Component.translatable("beast_rank.earth_xuanxue." + getRank());
     }
 
     public int getAffinity() {'''

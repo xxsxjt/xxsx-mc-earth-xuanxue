@@ -1,0 +1,36 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 4,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/talisman_basics"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:wind_talisman"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:empty_talisman",
+        "count": 2
+      },
+      {
+        "ingredient": "minecraft:feather",
+        "count": 4
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.wind_talisman",
+  "desc_key": "lore.earth_xuanxue.xua.wind_talisman.desc"
+}

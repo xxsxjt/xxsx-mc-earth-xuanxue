@@ -1,0 +1,51 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 4,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/spirit_materials"
+    },
+    {
+      "all": "earth_xuanxue:xua/spirit_veins"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:spirit_stone_core"
+    },
+    {
+      "block": "earth_xuanxue:spirit_array_core"
+    },
+    {
+      "item": "earth_xuanxue:spirit_array_core"
+    },
+    {
+      "item": "earth_xuanxue:array_rune_stone"
+    },
+    {
+      "ability": "earth_xuanxue:array_form"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:spirit_iron_ingot",
+        "count": 2
+      },
+      {
+        "ingredient": "earth_xuanxue:spirit_soil",
+        "count": 4
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.array_basics",
+  "desc_key": "lore.earth_xuanxue.xua.array_basics.desc"
+}

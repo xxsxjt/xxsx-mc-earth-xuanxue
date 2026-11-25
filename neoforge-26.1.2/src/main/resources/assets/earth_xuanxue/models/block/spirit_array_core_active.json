@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "earth_xuanxue:block/spirit_array_core_top_active",
+    "down": "minecraft:block/deepslate_tiles",
+    "up": "earth_xuanxue:block/spirit_array_core_top_active",
+    "north": "earth_xuanxue:block/spirit_array_core_side",
+    "south": "earth_xuanxue:block/spirit_array_core_side",
+    "west": "earth_xuanxue:block/spirit_array_core_side",
+    "east": "earth_xuanxue:block/spirit_array_core_side"
+  }
+}

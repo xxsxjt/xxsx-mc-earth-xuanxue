@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Export all 6 Xuanhuan Earth entity models to Blockbench .bbmodel files under
-D:\\PRIVATE_RESTRICTED\\Assets\\Blockbench\\xuanhuan_earth\\ and capture live
+D:\\PRIVATE_RESTRICTED\\Assets\\Blockbench\\earth_xuanxue\\ and capture live
 Blockbench viewport previews via bb_mcp_client.py.
 """
 from __future__ import annotations
@@ -20,16 +20,16 @@ import bb_mcp_client as bb  # noqa: E402
 import preview_models as pm  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-MODELS_DIR = ROOT / "neoforge-26.2" / "src" / "main" / "java" / "com" / "xxsx" / "xuanhuanearth" / "client" / "model"
-TEX_DIR = ROOT / "neoforge-26.2" / "src" / "main" / "resources" / "assets" / "xuanhuan_earth" / "textures" / "entity"
+MODELS_DIR = ROOT / "neoforge-26.1.2" / "src" / "main" / "java" / "com" / "xxsx" / "earth" / "xuanxue" / "client" / "model"
+TEX_DIR = ROOT / "neoforge-26.1.2" / "src" / "main" / "resources" / "assets" / "earth_xuanxue" / "textures" / "entity"
 
-OUT_DIR = Path(r"D:\PRIVATE_RESTRICTED\Assets\Blockbench\xuanhuan_earth")
+OUT_DIR = Path(r"D:\PRIVATE_RESTRICTED\Assets\Blockbench\earth_xuanxue")
 ENTITIES_DIR = OUT_DIR / "entities"
 PREVIEW_DIR = OUT_DIR / "previews"
 
 
 def make_uuid(seed_str: str) -> str:
-    return str(uuid.uuid5(uuid.NAMESPACE_DNS, f"xuanhuan_earth.{seed_str}"))
+    return str(uuid.uuid5(uuid.NAMESPACE_DNS, f"earth_xuanxue.{seed_str}"))
 
 
 def box_faces_uv(u: int, v: int, w: float, h: float, d: float) -> dict:
@@ -176,7 +176,7 @@ def build_bbmodel_dict(model_id: str, java_file: Path, tex_file: Path) -> dict:
                 "relative_path": "",
                 "name": tex_file.name,
                 "folder": "entity",
-                "namespace": "xuanhuan_earth",
+                "namespace": "earth_xuanxue",
                 "id": "0",
                 "group": "",
                 "width": 128,

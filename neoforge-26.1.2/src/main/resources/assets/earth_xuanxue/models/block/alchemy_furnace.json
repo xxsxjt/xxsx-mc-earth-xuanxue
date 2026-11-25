@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "earth_xuanxue:block/alchemy_furnace_front",
+    "down": "minecraft:block/deepslate_tiles",
+    "up": "earth_xuanxue:block/alchemy_furnace_top",
+    "north": "earth_xuanxue:block/alchemy_furnace_front",
+    "south": "earth_xuanxue:block/alchemy_furnace_side",
+    "west": "earth_xuanxue:block/alchemy_furnace_side",
+    "east": "earth_xuanxue:block/alchemy_furnace_side"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "earth_xuanxue:spirit_iron_blank",
+    "earth_xuanxue:spirit_iron_blank",
+    "minecraft:stone_bricks",
+    "minecraft:stone_bricks",
+    "minecraft:stone_bricks"
+  ],
+  "result": {
+    "id": "earth_xuanxue:stone_seal",
+    "count": 1
+  }
+}

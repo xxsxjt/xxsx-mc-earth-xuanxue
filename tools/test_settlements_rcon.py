@@ -14,7 +14,7 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2')
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2')
 LOG = Path(r'C:\Users\xxsx\AppData\Local\Temp\opencode\settlement_rcon.log')
 HOST, PORT, PASSWORD = '127.0.0.1', 25575, 'earthtest'
 
@@ -53,13 +53,13 @@ class Rcon:
 COMMANDS = [
     'gamerule doMobSpawning false',
     'forceload add -64 -64 64 64',
-    'place feature xuanhuan_earth:wandering_cultivator_market 0 100 0',
-    'place feature xuanhuan_earth:wandering_cultivator_market 40 100 40',
-    'place feature xuanhuan_earth:spirit_spring_village -40 100 0',
-    'place feature xuanhuan_earth:spirit_spring_village -40 100 -40',
-    'place feature xuanhuan_earth:sect_frontier_outpost 0 100 60',
-    'place feature xuanhuan_earth:mountain_spirit_shrine 60 100 0',
-    'place feature xuanhuan_earth:spirit_beast_keeper_camp 0 100 -60',
+    'place feature earth_xuanxue:wandering_cultivator_market 0 100 0',
+    'place feature earth_xuanxue:wandering_cultivator_market 40 100 40',
+    'place feature earth_xuanxue:spirit_spring_village -40 100 0',
+    'place feature earth_xuanxue:spirit_spring_village -40 100 -40',
+    'place feature earth_xuanxue:sect_frontier_outpost 0 100 60',
+    'place feature earth_xuanxue:mountain_spirit_shrine 60 100 0',
+    'place feature earth_xuanxue:spirit_beast_keeper_camp 0 100 -60',
 ]
 
 

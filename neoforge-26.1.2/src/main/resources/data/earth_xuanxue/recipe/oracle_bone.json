@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:bone",
+    "earth_xuanxue:spirit_dust"
+  ],
+  "result": {
+    "id": "earth_xuanxue:oracle_bone",
+    "count": 2
+  }
+}

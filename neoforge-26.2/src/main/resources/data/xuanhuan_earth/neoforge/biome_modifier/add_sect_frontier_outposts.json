@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "#minecraft:is_mountain",
-  "features": ["xuanhuan_earth:sect_frontier_outpost"],
-  "step": "surface_structures"
-}

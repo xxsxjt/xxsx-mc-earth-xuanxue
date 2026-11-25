@@ -1,0 +1,11 @@
+{
+  "display_name": "settlement.earth_xuanxue.sect_frontier_outpost",
+  "category": "sect",
+  "generation_status": "enabled",
+  "weight": 3,
+  "min_distance_chunks": 48,
+  "biomes": ["#minecraft:is_mountain", "#minecraft:is_hill"],
+  "buildings": ["watch_platform", "disciples_quarters", "small_scripture_hall", "training_yard"],
+  "residents": ["outer_disciple", "patrol_disciple", "outpost_steward"],
+  "outputs": ["earth_xuanxue:qi_recovery_pill", "earth_xuanxue:basic_talisman", "earth_xuanxue:spirit_iron_blank"]
+}

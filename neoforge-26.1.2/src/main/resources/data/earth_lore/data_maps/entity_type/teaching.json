@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": {
+    "earth_xuanxue:cultivation_settler": [
+      {
+        "node": "earth_xuanxue:xua/qi_guiding",
+        "price": 8,
+        "max_uses": 3
+      },
+      {
+        "node": "earth_xuanxue:xua/circulation",
+        "price": 12,
+        "max_uses": 3
+      },
+      {
+        "node": "earth_xuanxue:xua/spirit_stones",
+        "price": 12,
+        "max_uses": 3
+      }
+    ]
+  }
+}

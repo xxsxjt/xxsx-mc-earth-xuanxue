@@ -11,7 +11,7 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2')
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2')
 LOG = Path(r'C:\Users\xxsx\AppData\Local\Temp\opencode\anchor_nbt.log')
 HOST, PORT, PASSWORD = '127.0.0.1', 25575, 'earthtest'
 
@@ -76,11 +76,11 @@ def main() -> None:
     out = []
     if client is not None:
         client.cmd('forceload add -64 -64 64 64')
-        client.cmd('place feature xuanhuan_earth:spirit_spring_village 0 100 0')
+        client.cmd('place feature earth_xuanxue:spirit_spring_village 0 100 0')
         time.sleep(3)
         # Find the anchor by scanning down for the block, then read its NBT.
         for y in range(110, 40, -1):
-            probe = client.cmd(f'execute if block 0 {y} 0 xuanhuan_earth:settlement_anchor')
+            probe = client.cmd(f'execute if block 0 {y} 0 earth_xuanxue:settlement_anchor')
             if probe.strip() == 'Test passed':
                 out.append(('anchor_y', str(y)))
                 out.append(('nbt_now', client.cmd(f'data get block 0 {y} 0')))

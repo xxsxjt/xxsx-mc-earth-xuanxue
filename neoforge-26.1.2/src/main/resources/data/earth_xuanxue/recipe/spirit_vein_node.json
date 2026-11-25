@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "DDD",
+    "DAD",
+    "DDD"
+  ],
+  "key": {
+    "D": "minecraft:deepslate",
+    "A": "minecraft:amethyst_block"
+  },
+  "result": {
+    "id": "earth_xuanxue:spirit_vein_node"
+  }
+}

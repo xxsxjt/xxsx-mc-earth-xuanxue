@@ -14,7 +14,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-ENTITY = ROOT / "neoforge-26.2" / "src" / "main" / "resources" / "assets" / "xuanhuan_earth" / "textures" / "entity"
+ENTITY = ROOT / "neoforge-26.1.2" / "src" / "main" / "resources" / "assets" / "earth_xuanxue" / "textures" / "entity"
 OUT = ROOT / "tmp" / "uv-layout"
 
 

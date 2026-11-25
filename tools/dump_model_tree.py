@@ -6,8 +6,8 @@ import io
 import re
 from pathlib import Path
 
-ROOT = Path(r'D:\AGENT\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth')
-MODELS = ROOT / 'neoforge-26.2' / 'src' / 'main' / 'java' / 'com' / 'xxsx' / 'xuanhuanearth' / 'client' / 'model'
+ROOT = Path(r'D:\AGENT\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue')
+MODELS = ROOT / 'neoforge-26.1.2' / 'src' / 'main' / 'java' / 'com' / 'xxsx' / 'xuanhuanearth' / 'client' / 'model'
 
 PATTERN = re.compile(
     r'(?:PartDefinition\s+(\w+)\s*=\s*)?(\w+)\.addOrReplaceChild\(\s*"([a-z0-9_]+)"', re.S)

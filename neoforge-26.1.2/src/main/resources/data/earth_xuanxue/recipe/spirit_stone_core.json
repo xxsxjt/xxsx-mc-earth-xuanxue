@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CSC",
+    "SIS",
+    "CSC"
+  ],
+  "key": {
+    "C": "earth_xuanxue:spirit_crystal_shard",
+    "S": "earth_xuanxue:spirit_stone",
+    "I": "earth_xuanxue:spirit_iron_ingot"
+  },
+  "result": {
+    "id": "earth_xuanxue:spirit_stone_core",
+    "count": 1
+  }
+}

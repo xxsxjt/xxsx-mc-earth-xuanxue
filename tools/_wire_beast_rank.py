@@ -1,7 +1,7 @@
 import io
 
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\entity\ContractableSpiritBeastEntity.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\entity\ContractableSpiritBeastEntity.java')
 s = io.open(p, encoding='utf-8').read()
 
 # 1. Feeding a spirit crystal to an owned beast advances its rank.
@@ -21,11 +21,11 @@ new = '''        } else if (this.isOwnedBy(player)) {
                     }
                     if (promoted) {
                         player.sendSystemMessage(Component.translatable(
-                                "message.xuanhuan_earth.beast.rank_up",
+                                "message.earth_xuanxue.beast.rank_up",
                                 getDisplayName(), rankName(), getRank()));
                     } else {
                         player.sendSystemMessage(Component.translatable(
-                                "message.xuanhuan_earth.beast.rank_progress",
+                                "message.earth_xuanxue.beast.rank_progress",
                                 getDisplayName(), rankName(),
                                 getRankXp(), getRankXpNeeded()));
                     }
@@ -51,7 +51,7 @@ new_tick = '''    @Override
             boolean promoted = addRankExperience(3);
             if (promoted && this.getOwner() instanceof ServerPlayer owner) {
                 owner.sendSystemMessage(Component.translatable(
-                        "message.xuanhuan_earth.beast.rank_up",
+                        "message.earth_xuanxue.beast.rank_up",
                         getDisplayName(), rankName(), getRank()));
             }
         }

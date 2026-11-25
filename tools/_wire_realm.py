@@ -1,8 +1,8 @@
 import io
 
 # 1. Add the breakthrough action id.
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\CultivationActionPayload.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\CultivationActionPayload.java')
 s = io.open(p, encoding='utf-8').read()
 old = '    public static final int ACTIVATE_SKILL = -5;'
 new = old + '\n    public static final int BREAKTHROUGH = -6;'
@@ -14,8 +14,8 @@ else:
     print('MISS action id')
 
 # 2. Handle it on the server.
-p2 = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-      r'\com\xxsx\xuanhuanearth\CultivationNetwork.java')
+p2 = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+      r'\com\xxsx\earth\xuanxue\CultivationNetwork.java')
 s2 = io.open(p2, encoding='utf-8').read()
 old2 = '''            if (action == CultivationActionPayload.ACTIVATE_SKILL) {
                 CultivationSkill.activate(level, player);
@@ -36,8 +36,8 @@ else:
     print('MISS handler')
 
 # 3. Client request helper.
-p3 = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-      r'\com\xxsx\xuanhuanearth\client\XuanhuanEarthClient.java')
+p3 = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+      r'\com\xxsx\earth\xuanxue\client\XuanhuanEarthClient.java')
 s3 = io.open(p3, encoding='utf-8').read()
 old3 = '''    public static void requestActivateTechnique() {'''
 new3 = '''    public static void requestBreakthrough() {

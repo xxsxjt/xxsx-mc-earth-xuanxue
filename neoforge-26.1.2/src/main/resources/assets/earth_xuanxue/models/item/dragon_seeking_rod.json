@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "earth_xuanxue:item/dragon_seeking_rod"
+  }
+}
