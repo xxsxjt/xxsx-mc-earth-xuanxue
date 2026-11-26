@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "xuanhuan_earth:block/spirit_spring_stone"
+    "all": "xuanhuan_earth:block/spirit_spring_stone",
+    "particle": "xuanhuan_earth:block/spirit_spring_stone"
   }
 }

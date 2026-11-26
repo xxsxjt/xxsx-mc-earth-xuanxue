@@ -1,5 +1,7 @@
 package com.xxsx.xuanhuanearth.client;
 
+import com.xxsx.xuanhuanearth.client.model.AstralFlyingSwordModel;
+import com.xxsx.xuanhuanearth.client.model.AstralSovereignModel;
 import com.xxsx.xuanhuanearth.client.model.CrystalTurtleModel;
 import com.xxsx.xuanhuanearth.client.model.CultivationSettlerModel;
 import com.xxsx.xuanhuanearth.client.model.EmberCraneModel;
@@ -7,6 +9,10 @@ import com.xxsx.xuanhuanearth.client.model.SpiritFoxModel;
 import com.xxsx.xuanhuanearth.client.model.StonehornGoatModel;
 import com.xxsx.xuanhuanearth.client.model.WindWolfModel;
 import com.xxsx.xuanhuanearth.client.particle.XuanhuanParticleProviders;
+import com.xxsx.xuanhuanearth.client.renderer.AstralFlyingSwordRenderer;
+import com.xxsx.xuanhuanearth.client.renderer.AstralSovereignRenderer;
+import com.xxsx.xuanhuanearth.client.renderer.HalberdSwingVfx;
+import com.xxsx.xuanhuanearth.client.renderer.XuanhuanMachineBlockEntityRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.CultivationSettlerRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.SpiritBeastRenderer;
 import com.xxsx.xuanhuanearth.client.renderer.SpiritFoxRenderer;
@@ -22,7 +28,12 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -56,8 +67,11 @@ public final class XuanhuanEarthClient {
         modBus.addListener(XuanhuanEarthClient::registerPayloadHandlers);
         modBus.addListener(XuanhuanEarthClient::registerKeyMappings);
         modBus.addListener(XuanhuanParticleProviders::register);
+        modBus.addListener(XuanhuanEarthClient::registerFluidModels);
         NeoForge.EVENT_BUS.addListener(XuanhuanEarthClient::clientTick);
+        HalberdSwingVfx.register();
         NeoForge.EVENT_BUS.addListener(CultivationPlayerAnimations::renderPlayer);
+        NeoForge.EVENT_BUS.addListener(XuanhuanTooltipHandler::onItemTooltip);
     }
 
     private static void registerScreens(RegisterMenuScreensEvent event) {
@@ -80,6 +94,9 @@ public final class XuanhuanEarthClient {
                 new SpiritBeastRenderer<>(context, EmberCraneModel.LAYER_LOCATION, EmberCraneModel::new,
                         XuanhuanEarth.id("textures/entity/ember_crane.png"), 0.42F, 1.0F));
         event.registerEntityRenderer(XuanhuanEarth.CULTIVATION_SETTLER.get(), CultivationSettlerRenderer::new);
+        event.registerEntityRenderer(XuanhuanEarth.ASTRAL_SOVEREIGN.get(), AstralSovereignRenderer::new);
+        event.registerEntityRenderer(XuanhuanEarth.ASTRAL_FLYING_SWORD.get(), AstralFlyingSwordRenderer::new);
+        event.registerBlockEntityRenderer(XuanhuanEarth.XUANHUAN_MACHINE_BLOCK_ENTITY.get(), XuanhuanMachineBlockEntityRenderer::new);
     }
 
     private static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -89,6 +106,8 @@ public final class XuanhuanEarthClient {
         event.registerLayerDefinition(CrystalTurtleModel.LAYER_LOCATION, CrystalTurtleModel::createBodyLayer);
         event.registerLayerDefinition(EmberCraneModel.LAYER_LOCATION, EmberCraneModel::createBodyLayer);
         event.registerLayerDefinition(CultivationSettlerModel.LAYER_LOCATION, CultivationSettlerModel::createBodyLayer);
+        event.registerLayerDefinition(AstralSovereignModel.LAYER_LOCATION, AstralSovereignModel::createBodyLayer);
+        event.registerLayerDefinition(AstralFlyingSwordModel.LAYER_LOCATION, AstralFlyingSwordModel::createBodyLayer);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
@@ -98,6 +117,16 @@ public final class XuanhuanEarthClient {
     private static void registerPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
         event.register(CultivationStatusPayload.TYPE, XuanhuanEarthClient::handleCultivationStatus);
         event.register(CultivationVisualPayload.TYPE, XuanhuanEarthClient::handleCultivationVisual);
+    }
+
+    private static void registerFluidModels(RegisterFluidModelsEvent event) {
+        FluidModel.Unbaked model = new FluidModel.Unbaked(
+                new Material(Identifier.withDefaultNamespace("block/water_still"), true),
+                new Material(Identifier.withDefaultNamespace("block/water_flow"), true),
+                new Material(Identifier.withDefaultNamespace("block/water_overlay"), true),
+                (FluidTintSource) state -> 0xFF3CE8D4
+        );
+        event.register(model, XuanhuanEarth.SPIRIT_SPRING_FLUID, XuanhuanEarth.SPIRIT_SPRING_FLOWING);
     }
 
     private static void registerKeyMappings(RegisterKeyMappingsEvent event) {

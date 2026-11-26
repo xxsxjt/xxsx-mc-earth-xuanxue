@@ -2,6 +2,7 @@ package com.xxsx.xuanhuanearth;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import com.xxsx.xuanhuanearth.particle.XuanhuanParticles;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
@@ -85,15 +86,42 @@ public class XuanhuanMachineBlock extends Block implements EntityBlock {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (kind != Kind.SPIRIT_ARRAY_CORE || !state.getValue(FORMED) || random.nextInt(2) != 0) {
-            return;
+        double cx = pos.getX() + 0.5D;
+        double cy = pos.getY() + 1.02D;
+        double cz = pos.getZ() + 0.5D;
+        boolean active = state.getValue(ACTIVE);
+
+        if (kind == Kind.SPIRIT_ARRAY_CORE) {
+            if (state.getValue(FORMED)) {
+                int[][] nodes = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}, {1, -1}, {1, 1}, {-1, 1}, {-1, -1}};
+                int[] node = nodes[random.nextInt(nodes.length)];
+                double x = cx + node[0] * 1.15D;
+                double z = cz + node[1] * 1.15D;
+                level.addParticle(ParticleTypes.END_ROD, x, cy + 0.12D, z, -node[0] * 0.022D, 0.012D, -node[1] * 0.022D);
+                if (random.nextInt(3) == 0) {
+                    level.addParticle(XuanhuanParticles.QI_SPARK.get(), cx + (random.nextDouble() - 0.5D) * 1.6D, cy, cz + (random.nextDouble() - 0.5D) * 1.6D, 0.0D, 0.035D, 0.0D);
+                }
+                if (active && random.nextInt(5) == 0) {
+                    level.addParticle(XuanhuanParticles.SEAL_RING.get(), cx, cy + 0.18D, cz, 0.0D, 0.0D, 0.0D);
+                }
+            }
+        } else if (kind == Kind.ALCHEMY_FURNACE) {
+            if (active || random.nextInt(3) == 0) {
+                level.addParticle(ParticleTypes.FLAME, cx + (random.nextDouble() - 0.5D) * 0.36D, cy + 0.05D, cz + (random.nextDouble() - 0.5D) * 0.36D, 0.0D, 0.022D, 0.0D);
+                level.addParticle(XuanhuanParticles.EMBER_SPARK.get(), cx, cy + 0.15D, cz, (random.nextDouble() - 0.5D) * 0.04D, 0.045D, (random.nextDouble() - 0.5D) * 0.04D);
+                if (active && random.nextInt(4) == 0) {
+                    level.addParticle(XuanhuanParticles.QI_RING.get(), cx, cy + 0.25D, cz, 0.0D, 0.0D, 0.0D);
+                }
+            }
+        } else if (kind == Kind.TALISMAN_TABLE) {
+            if (active || random.nextInt(2) == 0) {
+                double ang = (level.getGameTime() * 0.18D) + random.nextDouble() * Math.PI * 2.0D;
+                level.addParticle(XuanhuanParticles.QI_SPARK.get(), cx + Math.cos(ang) * 0.38D, cy + 0.12D, cz + Math.sin(ang) * 0.38D, 0.0D, 0.025D, 0.0D);
+                if (active && random.nextInt(4) == 0) {
+                    level.addParticle(XuanhuanParticles.SEAL_RING.get(), cx, cy + 0.22D, cz, 0.0D, 0.0D, 0.0D);
+                }
+            }
         }
-        int[][] nodes = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}, {1, -1}, {1, 1}, {-1, 1}, {-1, -1}};
-        int[] node = nodes[random.nextInt(nodes.length)];
-        double x = pos.getX() + 0.5D + node[0] * 0.82D;
-        double z = pos.getZ() + 0.5D + node[1] * 0.82D;
-        level.addParticle(ParticleTypes.END_ROD, x, pos.getY() + 1.08D, z,
-                -node[0] * 0.012D, 0.004D, -node[1] * 0.012D);
     }
 
     @Override

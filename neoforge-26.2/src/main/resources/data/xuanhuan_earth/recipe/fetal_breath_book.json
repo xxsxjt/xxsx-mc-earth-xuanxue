@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:book",
+    "minecraft:paper",
+    "xuanhuan_earth:cinnabar_spirit_ink",
+    "xuanhuan_earth:spirit_spring_bottle"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:fetal_breath_book",
+    "count": 1
+  }
+}

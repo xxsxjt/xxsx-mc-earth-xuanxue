@@ -10,6 +10,12 @@
   "item_requires": [
     {
       "cond": "field>=80"
+    },
+    {
+      "cond": "realm>=4"
+    },
+    {
+      "cond": "xp_level>=30"
     }
   ],
   "unlocks": [
@@ -39,5 +45,6 @@
     "field_low"
   ],
   "name_key": "lore.xuanhuan_earth.xua.spirit_transformation",
-  "desc_key": "lore.xuanhuan_earth.xua.spirit_transformation.desc"
+  "desc_key": "lore.xuanhuan_earth.xua.spirit_transformation.desc",
+  "study_ticks": 180
 }

@@ -83,6 +83,7 @@ public final class XuanhuanLoreIntegration {
 
     public static void init() {
         LoreApi.registerCondition("field", (level, pos) -> Spirituality.measure(level, pos));
+        LoreApi.registerPlayerCondition("realm", ArcanaPower::getRealm);
 
         LoreApi.registerMigrator(new LoreMigrator() {
             @Override
