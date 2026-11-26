@@ -10,6 +10,15 @@
   "item_requires": [
     {
       "cond": "field>=60"
+    },
+    {
+      "cond": "realm>=2"
+    },
+    {
+      "cond": "xp_level>=15"
+    },
+    {
+      "hold": "xuanhuan_earth:spirit_stone"
     }
   ],
   "unlocks": [
@@ -39,5 +48,6 @@
     "field_low"
   ],
   "name_key": "lore.xuanhuan_earth.xua.golden_core",
-  "desc_key": "lore.xuanhuan_earth.xua.golden_core.desc"
+  "desc_key": "lore.xuanhuan_earth.xua.golden_core.desc",
+  "study_ticks": 100
 }

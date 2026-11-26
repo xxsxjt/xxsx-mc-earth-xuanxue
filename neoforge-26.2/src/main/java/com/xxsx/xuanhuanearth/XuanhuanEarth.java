@@ -29,7 +29,15 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
@@ -70,6 +78,10 @@ public class XuanhuanEarth {
     private static final String LEGACY_MODID = "earth_online_xuanhuan";
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    public static final DeferredRegister<FluidType> FLUID_TYPES =
+            DeferredRegister.create(NeoForgeRegistries.FLUID_TYPES, MODID);
+    public static final DeferredRegister<Fluid> FLUIDS =
+            DeferredRegister.create(Registries.FLUID, MODID);
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, MODID);
@@ -114,7 +126,7 @@ public class XuanhuanEarth {
 
     public static final DeferredBlock<XuanhuanBlock> SPIRIT_VEIN_NODE = block("spirit_vein_node",
             () -> stone(MapColor.COLOR_PURPLE, 4.0F).noOcclusion(), "message.xuanhuan_earth.block.spirit_vein_node");
-    public static final DeferredBlock<XuanhuanBlock> SPIRIT_SPRING_STONE = block("spirit_spring_stone",
+    public static final DeferredBlock<SpiritSpringStoneBlock> SPIRIT_SPRING_STONE = springStoneBlock("spirit_spring_stone",
             () -> stone(MapColor.WATER, 2.5F).noOcclusion(), "message.xuanhuan_earth.block.spirit_spring_stone");
     public static final DeferredBlock<XuanhuanBlock> SPIRIT_SOIL = block("spirit_soil",
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(0.6F).sound(SoundType.GRAVEL),
@@ -227,12 +239,49 @@ public class XuanhuanEarth {
             props -> new CultivationManualItem(props.stacksTo(1)
                     .component(LoreContent.LORE_TEXT.get(), CultivationManualItem.Type.FETAL_BREATH.defaultLoreText()),
                     CultivationManualItem.Type.FETAL_BREATH));
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
+            net.minecraft.core.component.DataComponentType<CultivationBookState>> CULTIVATION_BOOK_STATE =
+            DATA_COMPONENTS.registerComponentType("cultivation_book_state", builder -> builder
+                    .persistent(CultivationBookState.CODEC)
+                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.fromCodec(CultivationBookState.CODEC)));
+    public static final DeferredItem<CultivationBookItem> QI_GUIDING_BOOK = item("qi_guiding_book",
+            props -> new CultivationBookItem(props.stacksTo(1)
+                    .component(CULTIVATION_BOOK_STATE.get(), CultivationBookState.EMPTY), CultivationBookItem.Tome.QI_GUIDING));
+    public static final DeferredItem<CultivationBookItem> BIGU_BOOK = item("bigu_book",
+            props -> new CultivationBookItem(props.stacksTo(1)
+                    .component(CULTIVATION_BOOK_STATE.get(), CultivationBookState.EMPTY), CultivationBookItem.Tome.BIGU));
+    public static final DeferredItem<CultivationBookItem> BODY_TEMPERING_BOOK = item("body_tempering_book",
+            props -> new CultivationBookItem(props.stacksTo(1)
+                    .component(CULTIVATION_BOOK_STATE.get(), CultivationBookState.EMPTY), CultivationBookItem.Tome.BODY_TEMPERING));
+    public static final DeferredItem<CultivationBookItem> FETAL_BREATH_BOOK = item("fetal_breath_book",
+            props -> new CultivationBookItem(props.stacksTo(1)
+                    .component(CULTIVATION_BOOK_STATE.get(), CultivationBookState.EMPTY), CultivationBookItem.Tome.FETAL_BREATH));
     public static final DeferredItem<CultivationJournalItem> CULTIVATION_JOURNAL = item("cultivation_journal",
             props -> new CultivationJournalItem(props.stacksTo(1), "tooltip.xuanhuan_earth.cultivation_journal"));
     public static final DeferredItem<SpiritCompassItem> SPIRIT_COMPASS = item("spirit_compass",
             props -> new SpiritCompassItem(props.stacksTo(1)));
+    public static final DeferredHolder<FluidType, FluidType> SPIRIT_SPRING_FLUID_TYPE =
+            FLUID_TYPES.register("spirit_spring", () -> new FluidType(SpiritSpringFluid.fluidTypeProperties()));
+    public static final DeferredHolder<Fluid, BaseFlowingFluid> SPIRIT_SPRING_FLUID =
+            FLUIDS.register("spirit_spring", () -> new SpiritSpringFluid.Source(SpiritSpringFluid.fluidProperties()));
+    public static final DeferredHolder<Fluid, BaseFlowingFluid> SPIRIT_SPRING_FLOWING =
+            FLUIDS.register("spirit_spring_flowing", () -> new SpiritSpringFluid.Flowing(SpiritSpringFluid.fluidProperties()));
+    public static final DeferredBlock<SpiritSpringFluidBlock> SPIRIT_SPRING_BLOCK =
+            BLOCKS.registerBlock("spirit_spring",
+                    props -> new SpiritSpringFluidBlock(SPIRIT_SPRING_FLUID.get(), props),
+                    () -> BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_CYAN)
+                            .replaceable()
+                            .noCollision()
+                            .strength(100.0F)
+                            .pushReaction(PushReaction.DESTROY)
+                            .noLootTable()
+                            .liquid()
+                            .lightLevel(s -> 6));
+    public static final DeferredItem<BucketItem> SPIRIT_SPRING_BUCKET = item("spirit_spring_bucket",
+            props -> new BucketItem(SPIRIT_SPRING_FLUID.get(), props.craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_SPRING_BOTTLE = item("spirit_spring_bottle",
-            props -> new GuidedXuanhuanItem(props.stacksTo(16), "tooltip.xuanhuan_earth.spirit_spring_bottle"));
+            props -> new GuidedXuanhuanItem(props.craftRemainder(Items.GLASS_BOTTLE).stacksTo(16), "tooltip.xuanhuan_earth.spirit_spring_bottle"));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_GRASS = material("spirit_grass", "tooltip.xuanhuan_earth.spirit_grass");
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_HERB = material("spirit_herb", "tooltip.xuanhuan_earth.spirit_herb");
     public static final DeferredItem<GuidedXuanhuanItem> CINNABAR_SPIRIT_INK = material("cinnabar_spirit_ink", "tooltip.xuanhuan_earth.cinnabar_spirit_ink");
@@ -387,6 +436,8 @@ public class XuanhuanEarth {
         registerLegacyAliases();
         DATA_COMPONENTS.register(modBus);
         MOB_EFFECTS.register(modBus);
+        FLUID_TYPES.register(modBus);
+        FLUIDS.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         ENTITY_TYPES.register(modBus);
@@ -407,6 +458,7 @@ public class XuanhuanEarth {
         NeoForge.EVENT_BUS.addListener(XuanhuanSettlementCatalog::register);
         NeoForge.EVENT_BUS.addListener(SpellGraphLoader::register);
         NeoForge.EVENT_BUS.addListener(XuanhuanLoreIntegration::onLoreLearned);
+        NeoForge.EVENT_BUS.addListener(SpiritSpringFluidBlock::onGlassBottleUse);
         modBus.addListener(this::registerCreativeTab);
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             XuanhuanEarthClient.register(modBus);
@@ -416,6 +468,15 @@ public class XuanhuanEarth {
 
     private static DeferredBlock<XuanhuanBlock> block(String id, Supplier<BlockBehaviour.Properties> props, String hintKey) {
         DeferredBlock<XuanhuanBlock> block = BLOCKS.registerBlock(id, p -> new XuanhuanBlock(p, hintKey), props);
+        DeferredItem<?> item = ITEMS.registerItem(id,
+                itemProps -> new GuidedXuanhuanBlockItem(block.get(), itemProps, "tooltip.xuanhuan_earth.block"),
+                itemProps -> itemProps);
+        TAB_ITEMS.add(item);
+        return block;
+    }
+
+    private static DeferredBlock<SpiritSpringStoneBlock> springStoneBlock(String id, Supplier<BlockBehaviour.Properties> props, String hintKey) {
+        DeferredBlock<SpiritSpringStoneBlock> block = BLOCKS.registerBlock(id, p -> new SpiritSpringStoneBlock(p, hintKey), props);
         DeferredItem<?> item = ITEMS.registerItem(id,
                 itemProps -> new GuidedXuanhuanBlockItem(block.get(), itemProps, "tooltip.xuanhuan_earth.block"),
                 itemProps -> itemProps);

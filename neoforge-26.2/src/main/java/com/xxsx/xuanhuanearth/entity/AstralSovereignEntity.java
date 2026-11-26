@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -94,6 +95,9 @@ public class AstralSovereignEntity extends Monster {
     private int ultimateCooldown = 240;
     private int meleeComboIndex = 0;
     private int shockwaveTicksRemaining = 0;
+    private int stuckTicks = 0;
+    private int vaultCooldown = 0;
+    private Vec3 lastProgressPos = Vec3.ZERO;
     private final Set<UUID> ultimateHitIds = new HashSet<>();
 
     public AstralSovereignEntity(EntityType<? extends Monster> type, Level level) {
@@ -109,6 +113,8 @@ public class AstralSovereignEntity extends Monster {
                 .add(Attributes.ARMOR, 10.0D)
                 .add(Attributes.ARMOR_TOUGHNESS, 6.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.85D)
+                .add(Attributes.STEP_HEIGHT, 1.5D)
+                .add(Attributes.SAFE_FALL_DISTANCE, 24.0D)
                 .add(Attributes.FOLLOW_RANGE, 48.0D);
     }
 
@@ -361,7 +367,29 @@ public class AstralSovereignEntity extends Monster {
         }
 
         LivingEntity target = this.getTarget();
+        if (this.vaultCooldown > 0) {
+            this.vaultCooldown--;
+        }
+
+        // Phase 2 true aerial levitation & 3D hover steering (descends smoothly only for ultimate ground slam)
+        boolean slamDescending = currentAction == ACTION_ULTIMATE_JUDGMENT
+                && getActionTick() >= ULTIMATE_TELEGRAPH_DURATION;
+        if (isPhase2() && currentAction != ACTION_PHASE_TRANSITION && !slamDescending) {
+            tickPhase2HoverFlight(serverLevel, target, currentAction);
+        } else {
+            if (this.isNoGravity()) {
+                this.setNoGravity(false);
+            }
+            if (slamDescending) {
+                Vec3 dm = this.getDeltaMovement();
+                this.setDeltaMovement(dm.x * 0.4D, Math.min(dm.y, -0.68D), dm.z * 0.4D);
+            } else if (target != null && target.isAlive() && currentAction == ACTION_NONE) {
+                tickGroundObstacleAssist(serverLevel, target);
+            }
+        }
+
         if (target == null || !target.isAlive()) {
+            this.stuckTicks = 0;
             return;
         }
 
@@ -721,10 +749,124 @@ public class AstralSovereignEntity extends Monster {
         output.putInt("MeleeComboIndex", this.meleeComboIndex);
     }
 
+    /** Phase 1 ground mobility assist: never snag on 1-block steps or shallow walls. */
+    private void tickGroundObstacleAssist(ServerLevel serverLevel, LivingEntity target) {
+        double distSqr = this.distanceToSqr(target);
+        if (distSqr <= 9.0D) {
+            this.stuckTicks = 0;
+            this.lastProgressPos = this.position();
+            return;
+        }
+
+        // Instant step/jump when colliding horizontally with a ledge
+        if (this.horizontalCollision && this.onGround() && this.vaultCooldown <= 0) {
+            Vec3 toTarget = new Vec3(target.getX() - this.getX(), 0.0D, target.getZ() - this.getZ());
+            double len = toTarget.length();
+            if (len > 0.05D) {
+                Vec3 dir = toTarget.scale(1.0D / len);
+                this.getJumpControl().jump();
+                this.setDeltaMovement(dir.x * 0.28D, 0.56D, dir.z * 0.28D);
+                this.needsSync = true;
+                this.vaultCooldown = 14;
+            }
+        }
+
+        // Track stuck state over time; trigger Star-Step Vault if trapped by terrain
+        if (this.lastProgressPos == Vec3.ZERO) {
+            this.lastProgressPos = this.position();
+        }
+        double movedHorizSqr = (this.getX() - this.lastProgressPos.x) * (this.getX() - this.lastProgressPos.x)
+                + (this.getZ() - this.lastProgressPos.z) * (this.getZ() - this.lastProgressPos.z);
+        if (movedHorizSqr < 0.09D) {
+            this.stuckTicks++;
+            if (this.stuckTicks >= 18 && this.vaultCooldown <= 0) {
+                Vec3 toTarget = new Vec3(target.getX() - this.getX(), 0.0D, target.getZ() - this.getZ());
+                double len = Math.max(0.05D, toTarget.length());
+                Vec3 dir = toTarget.scale(1.0D / len);
+                this.setDeltaMovement(dir.x * 0.46D, 0.66D, dir.z * 0.46D);
+                this.needsSync = true;
+                this.vaultCooldown = 28;
+                this.stuckTicks = 0;
+                this.playSound(SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), 0.9F, 1.25F);
+                serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(),
+                        this.getX(), this.getY() + 0.35D, this.getZ(), 1, 0, 0, 0, 0);
+            }
+        } else {
+            this.stuckTicks = 0;
+            this.lastProgressPos = this.position();
+        }
+    }
+
+    /** Phase 2 true aerial levitation: hovers ~2 blocks above terrain/target and flies smoothly over obstacles. */
+    private void tickPhase2HoverFlight(ServerLevel serverLevel, @Nullable LivingEntity target, int currentAction) {
+        if (!this.isNoGravity()) {
+            this.setNoGravity(true);
+        }
+        this.resetFallDistance();
+        this.getNavigation().stop();
+
+        // Probe solid ground below up to 10 blocks
+        double groundY = this.getY() - 2.0D;
+        BlockPos.MutableBlockPos probe = this.blockPosition().mutable();
+        for (int dy = 0; dy <= 10; dy++) {
+            probe.set(this.blockPosition().getX(), this.blockPosition().getY() - dy, this.blockPosition().getZ());
+            if (!serverLevel.getBlockState(probe).getCollisionShape(serverLevel, probe).isEmpty()) {
+                groundY = probe.getY() + 1.0D;
+                break;
+            }
+        }
+
+        double wave = Math.sin(this.tickCount * 0.11D) * 0.28D;
+        double desiredY = groundY + 1.95D + wave;
+        if (target != null && target.isAlive()) {
+            desiredY = Math.max(desiredY, target.getY() + 1.55D + wave);
+        }
+        // Avoid pushing head into solid ceiling blocks
+        BlockPos aboveHead = BlockPos.containing(this.getX(), this.getY() + this.getBbHeight() + 0.6D, this.getZ());
+        if (!serverLevel.getBlockState(aboveHead).getCollisionShape(serverLevel, aboveHead).isEmpty()) {
+            desiredY = Math.min(desiredY, this.getY() - 0.15D);
+        }
+
+        double vy = Mth.clamp((desiredY - this.getY()) * 0.16D, -0.30D, 0.42D);
+        double vx = this.getDeltaMovement().x * 0.72D;
+        double vz = this.getDeltaMovement().z * 0.72D;
+
+        if (target != null && target.isAlive() && currentAction != ACTION_ULTIMATE_JUDGMENT) {
+            this.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            double dx = target.getX() - this.getX();
+            double dz = target.getZ() - this.getZ();
+            double horizDist = Math.sqrt(dx * dx + dz * dz);
+            if (horizDist > 0.05D) {
+                float yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F;
+                this.setYRot(Mth.rotLerp(0.18F, this.getYRot(), yaw));
+                this.yBodyRot = this.getYRot();
+                if (horizDist > 3.2D) {
+                    double flySpeed = currentAction == ACTION_SWORD_ARRAY_BUFF ? 0.12D : 0.27D;
+                    vx = Mth.lerp(0.24D, vx, (dx / horizDist) * flySpeed);
+                    vz = Mth.lerp(0.24D, vz, (dz / horizDist) * flySpeed);
+                    if (this.horizontalCollision) {
+                        vy = Math.max(vy, 0.34D);
+                    }
+                } else if (currentAction == ACTION_NONE && this.tickCount % 22 == 0) {
+                    this.doHurtTarget(serverLevel, target);
+                }
+            }
+        }
+
+        this.setDeltaMovement(vx, vy, vz);
+        this.needsSync = true;
+        if (this.tickCount % 5 == 0) {
+            serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
+                    this.getX(), this.getY() + 0.15D, this.getZ(), 2, 0.35D, 0.08D, 0.35D, 0.02D);
+        }
+    }
+
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        this.entityData.set(DATA_PHASE2, input.getBooleanOr("Phase2", false));
+        boolean loadedP2 = input.getBooleanOr("Phase2", false);
+        this.entityData.set(DATA_PHASE2, loadedP2);
+        this.setNoGravity(loadedP2);
         this.ambientSwordCooldown = Math.max(0, input.getIntOr("AmbientSwordCooldown", 65));
         this.swordBuffCooldown = Math.max(0, input.getIntOr("SwordBuffCooldown", 160));
         this.entityData.set(DATA_SWORD_BUFF_TICKS, Math.max(0, input.getIntOr("SwordBuffTicks", 0)));

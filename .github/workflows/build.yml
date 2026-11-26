@@ -1,0 +1,44 @@
+name: Build Earth Xuanxue (JDK 25 / NeoForge 26.1.2)
+
+on:
+  push:
+    branches: [ main, 'feat/**', 'refactor/**' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: xuanxue
+      - uses: actions/checkout@v4
+        with:
+          repository: xxsxjt/xxsx-mc-earth-lore
+          ref: feat/creative-unlock-fast-study-and-requirements
+          path: earth_lore
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build Earth Lore dependency
+        working-directory: earth_lore/neoforge-26.1.2
+        run: >
+          ./gradlew build --no-daemon
+          -Dhttp.proxyHost= -Dhttps.proxyHost=
+          -Dhttp.proxyPort= -Dhttps.proxyPort=
+          -Dorg.gradle.java.installations.paths=$JAVA_HOME
+      - name: Build & Test Earth Xuanxue
+        working-directory: xuanxue/neoforge-26.2
+        run: >
+          ./gradlew build --no-daemon
+          -Dhttp.proxyHost= -Dhttps.proxyHost=
+          -Dhttp.proxyPort= -Dhttps.proxyPort=
+          -Dorg.gradle.java.installations.paths=$JAVA_HOME
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xuanhuan-earth-neoforge-26.1.2-jar
+          path: xuanxue/neoforge-26.2/build/libs/*.jar

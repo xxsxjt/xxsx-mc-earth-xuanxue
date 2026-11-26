@@ -392,28 +392,29 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         halo_tier3.addOrReplaceChild("halo3_seg_14", CubeListBuilder.create().texOffs(448, 32).addBox(-6.49F, -32.69F, -0.50F, 12.98F, 1.42F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 5.4978F));
         halo_tier3.addOrReplaceChild("halo3_ray_14", CubeListBuilder.create().texOffs(416, 32).addBox(-0.94F, -38.00F, -0.50F, 1.88F, 5.55F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 5.4978F));
         halo_tier3.addOrReplaceChild("halo3_seg_15", CubeListBuilder.create().texOffs(416, 32).addBox(-6.49F, -32.69F, -0.50F, 12.98F, 1.42F, 1.00F), PartPose.offsetAndRotation(0.00F, 0.00F, 0.00F, -0.0000F, -0.0000F, 5.8905F));
+        // Heroic outward martial stance (+7 deg toe-out, +4 deg grounded hip flare; shins vertical — zero pigeon-toe!)
         PartDefinition right_leg = sovereign_root.addOrReplaceChild("right_leg", CubeListBuilder.create()
             .texOffs(354, 126).addBox(-2.90F, -0.20F, -3.00F, 5.80F, 12.00F, 6.00F)
             .texOffs(379, 126).addBox(-3.50F, 1.20F, -2.40F, 1.20F, 7.30F, 4.80F)
-            , PartPose.offsetAndRotation(-5.50F, -23.00F, 0.00F, -0.1396F, -0.1745F, -0.1396F));
+            , PartPose.offsetAndRotation(-5.50F, -23.00F, 0.00F, -0.1047F, 0.1222F, 0.0698F));
         PartDefinition right_shin = right_leg.addOrReplaceChild("right_shin", CubeListBuilder.create()
             .texOffs(392, 126).addBox(-2.50F, -2.70F, -4.40F, 5.00F, 4.20F, 1.80F)
             .texOffs(407, 126).addBox(-1.10F, -1.70F, -4.90F, 2.20F, 2.20F, 1.10F)
             .texOffs(414, 126).addBox(-3.10F, -0.10F, -3.60F, 6.20F, 9.10F, 7.20F)
             .texOffs(441, 126).addBox(-3.30F, 8.30F, -4.20F, 6.60F, 3.20F, 8.00F)
             .texOffs(472, 126).addBox(-2.50F, 9.30F, -5.00F, 5.00F, 2.20F, 1.20F)
-            , PartPose.offsetAndRotation(0.00F, 11.50F, 0.00F, 0.1396F, -0.0000F, 0.1396F));
+            , PartPose.offsetAndRotation(0.00F, 11.50F, 0.00F, 0.1047F, 0.0000F, -0.0698F));
         PartDefinition left_leg = sovereign_root.addOrReplaceChild("left_leg", CubeListBuilder.create()
             .texOffs(485, 126).addBox(-2.90F, -0.20F, -3.00F, 5.80F, 12.00F, 6.00F)
             .texOffs(0, 172).addBox(2.30F, 1.20F, -2.40F, 1.20F, 7.30F, 4.80F)
-            , PartPose.offsetAndRotation(5.50F, -23.00F, 0.00F, -0.1396F, 0.1745F, 0.1396F));
+            , PartPose.offsetAndRotation(5.50F, -23.00F, 0.00F, -0.1047F, -0.1222F, -0.0698F));
         PartDefinition left_shin = left_leg.addOrReplaceChild("left_shin", CubeListBuilder.create()
             .texOffs(13, 172).addBox(-2.50F, -2.70F, -4.40F, 5.00F, 4.20F, 1.80F)
             .texOffs(28, 172).addBox(-1.10F, -1.70F, -4.90F, 2.20F, 2.20F, 1.10F)
             .texOffs(35, 172).addBox(-3.10F, -0.10F, -3.60F, 6.20F, 9.10F, 7.20F)
             .texOffs(62, 172).addBox(-3.30F, 8.30F, -4.20F, 6.60F, 3.20F, 8.00F)
             .texOffs(93, 172).addBox(-2.50F, 9.30F, -5.00F, 5.00F, 2.20F, 1.20F)
-            , PartPose.offsetAndRotation(0.00F, 11.50F, 0.00F, 0.1396F, -0.0000F, -0.1396F));
+            , PartPose.offsetAndRotation(0.00F, 11.50F, 0.00F, 0.1047F, 0.0000F, 0.0698F));
         // VFX containers kept empty here; dedicated per-skill emissive translucent VFX render in AstralSovereignRenderer!
         sovereign_root.addOrReplaceChild("vfx_slash_arc", CubeListBuilder.create(), PartPose.offset(0.00F, -28.00F, -4.00F));
         sovereign_root.addOrReplaceChild("vfx_magic_circle", CubeListBuilder.create(), PartPose.offset(0.00F, -1.00F, 0.00F));
@@ -568,11 +569,12 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         this.chest.y += breathe * 0.42F;
 
         float legSwing = Mth.cos(walkPos * 0.72F) * 0.58F * walkSpeed;
-        if (awakenFactor > 0.5F && walkSpeed < 0.12F && !isTransitioning) {
-            this.rightLeg.xRot += 0.18F + Mth.sin(age * 0.10F) * 0.06F;
-            this.leftLeg.xRot += -0.14F - Mth.sin(age * 0.10F) * 0.06F;
-            this.rightShin.xRot += 0.28F;
-            this.leftShin.xRot += 0.16F;
+        // Phase 2 is truly airborne/levitating: keep an ascended sword-immortal aerial leg pose even while gliding!
+        if (awakenFactor > 0.5F && !isTransitioning && state.actionType != AstralSovereignEntity.ACTION_ULTIMATE_JUDGMENT) {
+            this.rightLeg.xRot += 0.16F + Mth.sin(age * 0.11F) * 0.06F + walkSpeed * 0.14F;
+            this.leftLeg.xRot += -0.12F - Mth.sin(age * 0.11F) * 0.06F + walkSpeed * 0.10F;
+            this.rightShin.xRot += 0.30F + walkSpeed * 0.12F;
+            this.leftShin.xRot += 0.18F + walkSpeed * 0.08F;
         } else {
             this.rightLeg.xRot += legSwing;
             this.leftLeg.xRot -= legSwing;

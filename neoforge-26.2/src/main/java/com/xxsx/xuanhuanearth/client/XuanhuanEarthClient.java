@@ -28,7 +28,12 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -62,9 +67,11 @@ public final class XuanhuanEarthClient {
         modBus.addListener(XuanhuanEarthClient::registerPayloadHandlers);
         modBus.addListener(XuanhuanEarthClient::registerKeyMappings);
         modBus.addListener(XuanhuanParticleProviders::register);
+        modBus.addListener(XuanhuanEarthClient::registerFluidModels);
         NeoForge.EVENT_BUS.addListener(XuanhuanEarthClient::clientTick);
         HalberdSwingVfx.register();
         NeoForge.EVENT_BUS.addListener(CultivationPlayerAnimations::renderPlayer);
+        NeoForge.EVENT_BUS.addListener(XuanhuanTooltipHandler::onItemTooltip);
     }
 
     private static void registerScreens(RegisterMenuScreensEvent event) {
@@ -110,6 +117,16 @@ public final class XuanhuanEarthClient {
     private static void registerPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
         event.register(CultivationStatusPayload.TYPE, XuanhuanEarthClient::handleCultivationStatus);
         event.register(CultivationVisualPayload.TYPE, XuanhuanEarthClient::handleCultivationVisual);
+    }
+
+    private static void registerFluidModels(RegisterFluidModelsEvent event) {
+        FluidModel.Unbaked model = new FluidModel.Unbaked(
+                new Material(Identifier.withDefaultNamespace("block/water_still"), true),
+                new Material(Identifier.withDefaultNamespace("block/water_flow"), true),
+                new Material(Identifier.withDefaultNamespace("block/water_overlay"), true),
+                (FluidTintSource) state -> 0xFF3CE8D4
+        );
+        event.register(model, XuanhuanEarth.SPIRIT_SPRING_FLUID, XuanhuanEarth.SPIRIT_SPRING_FLOWING);
     }
 
     private static void registerKeyMappings(RegisterKeyMappingsEvent event) {

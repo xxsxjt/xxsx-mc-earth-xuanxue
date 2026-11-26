@@ -504,7 +504,7 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                     level.setBlock(center.offset(x, -1, z), palette.wall(), FLAGS);
                     level.setBlock(center.offset(x, 0, z), Blocks.SMOOTH_STONE_SLAB.defaultBlockState(), FLAGS);
                 } else {
-                    level.setBlock(center.offset(x, -1, z), Blocks.WATER.defaultBlockState(), FLAGS);
+                    level.setBlock(center.offset(x, -1, z), XuanhuanEarth.SPIRIT_SPRING_BLOCK.get().defaultBlockState(), FLAGS);
                     level.setBlock(center.offset(x, 0, z), Blocks.AIR.defaultBlockState(), FLAGS);
                 }
             }
@@ -531,7 +531,7 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                 } else if (x == 1 && z == 1) {
                     level.setBlock(pos.offset(x, -1, z),
                             XuanhuanEarth.SPIRIT_SPRING_STONE.get().defaultBlockState(), FLAGS);
-                    level.setBlock(pos.offset(x, 0, z), Blocks.WATER.defaultBlockState(), FLAGS);
+                    level.setBlock(pos.offset(x, 0, z), XuanhuanEarth.SPIRIT_SPRING_BLOCK.get().defaultBlockState(), FLAGS);
                     level.setBlock(pos.offset(x, 1, z), Blocks.AIR.defaultBlockState(), FLAGS);
                 } else {
                     level.setBlock(pos.offset(x, 0, z),

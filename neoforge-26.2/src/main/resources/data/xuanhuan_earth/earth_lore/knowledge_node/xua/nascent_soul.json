@@ -10,6 +10,12 @@
   "item_requires": [
     {
       "cond": "field>=70"
+    },
+    {
+      "cond": "realm>=3"
+    },
+    {
+      "cond": "xp_level>=25"
     }
   ],
   "unlocks": [
@@ -39,5 +45,6 @@
     "field_low"
   ],
   "name_key": "lore.xuanhuan_earth.xua.nascent_soul",
-  "desc_key": "lore.xuanhuan_earth.xua.nascent_soul.desc"
+  "desc_key": "lore.xuanhuan_earth.xua.nascent_soul.desc",
+  "study_ticks": 140
 }

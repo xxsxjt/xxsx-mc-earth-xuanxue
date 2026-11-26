@@ -16,6 +16,8 @@ public final class CultivationSettlerRenderer extends MobRenderer<CultivationSet
     private static final Identifier[] TEXTURES = {
             XuanhuanEarth.id("textures/entity/cultivation_settler_merchant.png"),
             XuanhuanEarth.id("textures/entity/cultivation_settler_spring_keeper.png"),
+            XuanhuanEarth.id("textures/entity/cultivation_settler_steward.png"),
+            XuanhuanEarth.id("textures/entity/cultivation_settler_spring_keeper.png"),
             XuanhuanEarth.id("textures/entity/cultivation_settler_steward.png")
     };
 
@@ -33,6 +35,8 @@ public final class CultivationSettlerRenderer extends MobRenderer<CultivationSet
                                    float partialTick) {
         super.extractRenderState(entity, state, partialTick);
         state.role = entity.getRole().id();
+        state.element = entity.getElementAffinity().id();
+        state.weapon = entity.getWeaponStyle().id();
         state.trading = entity.isTrading();
         state.hurtTime = Math.max(0.0F, entity.hurtTime - partialTick);
         state.breathPhase = Mth.sin((entity.tickCount + partialTick) * 0.09F);
@@ -44,23 +48,39 @@ public final class CultivationSettlerRenderer extends MobRenderer<CultivationSet
     }
 
     @Override
+    protected void scale(CultivationSettlerRenderState state, PoseStack poseStack) {
+        if (state.role == CultivationSettlerEntity.Role.SECT_ELDER.id()) {
+            poseStack.scale(1.08F, 1.08F, 1.08F);
+        } else if (state.role == CultivationSettlerEntity.Role.OUTER_DISCIPLE.id()) {
+            poseStack.scale(0.95F, 0.96F, 0.95F);
+        }
+    }
+
+    @Override
     public void submit(CultivationSettlerRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraRenderState) {
         super.submit(state, poseStack, collector, cameraRenderState);
         float age = state.ageInTicks;
-        // Role colors: 0 Merchant (warm amber-gold), 1 Spring Keeper (jade-cyan), 2 Sect Steward (celestial violet-gold)
-        int r = state.role == 1 ? 115 : (state.role == 2 ? 195 : 255);
-        int g = state.role == 1 ? 240 : (state.role == 2 ? 155 : 210);
-        int b = state.role == 1 ? 225 : (state.role == 2 ? 255 : 105);
+        CultivationSettlerEntity.ElementAffinity elem = CultivationSettlerEntity.ElementAffinity.byId(state.element);
+        int r = elem.r();
+        int g = elem.g();
+        int b = elem.b();
+        boolean isElder = state.role == CultivationSettlerEntity.Role.SECT_ELDER.id();
         boolean combat = state.combatPose > 0 || state.attackTime > 0.02F;
 
-        SpiritVfxHelper.submitBackHalo(poseStack, collector, SpiritVfxHelper.TEX_SWORD_SEAL,
-                state.bodyRot, 1.38F, 0.56F, combat ? 0.78F : 0.58F, age * 0.06F, r, g, b, combat ? 225 : 155);
-        if (state.trading || combat) {
+        if (isElder || combat) {
+            SpiritVfxHelper.submitBackHalo(poseStack, collector, SpiritVfxHelper.TEX_SWORD_SEAL,
+                    state.bodyRot, isElder ? 1.48F : 1.35F, 0.56F,
+                    isElder ? (combat ? 0.95F : 0.75F) : 0.65F,
+                    age * (isElder ? 0.08F : 0.06F), r, g, b, combat ? 225 : 170);
+        }
+        if (state.trading || combat || isElder) {
             SpiritVfxHelper.submitGroundSeal(poseStack, collector, SpiritVfxHelper.TEX_BAGUA,
-                    combat ? 1.75F : 1.35F, 0.06F, age * (combat ? 0.09F : 0.04F), r, g, b, combat ? 220 : 165);
+                    combat ? (isElder ? 2.10F : 1.65F) : 1.35F, 0.06F,
+                    age * (combat ? 0.09F : 0.04F), r, g, b, combat ? 220 : 145);
         }
         if (combat) {
-            SpiritVfxHelper.submitOrbitOrbs(poseStack, collector, 4, 1.05F, 1.25F, 0.18F, age * 1.4F, r, g, b, 225);
+            SpiritVfxHelper.submitOrbitOrbs(poseStack, collector, isElder ? 6 : 3,
+                    isElder ? 1.20F : 0.95F, 1.25F, 0.18F, age * 1.45F, r, g, b, 225);
         }
     }
 

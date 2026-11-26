@@ -4,6 +4,8 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 
 public final class CultivationSettlerRenderState extends LivingEntityRenderState {
     public int role;
+    public int element;
+    public int weapon;
     public boolean trading;
     public float hurtTime;
     public float breathPhase;

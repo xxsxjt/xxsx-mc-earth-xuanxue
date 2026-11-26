@@ -282,8 +282,15 @@ public class AstralFlyingSwordEntity extends Entity {
         LivingEntity owner = getOwnerEntity(serverLevel);
         boolean deflectedIntoOwner = isDeflected() && owner != null && living.getUUID().equals(owner.getUUID());
         float hitDmg = deflectedIntoOwner ? this.damage * 1.45F : this.damage;
-        DamageSource ds = owner != null ? this.damageSources().mobAttack(owner) : this.damageSources().magic();
-        living.hurtServer(serverLevel, ds, hitDmg);
+        // Use indirectMagic + scale knockback delta strictly to 1/5 (0.2x) so flying swords feel sharp without launching targets
+        Vec3 preHitVel = living.getDeltaMovement();
+        DamageSource ds = owner != null ? this.damageSources().indirectMagic(this, owner) : this.damageSources().magic();
+        boolean hurt = living.hurtServer(serverLevel, ds, hitDmg);
+        if (hurt) {
+            Vec3 kbDelta = living.getDeltaMovement().subtract(preHitVel);
+            living.setDeltaMovement(preHitVel.add(kbDelta.scale(0.20D)));
+            living.hurtMarked = true;
+        }
         serverLevel.sendParticles(
                 isEmpowered() ? XuanhuanParticles.EMBER_SPARK.get() : ParticleTypes.ELECTRIC_SPARK,
                 living.getX(), living.getY() + living.getBbHeight() * 0.5, living.getZ(),

@@ -1,5 +1,58 @@
 {
   "variants": {
-    "": { "model": "xuanhuan_earth:block/spirit_spring_stone" }
+    "size=1": [
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size1"
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size1",
+        "y": 90
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size1",
+        "y": 180
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size1",
+        "y": 270
+      }
+    ],
+    "size=2": [
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size2"
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size2",
+        "y": 90
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size2",
+        "y": 180
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size2",
+        "y": 270
+      }
+    ],
+    "size=3": [
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size3"
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size3",
+        "y": 90
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size3",
+        "y": 180
+      },
+      {
+        "model": "xuanhuan_earth:block/spirit_spring_stone_size3",
+        "y": 270
+      }
+    ],
+    "size=4": {
+      "model": "xuanhuan_earth:block/spirit_spring_stone"
+    }
   }
 }

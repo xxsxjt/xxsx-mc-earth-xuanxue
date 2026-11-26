@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:book",
+    "minecraft:paper",
+    "xuanhuan_earth:cinnabar_spirit_ink",
+    "xuanhuan_earth:spirit_herb"
+  ],
+  "result": {
+    "id": "xuanhuan_earth:bigu_book",
+    "count": 1
+  }
+}

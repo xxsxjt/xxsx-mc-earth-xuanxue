@@ -20,6 +20,12 @@
   "item_requires": [
     {
       "cond": "field>=50"
+    },
+    {
+      "cond": "realm>=1"
+    },
+    {
+      "cond": "xp_level>=5"
     }
   ],
   "unlocks": [
@@ -49,5 +55,6 @@
     "field_low"
   ],
   "name_key": "lore.xuanhuan_earth.xua.foundation_building",
-  "desc_key": "lore.xuanhuan_earth.xua.foundation_building.desc"
+  "desc_key": "lore.xuanhuan_earth.xua.foundation_building.desc",
+  "study_ticks": 60
 }
