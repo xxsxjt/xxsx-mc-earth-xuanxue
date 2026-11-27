@@ -1,0 +1,45 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 5,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/array_basics"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "block": "earth_xuanxue:array_pillar"
+    },
+    {
+      "item": "earth_xuanxue:array_pillar"
+    },
+    {
+      "item": "earth_xuanxue:array_control_tablet"
+    },
+    {
+      "ability": "earth_xuanxue:array_tablet"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:array_rune_stone",
+        "count": 8
+      },
+      {
+        "ingredient": "earth_xuanxue:spirit_iron_ingot",
+        "count": 2
+      }
+    ],
+    "ticks": 6000
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.array_expansion",
+  "desc_key": "lore.earth_xuanxue.xua.array_expansion.desc"
+}

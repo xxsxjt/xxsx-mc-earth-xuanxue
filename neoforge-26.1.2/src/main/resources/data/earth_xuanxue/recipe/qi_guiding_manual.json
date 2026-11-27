@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:book",
+    "minecraft:amethyst_shard",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "id": "earth_xuanxue:qi_guiding_manual"
+  }
+}

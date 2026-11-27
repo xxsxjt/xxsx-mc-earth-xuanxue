@@ -1,0 +1,39 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 5,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/talisman_basics"
+    },
+    {
+      "all": "earth_xuanxue:xua/wind_talisman"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:seal_talisman"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:empty_talisman",
+        "count": 2
+      },
+      {
+        "ingredient": "minecraft:string",
+        "count": 8
+      }
+    ],
+    "ticks": 6000
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.seal_talisman",
+  "desc_key": "lore.earth_xuanxue.xua.seal_talisman.desc"
+}

@@ -1,0 +1,52 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 4,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/spirit_veins"
+    },
+    {
+      "any": [
+        "earth_core:geo/stratigraphy",
+        "earth_xuanxue:xua/stone_reading"
+      ]
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "sky"
+    }
+  ],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:luopan"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "minecraft:compass",
+        "count": 1
+      },
+      {
+        "ingredient": "earth_xuanxue:spirit_dust",
+        "count": 4
+      },
+      {
+        "ingredient": "minecraft:paper",
+        "count": 4
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [
+    "sky_blocked"
+  ],
+  "name_key": "lore.earth_xuanxue.xua.geomancy",
+  "desc_key": "lore.earth_xuanxue.xua.geomancy.desc"
+}

@@ -1,0 +1,11 @@
+{
+  "display_name": "settlement.earth_xuanxue.mountain_spirit_shrine",
+  "category": "spirit_society",
+  "generation_status": "catalog_only",
+  "weight": 4,
+  "min_distance_chunks": 32,
+  "biomes": ["#minecraft:is_mountain", "#minecraft:is_taiga"],
+  "buildings": ["mountain_gate", "incense_court", "spirit_stone_altar", "keeper_lodge"],
+  "residents": ["shrine_keeper", "mountain_spirit_envoy", "pilgrim"],
+  "outputs": ["earth_xuanxue:spirit_crystal_shard", "earth_xuanxue:spirit_spring_bottle"]
+}

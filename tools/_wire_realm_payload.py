@@ -1,7 +1,7 @@
 import io
 
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\CultivationStatusPayload.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\CultivationStatusPayload.java')
 s = io.open(p, encoding='utf-8').read()
 
 pairs = [
@@ -16,8 +16,8 @@ pairs = [
      '                    buf.writeBoolean(payload.openScreen());\n'
      '                    buf.writeVarInt(payload.realm());'),
     # Empty.
-    ('"spirituality.xuanhuan_earth.source.natural", false, false);',
-     '"spirituality.xuanhuan_earth.source.natural", false, false, 0);'),
+    ('"spirituality.earth_xuanxue.source.natural", false, false);',
+     '"spirituality.earth_xuanxue.source.natural", false, false, 0);'),
 ]
 
 for old, new in pairs:
@@ -30,8 +30,8 @@ for old, new in pairs:
 io.open(p, 'w', encoding='utf-8', newline='\n').write(s)
 
 # Send the realm from the server.
-p2 = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-      r'\com\xxsx\xuanhuanearth\CultivationNetwork.java')
+p2 = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+      r'\com\xxsx\earth\xuanxue\CultivationNetwork.java')
 s2 = io.open(p2, encoding='utf-8').read()
 old2 = '''                player.getVehicle() instanceof MeditationSeatEntity,
                 openScreen));'''

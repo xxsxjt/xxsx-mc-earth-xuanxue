@@ -1,15 +1,15 @@
 import io, json, collections, os
 
-lang = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\resources\assets\xuanhuan_earth\lang'
+lang = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\resources\assets\earth_xuanxue\lang'
 
 ADD = {
     'zh_cn': {
-        'settlement.xuanhuan_earth.mountain_spirit_shrine': '\u5c71\u795e\u7960',
-        'settlement.xuanhuan_earth.spirit_beast_keeper_camp': '\u7075\u517d\u5e08\u8425\u5730',
+        'settlement.earth_xuanxue.mountain_spirit_shrine': '\u5c71\u795e\u7960',
+        'settlement.earth_xuanxue.spirit_beast_keeper_camp': '\u7075\u517d\u5e08\u8425\u5730',
     },
     'en_us': {
-        'settlement.xuanhuan_earth.mountain_spirit_shrine': 'Mountain Spirit Shrine',
-        'settlement.xuanhuan_earth.spirit_beast_keeper_camp': 'Spirit Beast Keeper Camp',
+        'settlement.earth_xuanxue.mountain_spirit_shrine': 'Mountain Spirit Shrine',
+        'settlement.earth_xuanxue.spirit_beast_keeper_camp': 'Spirit Beast Keeper Camp',
     },
 }
 

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " B ",
+    " C ",
+    "W W"
+  ],
+  "key": {
+    "B": "earth_xuanxue:spirit_iron_blank",
+    "C": "minecraft:crafting_table",
+    "W": "#minecraft:planks"
+  },
+  "result": {
+    "id": "earth_xuanxue:talisman_table"
+  }
+}

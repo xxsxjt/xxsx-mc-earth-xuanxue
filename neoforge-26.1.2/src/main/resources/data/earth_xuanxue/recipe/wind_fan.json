@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "earth_xuanxue:spirit_iron_blank",
+    "earth_xuanxue:spirit_iron_blank",
+    "minecraft:feather",
+    "minecraft:feather"
+  ],
+  "result": {
+    "id": "earth_xuanxue:wind_fan",
+    "count": 1
+  }
+}

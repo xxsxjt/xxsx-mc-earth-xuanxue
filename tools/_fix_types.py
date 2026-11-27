@@ -1,6 +1,6 @@
 import io
 
-base = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java\com\xxsx\xuanhuanearth\settlement'
+base = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java\com\xxsx\earth\xuanxue\settlement'
 
 # --- Fix: spirit grass is an item, not a block. Use the spirit soil bed only.
 p = base + r'\XuanhuanSettlementFeature.java'

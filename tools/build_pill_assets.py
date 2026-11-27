@@ -12,8 +12,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\resources')
-ASSETS = ROOT / 'assets' / 'xuanhuan_earth'
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\resources')
+ASSETS = ROOT / 'assets' / 'earth_xuanxue'
 LANG = ASSETS / 'lang'
 ITEMS = ASSETS / 'items'
 MODELS = ASSETS / 'models' / 'item'
@@ -113,17 +113,17 @@ def main() -> None:
                     object_pairs_hook=collections.OrderedDict)
 
     for pill_id, (zh_name, en_name, zh_tip, en_tip, base, accent, zh_msg, en_msg) in PILLS.items():
-        zh[f'item.xuanhuan_earth.{pill_id}'] = zh_name
-        zh[f'tooltip.xuanhuan_earth.{pill_id}'] = zh_tip
-        zh[f'message.xuanhuan_earth.pill.{pill_id}'] = zh_msg
-        en[f'item.xuanhuan_earth.{pill_id}'] = en_name
-        en[f'tooltip.xuanhuan_earth.{pill_id}'] = en_tip
-        en[f'message.xuanhuan_earth.pill.{pill_id}'] = en_msg
+        zh[f'item.earth_xuanxue.{pill_id}'] = zh_name
+        zh[f'tooltip.earth_xuanxue.{pill_id}'] = zh_tip
+        zh[f'message.earth_xuanxue.pill.{pill_id}'] = zh_msg
+        en[f'item.earth_xuanxue.{pill_id}'] = en_name
+        en[f'tooltip.earth_xuanxue.{pill_id}'] = en_tip
+        en[f'message.earth_xuanxue.pill.{pill_id}'] = en_msg
 
         model = {
             "model": {
                 "type": "minecraft:model",
-                "model": f"xuanhuan_earth:item/{pill_id}",
+                "model": f"earth_xuanxue:item/{pill_id}",
             }
         }
         io.open(ITEMS / f'{pill_id}.json', 'w', encoding='utf-8', newline='\n').write(
@@ -131,7 +131,7 @@ def main() -> None:
 
         item_model = {
             "parent": "minecraft:item/generated",
-            "textures": {"layer0": f"xuanhuan_earth:item/{pill_id}"},
+            "textures": {"layer0": f"earth_xuanxue:item/{pill_id}"},
         }
         io.open(MODELS / f'{pill_id}.json', 'w', encoding='utf-8', newline='\n').write(
             json.dumps(item_model, indent=2) + '\n')
@@ -139,8 +139,8 @@ def main() -> None:
         pill_texture(pill_id, base, accent).save(TEX / f'{pill_id}.png')
         print('pill', pill_id)
 
-    zh['message.xuanhuan_earth.pill.no_need'] = '法力与身体状态均无需恢复（%s/%s），本次没有服丹。'
-    en['message.xuanhuan_earth.pill.no_need'] = 'Mana and body status need no recovery (%s/%s); no pill was used.'
+    zh['message.earth_xuanxue.pill.no_need'] = '法力与身体状态均无需恢复（%s/%s），本次没有服丹。'
+    en['message.earth_xuanxue.pill.no_need'] = 'Mana and body status need no recovery (%s/%s); no pill was used.'
 
     io.open(LANG / 'zh_cn.json', 'w', encoding='utf-8', newline='\n').write(
         json.dumps(zh, ensure_ascii=False, indent=2) + '\n')

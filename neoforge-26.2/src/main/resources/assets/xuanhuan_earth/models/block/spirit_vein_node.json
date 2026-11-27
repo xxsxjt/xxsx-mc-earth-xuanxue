@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "xuanhuan_earth:block/spirit_vein_node"
-  }
-}

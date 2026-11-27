@@ -1,0 +1,53 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 7,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/foundation_building"
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "field>=60"
+    },
+    {
+      "cond": "realm>=2"
+    },
+    {
+      "cond": "xp_level>=15"
+    },
+    {
+      "hold": "earth_xuanxue:spirit_stone"
+    }
+  ],
+  "unlocks": [
+    {
+      "ability": "earth_xuanxue:realm_3"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:spirit_stone_core",
+        "count": 1
+      },
+      {
+        "ingredient": "earth_xuanxue:breakthrough_pill",
+        "count": 2
+      }
+    ],
+    "ticks": 9600
+  },
+  "fail_codes": [
+    "field_low"
+  ],
+  "name_key": "lore.earth_xuanxue.xua.golden_core",
+  "desc_key": "lore.earth_xuanxue.xua.golden_core.desc",
+  "study_ticks": 100
+}

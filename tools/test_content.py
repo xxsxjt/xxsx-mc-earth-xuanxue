@@ -10,23 +10,23 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2')
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2')
 LOG = Path(r'C:\Users\xxsx\AppData\Local\Temp\opencode\content_check.log')
 HOST, PORT, PASSWORD = '127.0.0.1', 25575, 'earthtest'
 
 PROBES = [
-    'give @p xuanhuan_earth:foundation_pill 1',
-    'give @p xuanhuan_earth:ironbody_pill 1',
-    'give @p xuanhuan_earth:cloudbreath_pill 1',
-    'give @p xuanhuan_earth:grainfast_pill 1',
-    'give @p xuanhuan_earth:nightsight_pill 1',
-    'give @p xuanhuan_earth:breakthrough_pill 1',
-    'give @p xuanhuan_earth:wind_fan 1',
-    'give @p xuanhuan_earth:stone_seal 1',
-    'give @p xuanhuan_earth:gather_orb 1',
-    'give @p xuanhuan_earth:lantern_rod 1',
-    'place feature xuanhuan_earth:mountain_spirit_shrine 0 100 0',
-    'place feature xuanhuan_earth:spirit_beast_keeper_camp 40 100 0',
+    'give @p earth_xuanxue:foundation_pill 1',
+    'give @p earth_xuanxue:ironbody_pill 1',
+    'give @p earth_xuanxue:cloudbreath_pill 1',
+    'give @p earth_xuanxue:grainfast_pill 1',
+    'give @p earth_xuanxue:nightsight_pill 1',
+    'give @p earth_xuanxue:breakthrough_pill 1',
+    'give @p earth_xuanxue:wind_fan 1',
+    'give @p earth_xuanxue:stone_seal 1',
+    'give @p earth_xuanxue:gather_orb 1',
+    'give @p earth_xuanxue:lantern_rod 1',
+    'place feature earth_xuanxue:mountain_spirit_shrine 0 100 0',
+    'place feature earth_xuanxue:spirit_beast_keeper_camp 40 100 0',
 ]
 
 

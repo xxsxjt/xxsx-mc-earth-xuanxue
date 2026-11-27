@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:amethyst_shard",
+    "minecraft:glowstone_dust"
+  ],
+  "result": {
+    "id": "earth_xuanxue:spirit_crystal_shard",
+    "count": 2
+  }
+}

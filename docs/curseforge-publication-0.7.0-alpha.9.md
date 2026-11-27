@@ -3,7 +3,7 @@
 - Project: Xuanhuan Earth
 - Project ID: 1617745
 - File ID: 9368724
-- Artifact: xuanhuan-earth-neoforge-26.1.2-0.7.0-alpha.9.jar
+- Artifact: earth-xuanxue-neoforge-26.1.2-0.7.0-alpha.9.jar
 - SHA256: 0AF18CAA9A7FFD79CDA740208871E9C069AB68D9F47E1BCE375A9AB66038ADDD
 - Size: 969405 bytes
 - Target: Minecraft 26.1.2 / NeoForge 26.1.2.124 / Client + Server / Java 25
@@ -11,8 +11,8 @@
 - Release type: Beta
 - Display name: Xuanhuan Earth 0.7.0-alpha.9 - MC 26.1.2 NeoForge
 - CurseForge status: Approved; public file page resolves
-- Public page: https://www.curseforge.com/minecraft/mc-mods/xuanhuan-earth/files/9368724
-- CDN: https://edge.forgecdn.net/files/9368/724/xuanhuan-earth-neoforge-26.1.2-0.7.0-alpha.9.jar
+- Public page: https://www.curseforge.com/minecraft/mc-mods/earth-xuanxue/files/9368724
+- CDN: https://edge.forgecdn.net/files/9368/724/earth-xuanxue-neoforge-26.1.2-0.7.0-alpha.9.jar
 - Relation: JEI optional dependency
 
 ## Verification

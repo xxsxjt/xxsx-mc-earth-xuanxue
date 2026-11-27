@@ -1,0 +1,11 @@
+{
+  "display_name": "settlement.earth_xuanxue.wandering_cultivator_market",
+  "category": "trade",
+  "generation_status": "enabled",
+  "weight": 8,
+  "min_distance_chunks": 24,
+  "biomes": ["#minecraft:is_overworld"],
+  "buildings": ["market_gate", "medicine_stall", "talisman_stall", "tea_shelter"],
+  "residents": ["wandering_cultivator", "herbalist", "talisman_scribe", "caravan_guard"],
+  "outputs": ["earth_xuanxue:spirit_grass", "earth_xuanxue:cinnabar_spirit_ink", "earth_xuanxue:talisman_paper"]
+}

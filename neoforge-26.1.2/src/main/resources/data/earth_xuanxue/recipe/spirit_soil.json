@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:dirt",
+    "minecraft:bone_meal",
+    "earth_xuanxue:spirit_spring_bottle"
+  ],
+  "result": {
+    "id": "earth_xuanxue:spirit_soil",
+    "count": 2
+  }
+}

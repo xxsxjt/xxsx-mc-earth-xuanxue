@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "earth_xuanxue:spirit_iron_blank",
+    "earth_xuanxue:spirit_crystal_shard",
+    "earth_xuanxue:spirit_crystal_shard",
+    "earth_xuanxue:spirit_crystal_shard"
+  ],
+  "result": {
+    "id": "earth_xuanxue:gather_orb",
+    "count": 1
+  }
+}

@@ -1,7 +1,7 @@
 import io
 
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\XuanhuanMachineBlock.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\XuanhuanMachineBlock.java')
 s = io.open(p, encoding='utf-8').read()
 
 anchor = '''        recipes.add(r("crystal_qi_pill", Kind.ALCHEMY_FURNACE,

@@ -1,0 +1,11 @@
+{
+  "id": "earth_xuanxue:circulation",
+  "sources": ["local_field", "player_mana"],
+  "nodes": [
+    { "kind": "contamination_filter", "input": "energy" },
+    { "kind": "breath_converter", "input": "energy", "cost_aeu": 1 },
+    { "kind": "circulation_shaper", "input": "energy" },
+    { "kind": "mana_return", "input": "control" },
+    { "kind": "field_depletion_sink", "input": "target" }
+  ]
+}

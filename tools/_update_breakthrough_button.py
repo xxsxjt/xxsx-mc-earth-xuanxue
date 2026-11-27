@@ -1,7 +1,7 @@
 import io
 
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\client\CultivationScreen.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\client\CultivationScreen.java')
 s = io.open(p, encoding='utf-8').read()
 
 old = '''        if (primaryActionButton != null) {
@@ -10,7 +10,7 @@ new = '''        if (breakthroughButton != null) {
             boolean maxed = status.realm() >= RealmBreakthrough.MAX_REALM;
             breakthroughButton.active = !maxed;
             breakthroughButton.setMessage(Component.translatable(
-                    "screen.xuanhuan_earth.cultivation.breakthrough")
+                    "screen.earth_xuanxue.cultivation.breakthrough")
                     .copy()
                     .append(Component.literal("  "))
                     .append(Component.translatable(RealmBreakthrough.realmNameKey(status.realm()))));

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "SIS",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:smooth_stone",
+    "I": "earth_xuanxue:spirit_crystal_shard"
+  },
+  "result": {
+    "id": "earth_xuanxue:spirit_stone",
+    "count": 1
+  }
+}

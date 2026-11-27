@@ -1,0 +1,40 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 5,
+  "gate": "soft",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/qi_refining"
+    },
+    {
+      "all": "earth_xuanxue:xua/restorative_pills"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:breakthrough_pill"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:spirit_crystal_shard",
+        "count": 8
+      },
+      {
+        "ingredient": "earth_xuanxue:cinnabar_spirit_ink",
+        "count": 2
+      }
+    ],
+    "ticks": 6000
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.breakthrough_pills",
+  "desc_key": "lore.earth_xuanxue.xua.breakthrough_pills.desc"
+}

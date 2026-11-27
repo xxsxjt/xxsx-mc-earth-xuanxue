@@ -16,8 +16,8 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(r'D:\AGENT\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth')
-MODELS = ROOT / 'neoforge-26.2' / 'src' / 'main' / 'java' / 'com' / 'xxsx' / 'xuanhuanearth' / 'client' / 'model'
+ROOT = Path(__file__).resolve().parent.parent
+MODELS = ROOT / 'neoforge-26.1.2' / 'src' / 'main' / 'java' / 'com' / 'xxsx' / 'xuanhuanearth' / 'client' / 'model'
 
 REGISTRATION = re.compile(
     r'(?:PartDefinition\s+(\w+)\s*=\s*)?(\w+)\.addOrReplaceChild\(\s*"([a-z0-9_]+)"', re.S)

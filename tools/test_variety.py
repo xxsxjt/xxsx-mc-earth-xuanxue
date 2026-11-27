@@ -14,7 +14,7 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2')
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2')
 LOG = Path(r'C:\Users\xxsx\AppData\Local\Temp\opencode\settlement_variety.log')
 HOST, PORT, PASSWORD = '127.0.0.1', 25575, 'earthtest'
 
@@ -82,7 +82,7 @@ def main() -> None:
     if client is not None:
         client.cmd('forceload add -96 -96 96 96')
         for i, (x, y, z) in enumerate(COORDS):
-            client.cmd(f'place feature xuanhuan_earth:spirit_spring_village {x} {y} {z}')
+            client.cmd(f'place feature earth_xuanxue:spirit_spring_village {x} {y} {z}')
             time.sleep(2)
             nbt = client.cmd(f'data get block {x} {y} {z}')
             palette = re.search(r'Palette: "([^"]*)"', nbt)

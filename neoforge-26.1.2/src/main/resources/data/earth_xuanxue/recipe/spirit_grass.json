@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:wheat_seeds",
+    "minecraft:fern",
+    "earth_xuanxue:spirit_spring_bottle"
+  ],
+  "result": {
+    "id": "earth_xuanxue:spirit_grass",
+    "count": 2
+  }
+}

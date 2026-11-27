@@ -1,7 +1,7 @@
 import io
 
-base = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-        r'\com\xxsx\xuanhuanearth\settlement')
+base = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+        r'\com\xxsx\earth\xuanxue\settlement')
 
 # --- Feature: record where residents should stand, per layout, at generation time.
 p = base + r'\XuanhuanSettlementFeature.java'

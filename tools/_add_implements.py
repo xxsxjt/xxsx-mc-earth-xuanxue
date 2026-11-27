@@ -1,8 +1,8 @@
 import io
 
 # 1. Register the component type and the four implement items.
-p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\java'
-     r'\com\xxsx\xuanhuanearth\XuanhuanEarth.java')
+p = (r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\java'
+     r'\com\xxsx\earth\xuanxue\XuanhuanEarth.java')
 s = io.open(p, encoding='utf-8').read()
 
 anchor = '''    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_BEAST_SEAL = material('''

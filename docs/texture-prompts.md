@@ -3,7 +3,7 @@
 First polished block-texture pass for `Xuanhuan Earth / 玄幻地球` used `gpt-image-2` through the local imagegen CLI and the DPAPI-encrypted image key. Raw generated images are kept under ignored `tmp/imagegen/`; final downscaled PNGs are packaged under:
 
 ```text
-neoforge-26.2/src/main/resources/assets/xuanhuan_earth/textures/block/
+neoforge-26.1.2/src/main/resources/assets/earth_xuanxue/textures/block/
 ```
 
 Prompt principles used:
@@ -28,6 +28,6 @@ Second item-icon pass:
 
 - Generated with `gpt-image-2` from `tmp/imagegen/xuanhuan-items-20260707/xuanhuan-item-prompts.jsonl`.
 - Raw sources remain under ignored `tmp/imagegen/xuanhuan-items-20260707/raw/`.
-- Final icons are `32x32` transparent PNGs in `assets/xuanhuan_earth/textures/item/`.
+- Final icons are `32x32` transparent PNGs in `assets/earth_xuanxue/textures/item/`.
 - Pillow was used only for chroma-key cleanup, cropping, downscaling and contact-sheet validation.
 - Replaced vanilla placeholder item models for manuals, talisman materials, spirit compass, spirit spring bottle, spirit grass, spirit crystal shard, spirit iron blank and qi recovery pill.

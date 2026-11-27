@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "earth_core"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:redstone",
+    "minecraft:ink_sac",
+    "earth_xuanxue:spirit_crystal_shard"
+  ],
+  "result": {
+    "id": "earth_xuanxue:cinnabar_spirit_ink",
+    "count": 2
+  }
+}

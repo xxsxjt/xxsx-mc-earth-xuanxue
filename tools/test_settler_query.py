@@ -10,7 +10,7 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2')
+ROOT = Path(r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2')
 LOG = Path(r'C:\Users\xxsx\AppData\Local\Temp\opencode\settler_query.log')
 HOST, PORT, PASSWORD = '127.0.0.1', 25575, 'earthtest'
 
@@ -75,25 +75,25 @@ def main() -> None:
     out = []
     if client is not None:
         client.cmd('forceload add -64 -64 64 64')
-        client.cmd('place feature xuanhuan_earth:spirit_spring_village 0 100 0')
+        client.cmd('place feature earth_xuanxue:spirit_spring_village 0 100 0')
         time.sleep(14)
         # Single-entity selector: nearest settler within 32 blocks of the site.
         out.append(('nearest settler',
                     client.cmd('execute positioned 0 63 0 run data get entity '
-                               '@e[type=xuanhuan_earth:cultivation_settler,limit=1,'
+                               '@e[type=earth_xuanxue:cultivation_settler,limit=1,'
                                'sort=nearest,distance=..32] '
                                'PersistenceRequired')))
         out.append(('nearest role',
                     client.cmd('execute positioned 0 63 0 run data get entity '
-                               '@e[type=xuanhuan_earth:cultivation_settler,limit=1,'
+                               '@e[type=earth_xuanxue:cultivation_settler,limit=1,'
                                'sort=nearest,distance=..32] '
                                'neoforge:attachments')))
         out.append(('settler count check',
                     client.cmd('execute positioned 0 63 0 run execute if entity '
-                               '@e[type=xuanhuan_earth:cultivation_settler,distance=..32]')))
+                               '@e[type=earth_xuanxue:cultivation_settler,distance=..32]')))
         out.append(('beast check',
                     client.cmd('execute positioned 0 63 0 run execute if entity '
-                               '@e[type=xuanhuan_earth:spirit_fox,distance=..32]')))
+                               '@e[type=earth_xuanxue:spirit_fox,distance=..32]')))
         time.sleep(3)
         client.cmd('save-all')
         time.sleep(2)

@@ -1,0 +1,36 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 4,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/talisman_basics"
+    }
+  ],
+  "item_requires": [],
+  "unlocks": [
+    {
+      "item": "earth_xuanxue:fire_talisman"
+    }
+  ],
+  "literature": [
+    "notes"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:empty_talisman",
+        "count": 2
+      },
+      {
+        "ingredient": "minecraft:blaze_powder",
+        "count": 2
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [],
+  "name_key": "lore.earth_xuanxue.xua.fire_talisman",
+  "desc_key": "lore.earth_xuanxue.xua.fire_talisman.desc"
+}

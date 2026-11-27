@@ -1,0 +1,77 @@
+modLoader="javafml"
+loaderVersion="[3,)"
+license="AGPL-3.0-only"
+
+[[mods]]
+modId="earth_xuanxue"
+version="0.9.0"
+displayName="地球：玄学 (Earth: Xuanxue)"
+logoFile="logo.png"
+description='''
+In-development beta for Minecraft 26.1.2 + NeoForge 26.1.2.124.
+Xuanhuan Earth is independently playable and adds a xuanhuan world layer:
+spiritual veins, spirit springs, talismans, alchemy vessels and formation cores.
+This build implements the first playable cultivation loop: handbook screen,
+field-aware alchemy/talisman/array stations, JEI categories, consumable
+starter outputs, vanilla material routes, and optional Earth Human API-based recovery links.
+The server-synced cultivation panel now opens from a configurable key anywhere.
+Free practice is available after learning Qi Guiding, while the optional cushion adds full efficiency,
+continuous cycles, directional posture, a four-phase HUD and stronger recovery.
+The handbook is now a permanent navigation item, while technique manuals only
+unlock routes. Repeated practice advances independent level-1-to-10 experience
+tracks, and each route has a mana-costed active technique with its own cooldown.
+Level rewards now produce real metabolic, combat-resilience and breathing consequences;
+the handbook reports live progression and the next valid action.
+The handbook also tracks a persistent six-step standalone journey from initiation through
+practice, facility output, active technique, artifact use and spirit-beast contracting.
+Successful practice, recovery and combat techniques broadcast short-lived player
+action states instead of writing unused telemetry.
+Creature render states now carry real attack progress and sitting posture for
+species-specific strike, guard and recovery motion.
+The ecosystem slice now includes five independent contractable spirit beasts,
+three persistent companion modes, affinity-based sealing, dedicated models and drops.
+Three cultivation resident roles use real merchant containers, while wandering markets,
+spirit spring villages and sect frontier outposts generate through isolated features and
+deferred settlement anchors without replacing vanilla villages or mutating vanilla mobs.
+Spirit stones now carry a persistent AEU field charge, talismans seal their charge when
+drawn, and spell graphs load from data packs so server operators can retune costs.
+Rituals, stations and beasts use dedicated xuanhuan particles instead of vanilla ones,
+spirit beasts have emissive eyes and react to hurt, water, leaps and running, and player
+cultivation poses now gather, release and settle instead of looping a single sway.
+'''
+authors="xxsx"
+
+[[dependencies.earth_xuanxue]]
+modId="neoforge"
+type="required"
+versionRange="[26.1.2.124,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.earth_xuanxue]]
+modId="minecraft"
+type="required"
+versionRange="[26.1.2]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.earth_xuanxue]]
+modId="earth_lore"
+type="optional"
+versionRange="[0.2.0,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.earth_xuanxue]]
+modId="earth_core"
+type="optional"
+versionRange="[0.1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.earth_xuanxue]]
+modId="earth_human"
+type="optional"
+versionRange="[0.1.1,)"
+ordering="AFTER"
+side="BOTH"

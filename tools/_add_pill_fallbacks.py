@@ -8,7 +8,7 @@ import io
 import json
 import os
 
-ROOT = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\neoforge-26.2\src\main\resources\data\xuanhuan_earth\recipe'
+ROOT = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\neoforge-26.1.2\src\main\resources\data\earth_xuanxue\recipe'
 
 RECIPES = {
     # Grass + spring water: the same shape as the furnace recipe but weaker, so the furnace
@@ -17,22 +17,22 @@ RECIPES = {
         "type": "minecraft:crafting_shapeless",
         "category": "misc",
         "ingredients": [
-            "xuanhuan_earth:spirit_grass",
-            "xuanhuan_earth:spirit_grass",
+            "earth_xuanxue:spirit_grass",
+            "earth_xuanxue:spirit_grass",
             "minecraft:wheat",
             "minecraft:bowl",
         ],
-        "result": {"id": "xuanhuan_earth:grainfast_pill", "count": 1},
+        "result": {"id": "earth_xuanxue:grainfast_pill", "count": 1},
     },
     'nightsight_pill_simple.json': {
         "type": "minecraft:crafting_shapeless",
         "category": "misc",
         "ingredients": [
-            "xuanhuan_earth:spirit_grass",
+            "earth_xuanxue:spirit_grass",
             "minecraft:golden_carrot",
             "minecraft:glass_bottle",
         ],
-        "result": {"id": "xuanhuan_earth:nightsight_pill", "count": 1},
+        "result": {"id": "earth_xuanxue:nightsight_pill", "count": 1},
     },
 }
 

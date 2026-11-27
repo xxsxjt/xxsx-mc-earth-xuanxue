@@ -1,0 +1,46 @@
+{
+  "discipline": "earth_lore:xua",
+  "tier": 4,
+  "gate": "hard",
+  "requires": [
+    {
+      "all": "earth_xuanxue:xua/circulation"
+    },
+    {
+      "all": "earth_xuanxue:xua/spirit_stones"
+    }
+  ],
+  "item_requires": [
+    {
+      "cond": "field>=40"
+    }
+  ],
+  "unlocks": [
+    {
+      "ability": "earth_xuanxue:realm_1"
+    }
+  ],
+  "literature": [
+    "notes",
+    "jade_slip"
+  ],
+  "teachers": [],
+  "research": {
+    "items": [
+      {
+        "ingredient": "earth_xuanxue:spirit_stone",
+        "count": 2
+      },
+      {
+        "ingredient": "earth_xuanxue:qi_recovery_pill",
+        "count": 2
+      }
+    ],
+    "ticks": 4800
+  },
+  "fail_codes": [
+    "field_low"
+  ],
+  "name_key": "lore.earth_xuanxue.xua.qi_refining",
+  "desc_key": "lore.earth_xuanxue.xua.qi_refining.desc"
+}

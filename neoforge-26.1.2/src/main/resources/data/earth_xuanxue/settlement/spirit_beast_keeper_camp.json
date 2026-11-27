@@ -1,0 +1,11 @@
+{
+  "display_name": "settlement.earth_xuanxue.spirit_beast_keeper_camp",
+  "category": "beast_keeping",
+  "generation_status": "catalog_only",
+  "weight": 6,
+  "min_distance_chunks": 28,
+  "biomes": ["#minecraft:is_forest", "#minecraft:is_taiga"],
+  "buildings": ["keeper_tent", "spirit_grass_pen", "tracking_post", "supply_shed"],
+  "residents": ["spirit_beast_keeper", "tracker", "apprentice_keeper"],
+  "outputs": ["earth_xuanxue:spirit_grass", "earth_xuanxue:spirit_fox_spawn_egg"]
+}

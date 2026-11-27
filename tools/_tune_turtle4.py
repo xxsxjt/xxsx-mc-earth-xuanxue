@@ -1,6 +1,6 @@
 import io
 
-p = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\xuanhuan_earth\tools\rebuild_beast_models.py'
+p = r'D:\Codex\WORKSPACES\Projects\mc-agent\earth-series\earth_xuanxue\tools\rebuild_beast_models.py'
 s = io.open(p, encoding='utf-8').read()
 
 old = '''    # Head: taller than the shell rim, projecting forward beyond it.

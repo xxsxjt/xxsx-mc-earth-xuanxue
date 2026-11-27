@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "earth_core"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#earth_core:arcana_geology_catalysts",
+    "minecraft:amethyst_shard",
+    "minecraft:glowstone_dust"
+  ],
+  "result": {
+    "id": "earth_xuanxue:spirit_crystal_shard",
+    "count": 3
+  }
+}

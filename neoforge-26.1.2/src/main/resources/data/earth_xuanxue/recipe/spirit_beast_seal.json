@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "minecraft:gold_nugget",
+    "minecraft:amethyst_shard",
+    "earth_xuanxue:spirit_crystal_shard"
+  ],
+  "result": { "id": "earth_xuanxue:spirit_beast_seal", "count": 1 }
+}
