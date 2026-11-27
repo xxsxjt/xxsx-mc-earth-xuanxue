@@ -266,7 +266,44 @@ public final class CultivationSettlerModel extends EntityModel<CultivationSettle
             this.leftArm.xRot += this.rightLeg.xRot * 0.60F;
         }
 
-        if (state.combatPose == CultivationSettlerEntity.POSE_BURST) {
+        if (state.combatPose == CultivationSettlerEntity.POSE_MEDITATE) {
+            float floatBob = Mth.sin(state.ageInTicks * 0.11F) * 0.55F;
+            float sitDrop = 4.6F + floatBob;
+            this.head.y += sitDrop;
+            this.body.y += sitDrop;
+            this.rightArm.y += sitDrop;
+            this.leftArm.y += sitDrop;
+            this.rightLeg.y += sitDrop - 0.3F;
+            this.leftLeg.y += sitDrop - 0.3F;
+            this.merchantPack.y += sitDrop;
+            this.springPack.y += sitDrop;
+            this.stewardPack.y += sitDrop;
+
+            // Lotus cross-legged posture
+            this.rightLeg.xRot = -1.32F;
+            this.rightLeg.yRot = -0.58F;
+            this.rightLeg.zRot = 0.24F;
+            this.leftLeg.xRot = -1.32F;
+            this.leftLeg.yRot = 0.58F;
+            this.leftLeg.zRot = -0.24F;
+
+            // Dantian hand mudra with serene breathing sway
+            this.rightArm.xRot = -0.74F + breath * 0.04F;
+            this.rightArm.yRot = -0.46F;
+            this.rightArm.zRot = 0.12F;
+            this.leftArm.xRot = -0.74F + breath * 0.04F;
+            this.leftArm.yRot = 0.46F;
+            this.leftArm.zRot = -0.12F;
+            this.head.xRot = 0.08F + breath * 0.03F;
+        } else if (state.combatPose == CultivationSettlerEntity.POSE_DRINK_PILL) {
+            float sip = Mth.sin(state.ageInTicks * 0.48F) * 0.12F;
+            this.rightArm.xRot = -1.78F + sip;
+            this.rightArm.yRot = -0.44F;
+            this.rightArm.zRot = 0.10F;
+            this.leftArm.xRot = -0.32F;
+            this.leftArm.yRot = 0.22F;
+            this.head.xRot -= 0.24F + sip * 0.25F;
+        } else if (state.combatPose == CultivationSettlerEntity.POSE_BURST) {
             float pulse = 0.65F + 0.35F * Mth.sin(state.ageInTicks * 0.42F);
             this.rightArm.xRot = -2.05F - pulse * 0.18F;
             this.leftArm.xRot = -1.95F - pulse * 0.18F;

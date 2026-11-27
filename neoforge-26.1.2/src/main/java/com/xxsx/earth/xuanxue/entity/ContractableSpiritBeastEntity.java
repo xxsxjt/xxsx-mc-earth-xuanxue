@@ -160,6 +160,15 @@ public abstract class ContractableSpiritBeastEntity extends TamableAnimal {
     }
 
     @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if (target instanceof Player player && (player.isCreative() || player.isSpectator())) {
+            super.setTarget(null);
+            return;
+        }
+        super.setTarget(target);
+    }
+
+    @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!this.isTame()) {

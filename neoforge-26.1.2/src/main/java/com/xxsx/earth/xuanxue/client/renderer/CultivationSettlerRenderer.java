@@ -65,22 +65,31 @@ public final class CultivationSettlerRenderer extends MobRenderer<CultivationSet
         int g = elem.g();
         int b = elem.b();
         boolean isElder = state.role == CultivationSettlerEntity.Role.SECT_ELDER.id();
-        boolean combat = state.combatPose > 0 || state.attackTime > 0.02F;
+        boolean meditating = state.combatPose == CultivationSettlerEntity.POSE_MEDITATE;
+        boolean combat = (state.combatPose >= CultivationSettlerEntity.POSE_MELEE
+                && state.combatPose <= CultivationSettlerEntity.POSE_BURST)
+                || state.attackTime > 0.02F;
 
-        if (isElder || combat) {
+        if (isElder || combat || meditating) {
             SpiritVfxHelper.submitBackHalo(poseStack, collector, SpiritVfxHelper.TEX_SWORD_SEAL,
-                    state.bodyRot, isElder ? 1.48F : 1.35F, 0.56F,
-                    isElder ? (combat ? 0.95F : 0.75F) : 0.65F,
-                    age * (isElder ? 0.08F : 0.06F), r, g, b, combat ? 225 : 170);
+                    state.bodyRot, isElder ? 1.48F : (meditating ? 1.18F : 1.35F), 0.56F,
+                    isElder ? (combat ? 0.95F : 0.75F) : (meditating ? 0.58F : 0.65F),
+                    age * (meditating ? 0.035F : (isElder ? 0.08F : 0.06F)),
+                    r, g, b, combat ? 225 : (meditating ? 165 : 170));
         }
-        if (state.trading || combat || isElder) {
+        if (state.trading || combat || meditating || isElder) {
             SpiritVfxHelper.submitGroundSeal(poseStack, collector, SpiritVfxHelper.TEX_BAGUA,
-                    combat ? (isElder ? 2.10F : 1.65F) : 1.35F, 0.06F,
-                    age * (combat ? 0.09F : 0.04F), r, g, b, combat ? 220 : 145);
+                    combat ? (isElder ? 2.10F : 1.65F) : (meditating ? 1.60F : 1.35F), 0.06F,
+                    age * (combat ? 0.09F : (meditating ? 0.045F : 0.04F)),
+                    r, g, b, combat ? 220 : (meditating ? 175 : 145));
         }
-        if (combat) {
-            SpiritVfxHelper.submitOrbitOrbs(poseStack, collector, isElder ? 6 : 3,
-                    isElder ? 1.20F : 0.95F, 1.25F, 0.18F, age * 1.45F, r, g, b, 225);
+        if (combat || meditating) {
+            SpiritVfxHelper.submitOrbitOrbs(poseStack, collector,
+                    meditating ? 4 : (isElder ? 6 : 3),
+                    meditating ? 1.05F : (isElder ? 1.20F : 0.95F),
+                    meditating ? 0.95F : 1.25F,
+                    meditating ? 0.14F : 0.18F,
+                    age * (meditating ? 0.75F : 1.45F), r, g, b, meditating ? 185 : 225);
         }
     }
 

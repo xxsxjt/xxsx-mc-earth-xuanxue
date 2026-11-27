@@ -20,6 +20,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -61,6 +63,16 @@ public class AstralSovereignEntity extends Monster {
     public static final int ULTIMATE_SHOCKWAVE_DURATION = 12;
     public static final double ULTIMATE_MAX_RADIUS = 15.5D;
     public static final int SWORD_BUFF_DURATION = 120;
+    public static final double BASE_MOVE_SPEED = 0.36D;
+    public static final double MELEE_CHASE_SPEED = 1.24D;
+    public static final double PHASE2_AIR_SPEED = 0.44D;
+    public static final double PHASE2_AERIAL_STRIKE_RANGE = 4.6D;
+    public static final double MELEE_CLEAVE_KNOCKBACK_H = 0.22D;
+    public static final double MELEE_CLEAVE_KNOCKBACK_V = 0.10D;
+    public static final double SHOCKWAVE_KNOCKBACK_H = 0.42D;
+    public static final double SHOCKWAVE_KNOCKBACK_V = 0.22D;
+    public static final double PHASE_TRANSITION_KNOCKBACK_H = 0.52D;
+    public static final double PHASE_TRANSITION_KNOCKBACK_V = 0.24D;
 
     public static final int ACTION_NONE = 0;
     public static final int ACTION_COMBO_SWEEP = 1;
@@ -97,6 +109,9 @@ public class AstralSovereignEntity extends Monster {
     private int shockwaveTicksRemaining = 0;
     private int stuckTicks = 0;
     private int vaultCooldown = 0;
+    private int dashCooldown = 28;
+    private int p1QiWaveCooldown = 55;
+    private int aerialMeleeCooldown = 0;
     private Vec3 lastProgressPos = Vec3.ZERO;
     private final Set<UUID> ultimateHitIds = new HashSet<>();
 
@@ -108,14 +123,34 @@ public class AstralSovereignEntity extends Monster {
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 450.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.28D)
+                .add(Attributes.MOVEMENT_SPEED, BASE_MOVE_SPEED)
                 .add(Attributes.ATTACK_DAMAGE, 14.0D)
+                .add(Attributes.ATTACK_KNOCKBACK, 0.12D)
                 .add(Attributes.ARMOR, 10.0D)
                 .add(Attributes.ARMOR_TOUGHNESS, 6.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.85D)
                 .add(Attributes.STEP_HEIGHT, 1.5D)
                 .add(Attributes.SAFE_FALL_DISTANCE, 24.0D)
                 .add(Attributes.FOLLOW_RANGE, 48.0D);
+    }
+
+    public static boolean isValidHostileTarget(@Nullable LivingEntity entity) {
+        if (entity == null || !entity.isAlive()) {
+            return false;
+        }
+        if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if (target != null && !isValidHostileTarget(target)) {
+            super.setTarget(null);
+            return;
+        }
+        super.setTarget(target);
     }
 
     @Override
@@ -131,7 +166,7 @@ public class AstralSovereignEntity extends Monster {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.15D, true));
+        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, MELEE_CHASE_SPEED, true));
         this.goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 0.7D));
         this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 16.0F));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
@@ -264,17 +299,17 @@ public class AstralSovereignEntity extends Monster {
                             2, 0.2, 0.25, 0.2, 0.04);
                 }
             }
-            AABB area = this.getBoundingBox().inflate(13.0D, 4.5D, 13.0D);
+            AABB area = this.getBoundingBox().inflate(13.0D, 5.0D, 13.0D);
             for (LivingEntity target : serverLevel.getEntitiesOfClass(LivingEntity.class, area,
-                    e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                    e -> e != this && isValidHostileTarget(e) && !this.isAlliedTo(e))) {
                 double dx = target.getX() - this.getX();
                 double dz = target.getZ() - this.getZ();
                 double dist = Math.sqrt(dx * dx + dz * dz);
                 if (dist <= 13.0D) {
                     target.hurtServer(serverLevel, this.damageSources().mobAttack(this), 14.0F);
                     if (dist > 1.0E-4D) {
-                        double strength = 1.65D * Math.max(0.45D, 1.0D - dist / 15.0D);
-                        target.push((dx / dist) * strength, 0.62D, (dz / dist) * strength);
+                        double strength = PHASE_TRANSITION_KNOCKBACK_H * Math.max(0.45D, 1.0D - dist / 15.0D);
+                        target.push((dx / dist) * strength, PHASE_TRANSITION_KNOCKBACK_V, (dz / dist) * strength);
                         target.hurtMarked = true;
                     }
                 }
@@ -367,8 +402,21 @@ public class AstralSovereignEntity extends Monster {
         }
 
         LivingEntity target = this.getTarget();
+        if (target != null && !isValidHostileTarget(target)) {
+            this.setTarget(null);
+            target = null;
+        }
         if (this.vaultCooldown > 0) {
             this.vaultCooldown--;
+        }
+        if (this.dashCooldown > 0) {
+            this.dashCooldown--;
+        }
+        if (this.p1QiWaveCooldown > 0) {
+            this.p1QiWaveCooldown--;
+        }
+        if (this.aerialMeleeCooldown > 0) {
+            this.aerialMeleeCooldown--;
         }
 
         // Phase 2 true aerial levitation & 3D hover steering (descends smoothly only for ultimate ground slam)
@@ -394,6 +442,17 @@ public class AstralSovereignEntity extends Monster {
         }
 
         double distSqr = this.distanceToSqr(target);
+
+        // Phase 1 Anti-Kite Mobility: Star-Step Gap-Closer Dash + Mid-Range Halberd Qi-Wave
+        if (!isPhase2() && getActionType() == ACTION_NONE) {
+            if (this.dashCooldown <= 0 && distSqr >= 20.25D && distSqr <= 400.0D) {
+                performStarStepDash(serverLevel, target);
+            } else if (this.p1QiWaveCooldown <= 0 && distSqr >= 30.25D && distSqr <= 324.0D
+                    && this.getSensing().hasLineOfSight(target)) {
+                performPhase1QiWave(serverLevel, target);
+                return;
+            }
+        }
 
         // Ultimate: Eight-Wastes Astral Judgment (Circular Shockwave)
         if (--this.ultimateCooldown <= 0 && getActionType() == ACTION_NONE && distSqr < 144.0D) {
@@ -532,9 +591,9 @@ public class AstralSovereignEntity extends Monster {
                             3, 0.25, 0.25, 0.25, 0.04);
                 }
                 serverLevel.sendParticles(ParticleTypes.EXPLOSION, mx, this.getY() + 0.5, mz, 2, 0.6, 0.3, 0.6, 0.0);
-                AABB meteorBox = new AABB(mx - 3.0, this.getY() - 1.0, mz - 3.0, mx + 3.0, this.getY() + 3.5, mz + 3.0);
+                AABB meteorBox = new AABB(mx - 3.2, this.getY() - 4.0, mz - 3.2, mx + 3.2, this.getY() + 3.5, mz + 3.2);
                 for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, meteorBox,
-                        e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                        e -> e != this && isValidHostileTarget(e) && !this.isAlliedTo(e))) {
                     le.hurtServer(serverLevel, this.damageSources().mobAttack(this), isPhase2() ? 10.0F : 7.5F);
                 }
             }
@@ -586,9 +645,9 @@ public class AstralSovereignEntity extends Monster {
         // Apply wave-front damage & safe radial knockback to targets caught by the expanding ring
         double innerSq = Math.max(0.0, waveRadius - 2.4) * Math.max(0.0, waveRadius - 2.4);
         double outerSq = (waveRadius + 1.1) * (waveRadius + 1.1);
-        AABB box = this.getBoundingBox().inflate(waveRadius + 1.1, 3.8, waveRadius + 1.1);
+        AABB box = this.getBoundingBox().inflate(waveRadius + 1.1, 4.5, waveRadius + 1.1);
         List<LivingEntity> victims = serverLevel.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != this && e.isAlive() && !this.ultimateHitIds.contains(e.getUUID()));
+                e -> e != this && isValidHostileTarget(e) && !this.ultimateHitIds.contains(e.getUUID()));
         float dmg = isPhase2() ? 18.0F : 14.0F;
         for (LivingEntity victim : victims) {
             double dx = victim.getX() - this.getX();
@@ -601,7 +660,7 @@ public class AstralSovereignEntity extends Monster {
                 Vec3 push = len > 1.0E-4
                         ? new Vec3(dx / len, 0.0, dz / len)
                         : new Vec3(0.0, 0.0, 1.0);
-                victim.push(push.x * 1.15, 0.55, push.z * 1.15);
+                victim.push(push.x * SHOCKWAVE_KNOCKBACK_H, SHOCKWAVE_KNOCKBACK_V, push.z * SHOCKWAVE_KNOCKBACK_H);
                 victim.hurtMarked = true;
             }
         }
@@ -629,9 +688,67 @@ public class AstralSovereignEntity extends Monster {
             startAction(ACTION_COMBO_THRUST, 20);
         }
 
+        if (target instanceof LivingEntity living && !isValidHostileTarget(living)) {
+            return false;
+        }
+        Vec3 preHitVel = target.getDeltaMovement();
         boolean hit = super.doHurtTarget(serverLevel, target);
+        if (hit) {
+            // Dampen vanilla knockback to 25% so targets stay inside halberd combo reach instead of flying 10 blocks away
+            Vec3 kbDelta = target.getDeltaMovement().subtract(preHitVel);
+            target.setDeltaMovement(
+                    preHitVel.x + kbDelta.x * 0.25D,
+                    preHitVel.y + Math.min(kbDelta.y * 0.30D, 0.12D),
+                    preHitVel.z + kbDelta.z * 0.25D
+            );
+            target.hurtMarked = true;
+        }
         emitMeleeComboVfxAndCleave(serverLevel, combo, target);
         return hit;
+    }
+
+    private void performStarStepDash(ServerLevel serverLevel, LivingEntity target) {
+        Vec3 toTarget = new Vec3(target.getX() - this.getX(), 0.0D, target.getZ() - this.getZ());
+        double horiz = Math.max(0.05D, toTarget.length());
+        Vec3 dir = toTarget.scale(1.0D / horiz);
+        float yaw = (float) (Mth.atan2(dir.z, dir.x) * Mth.RAD_TO_DEG) - 90.0F;
+        this.setYRot(yaw);
+        this.yBodyRot = yaw;
+        this.setDeltaMovement(dir.x * 1.18D, Math.max(this.getDeltaMovement().y, 0.28D), dir.z * 1.18D);
+        this.needsSync = true;
+        this.addEffect(new MobEffectInstance(MobEffects.SPEED, 36, 1, true, false, false));
+        this.dashCooldown = 56;
+        this.playSound(SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), 1.1F, 1.15F);
+        serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(),
+                this.getX(), this.getY() + 0.65D, this.getZ(), 1, 0, 0, 0, 0);
+        serverLevel.sendParticles(ParticleTypes.END_ROD,
+                this.getX(), this.getY() + 1.1D, this.getZ(), 14, 0.45D, 0.55D, 0.45D, 0.08D);
+    }
+
+    private void performPhase1QiWave(ServerLevel serverLevel, LivingEntity target) {
+        this.getLookControl().setLookAt(target, 35.0F, 35.0F);
+        startAction(ACTION_COMBO_THRUST, 16);
+        this.p1QiWaveCooldown = 72;
+        Vec3 start = new Vec3(this.getX(), this.getY() + 1.65D, this.getZ());
+        Vec3 aim = target.getBoundingBox().getCenter().subtract(start);
+        double dist = Math.max(0.1D, aim.length());
+        Vec3 dir = aim.scale(1.0D / dist);
+        double maxLen = Math.min(16.0D, dist + 2.5D);
+        Set<UUID> hitSet = new HashSet<>();
+        for (int step = 1; step <= (int) maxLen; step++) {
+            Vec3 p = start.add(dir.scale(step));
+            serverLevel.sendParticles(step % 2 == 0 ? XuanhuanParticles.QI_SPARK.get() : ParticleTypes.END_ROD,
+                    p.x, p.y, p.z, 2, 0.14D, 0.14D, 0.14D, 0.03D);
+            AABB segBox = new AABB(p.x - 1.25D, p.y - 1.35D, p.z - 1.25D, p.x + 1.25D, p.y + 1.35D, p.z + 1.25D);
+            for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, segBox,
+                    e -> e != this && isValidHostileTarget(e) && !this.isAlliedTo(e) && !hitSet.contains(e.getUUID()))) {
+                hitSet.add(le.getUUID());
+                le.hurtServer(serverLevel, this.damageSources().mobAttack(this), 9.5F);
+                le.push(dir.x * 0.18D, 0.08D, dir.z * 0.18D);
+                le.hurtMarked = true;
+            }
+        }
+        this.playSound(SoundEvents.TRIDENT_THROW.value(), 1.15F, 1.08F);
     }
 
     private void emitMeleeComboVfxAndCleave(ServerLevel serverLevel, int combo, Entity primaryTarget) {
@@ -643,8 +760,14 @@ public class AstralSovereignEntity extends Monster {
             horizForward = horizForward.normalize();
         }
         Vec3 right = new Vec3(-horizForward.z, 0.0, horizForward.x);
-        double baseY = this.getY() + 1.85;
+        double targetFootY = primaryTarget != null ? primaryTarget.getY() : this.getY();
+        double minHitY = Math.min(this.getY(), targetFootY) - 1.25D;
+        double maxHitY = Math.max(this.getY(), targetFootY) + 3.25D;
+        double baseY = primaryTarget != null
+                ? Mth.lerp(0.45D, this.getY() + 1.65D, targetFootY + primaryTarget.getBbHeight() * 0.6D)
+                : this.getY() + 1.75D;
         boolean p2 = isPhase2();
+        Set<UUID> hitThisCombo = new HashSet<>();
 
         if (combo == 0) {
             // Combo 1: P1 6.2m cold-silver arc -> P2 8.5m 180° Twin-Moon Golden-Crimson Sweep + 2 Chasing Swords!
@@ -665,14 +788,16 @@ public class AstralSovereignEntity extends Monster {
                             1, 0.1, 0.1, 0.1, 0.02);
                 }
             }
-            AABB box = this.getBoundingBox().inflate(sweepRadius, 2.5D, sweepRadius);
+            AABB box = new AABB(
+                    this.getX() - sweepRadius, minHitY, this.getZ() - sweepRadius,
+                    this.getX() + sweepRadius, maxHitY, this.getZ() + sweepRadius);
             for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, box,
-                    e -> e != this && e != primaryTarget && e.isAlive() && !this.isAlliedTo(e))) {
+                    e -> e != this && e != primaryTarget && isValidHostileTarget(e) && !this.isAlliedTo(e))) {
                 Vec3 to = new Vec3(le.getX() - this.getX(), 0.0, le.getZ() - this.getZ());
                 double dist = to.length();
                 if (dist <= sweepRadius && dist > 0.01 && to.normalize().dot(horizForward) >= maxDot) {
                     le.hurtServer(serverLevel, this.damageSources().mobAttack(this), p2 ? 12.5F : 8.5F);
-                    le.push(to.x / dist * (p2 ? 1.15 : 0.75), p2 ? 0.42 : 0.25, to.z / dist * (p2 ? 1.15 : 0.75));
+                    le.push(to.x / dist * MELEE_CLEAVE_KNOCKBACK_H, MELEE_CLEAVE_KNOCKBACK_V, to.z / dist * MELEE_CLEAVE_KNOCKBACK_H);
                     le.hurtMarked = true;
                 }
             }
@@ -681,56 +806,68 @@ public class AstralSovereignEntity extends Monster {
             }
             this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.35F, p2 ? 0.78F : 0.95F);
         } else if (combo == 1) {
-            // Combo 2: P1 7.0m single fissure -> P2 9.5m TRIPLE-LANE Branching Fan Fissures (0°, ±28°)!
+            // Combo 2: P1 7.0m single fissure -> P2 9.5m TRIPLE-LANE Branching Fan Fissures (0°, ±28°) tracking ground level!
             double laneLen = p2 ? 9.5D : 7.0D;
             double[] laneAngles = p2 ? new double[]{0.0, 0.48, -0.48} : new double[]{0.0};
+            double fissureY = Math.min(this.getY(), targetFootY);
             for (double la : laneAngles) {
                 Vec3 lDir = horizForward.scale(Math.cos(la)).add(right.scale(Math.sin(la)));
                 for (int step = 2; step <= (int) laneLen; step++) {
                     double px = this.getX() + lDir.x * step;
                     double pz = this.getZ() + lDir.z * step;
                     serverLevel.sendParticles(p2 ? XuanhuanParticles.EMBER_SPARK.get() : XuanhuanParticles.QI_SPARK.get(),
-                            px, this.getY() + 0.35, pz, 3, 0.22, 0.55, 0.22, 0.05);
+                            px, fissureY + 0.35, pz, 3, 0.22, 0.55, 0.22, 0.05);
                     if (step % 2 == 0) {
                         serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
-                                px, this.getY() + 0.18, pz, 2, 0.18, 0.35, 0.18, 0.03);
+                                px, fissureY + 0.18, pz, 2, 0.18, 0.35, 0.18, 0.03);
                     }
-                    AABB segBox = new AABB(px - 1.35, this.getY() - 0.5, pz - 1.35, px + 1.35, this.getY() + 2.8, pz + 1.35);
+                    AABB segBox = new AABB(px - 1.35, minHitY, pz - 1.35, px + 1.35, maxHitY, pz + 1.35);
                     for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, segBox,
-                            e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                            e -> e != this && isValidHostileTarget(e) && !this.isAlliedTo(e) && !hitThisCombo.contains(e.getUUID()))) {
+                        hitThisCombo.add(le.getUUID());
                         le.hurtServer(serverLevel, this.damageSources().mobAttack(this), p2 ? 11.5F : 8.5F);
-                        le.push(lDir.x * 0.65, p2 ? 0.58 : 0.38, lDir.z * 0.65);
+                        le.push(lDir.x * MELEE_CLEAVE_KNOCKBACK_H, MELEE_CLEAVE_KNOCKBACK_V + 0.04D, lDir.z * MELEE_CLEAVE_KNOCKBACK_H);
                         le.hurtMarked = true;
                     }
                 }
             }
             this.playSound(SoundEvents.TRIDENT_THUNDER.value(), 1.25F, p2 ? 0.85F : 1.08F);
         } else {
-            // Combo 3: P1 8.5m cyan lance -> P2 12.5m Golden-Crimson Dragon Lance + 4.5m Tip Star-Nova Detonation!
+            // Combo 3: P1 8.5m cyan lance -> P2 12.5m 3D-aimed Golden-Crimson Dragon Lance + 4.5m Tip Star-Nova Detonation!
             double lanceLen = p2 ? 12.5D : 8.5D;
+            Vec3 lanceOrigin = new Vec3(this.getX(), this.getY() + 1.65D, this.getZ());
+            Vec3 lanceDir = horizForward;
+            if (primaryTarget != null) {
+                Vec3 aim3d = primaryTarget.getBoundingBox().getCenter().subtract(lanceOrigin);
+                if (aim3d.lengthSqr() > 0.04D) {
+                    lanceDir = aim3d.normalize();
+                }
+            }
             for (int step = 1; step <= (int) lanceLen; step++) {
-                double px = this.getX() + horizForward.x * step;
-                double pz = this.getZ() + horizForward.z * step;
+                Vec3 lp = lanceOrigin.add(lanceDir.scale(step));
                 serverLevel.sendParticles(p2 ? XuanhuanParticles.EMBER_SPARK.get() : ParticleTypes.END_ROD,
-                        px, baseY, pz, p2 ? 3 : 2, 0.18, 0.18, 0.18, 0.04);
-                AABB segBox = new AABB(px - 1.4, baseY - 1.4, pz - 1.4, px + 1.4, baseY + 1.6, pz + 1.4);
+                        lp.x, lp.y, lp.z, p2 ? 3 : 2, 0.18, 0.18, 0.18, 0.04);
+                AABB segBox = new AABB(lp.x - 1.4, Math.min(lp.y - 1.5, minHitY), lp.z - 1.4,
+                        lp.x + 1.4, Math.max(lp.y + 1.6, maxHitY), lp.z + 1.4);
                 for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, segBox,
-                        e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                        e -> e != this && isValidHostileTarget(e) && !this.isAlliedTo(e) && !hitThisCombo.contains(e.getUUID()))) {
+                    hitThisCombo.add(le.getUUID());
                     le.hurtServer(serverLevel, this.damageSources().mobAttack(this), p2 ? 12.0F : 9.0F);
-                    le.push(horizForward.x * 0.95, 0.32, horizForward.z * 0.95);
+                    le.push(horizForward.x * MELEE_CLEAVE_KNOCKBACK_H, MELEE_CLEAVE_KNOCKBACK_V, horizForward.z * MELEE_CLEAVE_KNOCKBACK_H);
                     le.hurtMarked = true;
                 }
             }
             if (p2) {
-                double tx = this.getX() + horizForward.x * lanceLen;
-                double tz = this.getZ() + horizForward.z * lanceLen;
-                serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER, tx, baseY, tz, 1, 0.4, 0.4, 0.4, 0.0);
-                serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(), tx, baseY, tz, 1, 0, 0, 0, 0);
-                AABB novaBox = new AABB(tx - 4.5, this.getY() - 1.0, tz - 4.5, tx + 4.5, this.getY() + 3.5, tz + 4.5);
+                Vec3 tip = lanceOrigin.add(lanceDir.scale(lanceLen));
+                double tipY = Math.max(minHitY + 1.0D, tip.y);
+                serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER, tip.x, tipY, tip.z, 1, 0.4, 0.4, 0.4, 0.0);
+                serverLevel.sendParticles(XuanhuanParticles.QI_RING.get(), tip.x, tipY, tip.z, 1, 0, 0, 0, 0);
+                AABB novaBox = new AABB(tip.x - 4.5, minHitY, tip.z - 4.5, tip.x + 4.5, maxHitY, tip.z + 4.5);
                 for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, novaBox,
-                        e -> e != this && e.isAlive() && !this.isAlliedTo(e))) {
+                        e -> e != this && isValidHostileTarget(e) && !this.isAlliedTo(e))) {
                     le.hurtServer(serverLevel, this.damageSources().mobAttack(this), 13.0F);
-                    le.push(horizForward.x * 1.1, 0.45, horizForward.z * 1.1);
+                    le.push(horizForward.x * (MELEE_CLEAVE_KNOCKBACK_H + 0.06D), MELEE_CLEAVE_KNOCKBACK_V + 0.06D,
+                            horizForward.z * (MELEE_CLEAVE_KNOCKBACK_H + 0.06D));
                     le.hurtMarked = true;
                 }
             }
@@ -816,40 +953,64 @@ public class AstralSovereignEntity extends Monster {
             }
         }
 
-        double wave = Math.sin(this.tickCount * 0.11D) * 0.28D;
-        double desiredY = groundY + 1.95D + wave;
-        if (target != null && target.isAlive()) {
-            desiredY = Math.max(desiredY, target.getY() + 1.55D + wave);
+        double wave = Math.sin(this.tickCount * 0.11D) * 0.22D;
+        double desiredY = groundY + 1.55D + wave;
+        double dx = 0.0D;
+        double dz = 0.0D;
+        double horizDist = 0.0D;
+        boolean hasTarget = target != null && isValidHostileTarget(target);
+        if (hasTarget) {
+            dx = target.getX() - this.getX();
+            dz = target.getZ() - this.getZ();
+            horizDist = Math.sqrt(dx * dx + dz * dz);
+            if (horizDist <= 6.5D) {
+                // Swoop down smoothly into melee strike altitude right above ground targets!
+                desiredY = Math.max(groundY + 0.35D, target.getY() + 0.42D) + wave * 0.35D;
+            } else {
+                // Cruise gracefully while approaching from afar
+                desiredY = Math.max(groundY + 1.40D, target.getY() + 1.15D) + wave;
+            }
         }
         // Avoid pushing head into solid ceiling blocks
         BlockPos aboveHead = BlockPos.containing(this.getX(), this.getY() + this.getBbHeight() + 0.6D, this.getZ());
         if (!serverLevel.getBlockState(aboveHead).getCollisionShape(serverLevel, aboveHead).isEmpty()) {
-            desiredY = Math.min(desiredY, this.getY() - 0.15D);
+            desiredY = Math.min(desiredY, this.getY() - 0.18D);
         }
 
-        double vy = Mth.clamp((desiredY - this.getY()) * 0.16D, -0.30D, 0.42D);
-        double vx = this.getDeltaMovement().x * 0.72D;
-        double vz = this.getDeltaMovement().z * 0.72D;
+        double vy = Mth.clamp((desiredY - this.getY()) * 0.22D, -0.38D, 0.46D);
+        double vx = this.getDeltaMovement().x * 0.76D;
+        double vz = this.getDeltaMovement().z * 0.76D;
 
-        if (target != null && target.isAlive() && currentAction != ACTION_ULTIMATE_JUDGMENT) {
-            this.getLookControl().setLookAt(target, 30.0F, 30.0F);
-            double dx = target.getX() - this.getX();
-            double dz = target.getZ() - this.getZ();
-            double horizDist = Math.sqrt(dx * dx + dz * dz);
+        if (hasTarget && currentAction != ACTION_ULTIMATE_JUDGMENT) {
+            this.getLookControl().setLookAt(target, 34.0F, 34.0F);
             if (horizDist > 0.05D) {
                 float yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F;
-                this.setYRot(Mth.rotLerp(0.18F, this.getYRot(), yaw));
+                this.setYRot(Mth.rotLerp(0.24F, this.getYRot(), yaw));
                 this.yBodyRot = this.getYRot();
-                if (horizDist > 3.2D) {
-                    double flySpeed = currentAction == ACTION_SWORD_ARRAY_BUFF ? 0.12D : 0.27D;
-                    vx = Mth.lerp(0.24D, vx, (dx / horizDist) * flySpeed);
-                    vz = Mth.lerp(0.24D, vz, (dz / horizDist) * flySpeed);
+                if (horizDist > 7.0D && this.dashCooldown <= 0 && currentAction == ACTION_NONE) {
+                    // Aerial Star-Swoop Dash closes distance aggressively on ranged/fleeing targets
+                    vx = (dx / horizDist) * 0.92D;
+                    vz = (dz / horizDist) * 0.92D;
+                    vy = Mth.clamp((target.getY() + 0.55D - this.getY()) * 0.22D, -0.35D, 0.35D);
+                    this.dashCooldown = 48;
+                    this.playSound(SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), 1.0F, 1.25F);
+                    serverLevel.sendParticles(XuanhuanParticles.EMBER_SPARK.get(),
+                            this.getX(), this.getY() + 0.9D, this.getZ(), 12, 0.4D, 0.4D, 0.4D, 0.06D);
+                } else if (horizDist > 2.6D) {
+                    double flySpeed = currentAction == ACTION_SWORD_ARRAY_BUFF ? 0.22D : PHASE2_AIR_SPEED;
+                    vx = Mth.lerp(0.30D, vx, (dx / horizDist) * flySpeed);
+                    vz = Mth.lerp(0.30D, vz, (dz / horizDist) * flySpeed);
                     if (this.horizontalCollision) {
-                        vy = Math.max(vy, 0.34D);
+                        vy = Math.max(vy, 0.36D);
                     }
-                } else if (currentAction == ACTION_NONE && this.tickCount % 22 == 0) {
-                    this.doHurtTarget(serverLevel, target);
                 }
+            }
+            if (horizDist <= PHASE2_AERIAL_STRIKE_RANGE
+                    && Math.abs(target.getY() - this.getY()) <= 3.6D
+                    && currentAction == ACTION_NONE
+                    && this.aerialMeleeCooldown <= 0) {
+                this.doHurtTarget(serverLevel, target);
+                this.aerialMeleeCooldown = 18;
             }
         }
 

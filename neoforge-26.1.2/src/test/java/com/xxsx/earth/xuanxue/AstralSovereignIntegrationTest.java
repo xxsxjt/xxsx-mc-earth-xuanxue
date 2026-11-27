@@ -106,5 +106,19 @@ class AstralSovereignIntegrationTest {
         assertTrue(AstralHalberdItem.COOLDOWN_TICKS >= 20);
         String halberdSource = Files.readString(Path.of("src/main/java/com/xxsx/earth/xuanxue/AstralHalberdItem.java"));
         assertFalse(halberdSource.contains("SEAL_RING"));
+
+        // v0.9.1 playtest AI & combat bounds: agile P1 chase, low knockback, reliable P2 aerial strike, Creative immunity
+        assertTrue(AstralSovereignEntity.BASE_MOVE_SPEED >= 0.34D);
+        assertTrue(AstralSovereignEntity.MELEE_CHASE_SPEED >= 1.20D);
+        assertTrue(AstralSovereignEntity.PHASE2_AIR_SPEED >= 0.40D);
+        assertTrue(AstralSovereignEntity.PHASE2_AERIAL_STRIKE_RANGE >= 4.2D);
+        assertTrue(AstralSovereignEntity.MELEE_CLEAVE_KNOCKBACK_H <= 0.30D);
+        assertTrue(AstralSovereignEntity.MELEE_CLEAVE_KNOCKBACK_V <= 0.16D);
+        assertTrue(AstralSovereignEntity.SHOCKWAVE_KNOCKBACK_H <= 0.55D);
+        assertTrue(entitySource.contains("performStarStepDash"));
+        assertTrue(entitySource.contains("performPhase1QiWave"));
+        assertTrue(entitySource.contains("aerialMeleeCooldown"));
+        assertTrue(entitySource.contains("isValidHostileTarget"));
+        assertTrue(entitySource.contains("player.isCreative()"));
     }
 }

@@ -71,6 +71,11 @@ public final class CultivationSettlerEntity extends AbstractVillager {
     public static final int POSE_MELEE = 1;
     public static final int POSE_CAST = 2;
     public static final int POSE_BURST = 3;
+    public static final int POSE_MEDITATE = 4;
+    public static final int POSE_DRINK_PILL = 5;
+
+    public static final int PILL_RECOVERY_COOLDOWN = 220;
+    public static final int SPELL_RECOVERY_COOLDOWN = 170;
 
     @Nullable
     private LivingEntity combatTarget;
@@ -79,8 +84,22 @@ public final class CultivationSettlerEntity extends AbstractVillager {
     private int specialCooldown;
     private int evadeCooldown;
     private int poseTicks;
+    private int pillCooldown;
+    private int recoverySpellCooldown;
+    private int meditateTicks;
+    private int idleRoutineCooldown = 90;
     private boolean initializedTraits;
     private boolean elderSecondWindUsed;
+
+    public static boolean isValidCombatTarget(@Nullable LivingEntity entity) {
+        if (entity == null || !entity.isAlive() || entity instanceof CultivationSettlerEntity) {
+            return false;
+        }
+        if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
+            return false;
+        }
+        return true;
+    }
 
     public CultivationSettlerEntity(EntityType<? extends CultivationSettlerEntity> type, Level level) {
         super(type, level);
@@ -149,35 +168,51 @@ public final class CultivationSettlerEntity extends AbstractVillager {
         if (this.attackCooldown > 0) this.attackCooldown--;
         if (this.specialCooldown > 0) this.specialCooldown--;
         if (this.evadeCooldown > 0) this.evadeCooldown--;
+        if (this.pillCooldown > 0) this.pillCooldown--;
+        if (this.recoverySpellCooldown > 0) this.recoverySpellCooldown--;
         if (this.aggroTicks > 0) this.aggroTicks--;
         if (this.poseTicks > 0) {
             this.poseTicks--;
-            if (this.poseTicks == 0 && !this.level().isClientSide()) {
+            if (this.poseTicks == 0 && this.meditateTicks <= 0 && !this.level().isClientSide()) {
                 setCombatPose(POSE_IDLE);
             }
         }
 
         if (this.level() instanceof ServerLevel serverLevel) {
-            if (this.combatTarget == null || !this.combatTarget.isAlive()) {
+            if (this.combatTarget != null && !isValidCombatTarget(this.combatTarget)) {
+                this.combatTarget = null;
+                this.aggroTicks = 0;
+            }
+
+            if (this.combatTarget == null) {
                 double scanRange = getRole() == Role.SECT_ELDER ? 16.0D : 11.0D;
                 Monster nearbyMonster = serverLevel.getEntitiesOfClass(Monster.class,
                         this.getBoundingBox().inflate(scanRange),
-                        m -> m.isAlive() && (m.getTarget() == this || getRole().proactivelyGuards()))
+                        m -> isValidCombatTarget(m) && (m.getTarget() == this || getRole().proactivelyGuards()))
                         .stream().findFirst().orElse(null);
                 if (nearbyMonster != null) {
                     this.combatTarget = nearbyMonster;
                     this.aggroTicks = 280;
+                    this.meditateTicks = 0;
                 }
             }
 
-            if (this.combatTarget != null && this.combatTarget.isAlive() && this.aggroTicks > 0
+            if (this.combatTarget != null && isValidCombatTarget(this.combatTarget) && this.aggroTicks > 0
                     && this.distanceToSqr(this.combatTarget) < 784.0D) {
+                this.meditateTicks = 0;
                 tickCultivatorCombat(serverLevel, this.combatTarget);
-            } else if (this.aggroTicks <= 0 || (this.combatTarget != null && !this.combatTarget.isAlive())) {
-                this.combatTarget = null;
-                if (getCombatPose() != POSE_IDLE) {
-                    setCombatPose(POSE_IDLE);
+            } else {
+                if (this.combatTarget != null || this.aggroTicks > 0) {
+                    this.combatTarget = null;
+                    this.aggroTicks = 0;
+                    if (getCombatPose() != POSE_MEDITATE && getCombatPose() != POSE_DRINK_PILL) {
+                        setCombatPose(POSE_IDLE);
+                        this.poseTicks = 0;
+                    }
+                    // Prompt quick recovery right after leaving combat
+                    this.idleRoutineCooldown = Math.min(this.idleRoutineCooldown, 24);
                 }
+                tickOutOfCombatRecoveryAndLife(serverLevel);
             }
         }
     }
@@ -306,7 +341,7 @@ public final class CultivationSettlerEntity extends AbstractVillager {
                     level.sendParticles(elem.secondaryParticle(), center.x, center.y + 1.0D, center.z, 16, 1.1D, 0.9D, 1.1D, 0.05D);
                     AABB box = new AABB(center.x - 3.6D, center.y - 1.5D, center.z - 3.6D, center.x + 3.6D, center.y + 3.0D, center.z + 3.6D);
                     for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, box,
-                            e -> e != this && e.isAlive() && !(e instanceof CultivationSettlerEntity))) {
+                            e -> e != this && isValidCombatTarget(e))) {
                         victim.hurtServer(level, level.damageSources().indirectMagic(this, this), 8.5F);
                         elem.applyOnHitEffect(level, this, victim, 1);
                     }
@@ -410,13 +445,249 @@ public final class CultivationSettlerEntity extends AbstractVillager {
         }
     }
 
+    private void tickOutOfCombatRecoveryAndLife(ServerLevel serverLevel) {
+        if (this.isTrading()) {
+            if (this.meditateTicks > 0 || getCombatPose() != POSE_IDLE) {
+                this.meditateTicks = 0;
+                this.poseTicks = 0;
+                setCombatPose(POSE_IDLE);
+            }
+            return;
+        }
+
+        float healthRatio = this.getMaxHealth() > 0.0F ? this.getHealth() / this.getMaxHealth() : 1.0F;
+        if (healthRatio >= 0.96F) {
+            this.elderSecondWindUsed = false;
+        }
+
+        ElementAffinity elem = getElementAffinity();
+
+        // Active seated meditation (打坐运功回血 / 平时吐纳)
+        if (this.meditateTicks > 0) {
+            this.meditateTicks--;
+            this.getNavigation().stop();
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.25D, 1.0D, 0.25D));
+            if (getCombatPose() != POSE_MEDITATE) {
+                setCombatPose(POSE_MEDITATE);
+            }
+            this.poseTicks = Math.max(this.poseTicks, 4);
+
+            if (this.tickCount % 8 == 0) {
+                double angle = this.tickCount * 0.28D;
+                double radius = 0.85D;
+                serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
+                        this.getX() + Math.cos(angle) * radius,
+                        this.getY() + 0.55D + Math.sin(angle * 0.5D) * 0.25D,
+                        this.getZ() + Math.sin(angle) * radius,
+                        2, 0.08D, 0.12D, 0.08D, 0.02D);
+                serverLevel.sendParticles(elem.particle(),
+                        this.getX() - Math.cos(angle) * radius,
+                        this.getY() + 0.70D,
+                        this.getZ() - Math.sin(angle) * radius,
+                        1, 0.06D, 0.10D, 0.06D, 0.01D);
+            }
+
+            if (this.getHealth() < this.getMaxHealth() && this.tickCount % 14 == 0) {
+                this.heal(2.0F);
+                serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                        this.getX(), this.getY() + 1.15D, this.getZ(),
+                        2, 0.30D, 0.25D, 0.30D, 0.02D);
+            }
+
+            if (this.meditateTicks == 0) {
+                XuanhuanEffects.groundRing(serverLevel, this.position(), 0.95F);
+                this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.55F, 1.35F);
+                setCombatPose(POSE_IDLE);
+                this.poseTicks = 0;
+            }
+            return;
+        }
+
+        // Let ongoing non-combat pill/spell/kata pose finish cleanly
+        if (this.poseTicks > 0) {
+            this.getNavigation().stop();
+            if (getCombatPose() == POSE_DRINK_PILL && this.poseTicks % 8 == 0) {
+                serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
+                        this.getX(), this.getY() + 1.35D, this.getZ(),
+                        3, 0.22D, 0.15D, 0.22D, 0.02D);
+            }
+            return;
+        }
+
+        // Post-combat & injured self-recovery: Pill -> Recovery Spell -> Seated Meditation
+        if (healthRatio < 0.92F) {
+            if (healthRatio < 0.68F && this.pillCooldown <= 0) {
+                performPillRecovery(serverLevel);
+                return;
+            }
+            if (this.recoverySpellCooldown <= 0) {
+                performRecoverySpell(serverLevel, elem);
+                return;
+            }
+            startMeditation(serverLevel, 90 + this.random.nextInt(45));
+            return;
+        }
+
+        // Healthy daily cultivation life: help injured peers, meditate, practice martial/spell forms
+        if (--this.idleRoutineCooldown <= 0) {
+            this.idleRoutineCooldown = 125 + this.random.nextInt(125);
+
+            // Check if a nearby allied cultivator needs healing first
+            if (this.recoverySpellCooldown <= 0) {
+                CultivationSettlerEntity injuredAlly = serverLevel.getEntitiesOfClass(
+                        CultivationSettlerEntity.class, this.getBoundingBox().inflate(10.0D),
+                        a -> a != this && a.isAlive() && a.getHealth() < a.getMaxHealth() * 0.88F)
+                        .stream().findFirst().orElse(null);
+                if (injuredAlly != null) {
+                    performAllyHealSpell(serverLevel, injuredAlly, elem);
+                    return;
+                }
+            }
+
+            int roll = this.random.nextInt(100);
+            if (roll < 42) {
+                startMeditation(serverLevel, 75 + this.random.nextInt(45));
+            } else if (roll < 78) {
+                performIdleCultivationDrill(serverLevel, elem);
+            } else {
+                performIdleTonicOrGreeting(serverLevel, elem);
+            }
+        }
+    }
+
+    private void performPillRecovery(ServerLevel serverLevel) {
+        this.getNavigation().stop();
+        setCombatPose(POSE_DRINK_PILL);
+        this.poseTicks = 28;
+        this.pillCooldown = PILL_RECOVERY_COOLDOWN;
+        float healAmt = Math.max(8.0F, this.getMaxHealth() * 0.28F);
+        this.heal(healAmt);
+        this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 1, true, false, true));
+        this.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 140, 0, true, false, true));
+        this.playSound(SoundEvents.WITCH_DRINK, 0.85F, 1.15F);
+        this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.65F, 1.45F);
+        serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
+                this.getX(), this.getY() + 1.35D, this.getZ(), 10, 0.30D, 0.25D, 0.30D, 0.04D);
+        serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                this.getX(), this.getY() + 1.15D, this.getZ(), 6, 0.35D, 0.35D, 0.35D, 0.03D);
+    }
+
+    private void performRecoverySpell(ServerLevel serverLevel, ElementAffinity elem) {
+        this.getNavigation().stop();
+        this.swing(InteractionHand.MAIN_HAND);
+        setCombatPose(POSE_CAST);
+        this.poseTicks = 28;
+        this.recoverySpellCooldown = SPELL_RECOVERY_COOLDOWN;
+        float healAmt = Math.max(6.0F, this.getMaxHealth() * 0.22F);
+        this.heal(healAmt);
+        this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 0, true, false, true));
+        this.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 100, 0, true, false, true));
+        XuanhuanEffects.groundRing(serverLevel, this.position(), 1.15F);
+        serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
+                this.getX(), this.getY() + 1.05D, this.getZ(), 14, 0.45D, 0.45D, 0.45D, 0.05D);
+        serverLevel.sendParticles(elem.particle(),
+                this.getX(), this.getY() + 0.90D, this.getZ(), 8, 0.40D, 0.35D, 0.40D, 0.03D);
+        this.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 0.85F, 1.30F);
+
+        if (getRole() == Role.SECT_ELDER || getRole() == Role.SPIRIT_SPRING_KEEPER) {
+            int healed = 0;
+            for (CultivationSettlerEntity ally : serverLevel.getEntitiesOfClass(
+                    CultivationSettlerEntity.class, this.getBoundingBox().inflate(10.0D))) {
+                if (ally != this && ally.isAlive() && ally.getHealth() < ally.getMaxHealth() * 0.95F && healed < 4) {
+                    ally.heal(8.0F);
+                    ally.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 0, true, false, true));
+                    spawnSpellBeam(serverLevel, this.position().add(0, 1.25D, 0),
+                            ally.position().add(0, 1.15D, 0), XuanhuanParticles.QI_SPARK.get(), ParticleTypes.HAPPY_VILLAGER);
+                    healed++;
+                }
+            }
+        }
+    }
+
+    private void performAllyHealSpell(ServerLevel serverLevel, CultivationSettlerEntity ally, ElementAffinity elem) {
+        this.getNavigation().stop();
+        this.getLookControl().setLookAt(ally, 30.0F, 30.0F);
+        this.swing(InteractionHand.MAIN_HAND);
+        setCombatPose(POSE_CAST);
+        this.poseTicks = 26;
+        this.recoverySpellCooldown = SPELL_RECOVERY_COOLDOWN;
+        ally.heal(8.0F);
+        ally.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 0, true, false, true));
+        spawnSpellBeam(serverLevel, this.position().add(0, 1.25D, 0),
+                ally.position().add(0, 1.15D, 0), XuanhuanParticles.QI_SPARK.get(), elem.particle());
+        serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                ally.getX(), ally.getY() + 1.2D, ally.getZ(), 6, 0.35D, 0.35D, 0.35D, 0.03D);
+        this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.8F, 1.35F);
+    }
+
+    private void startMeditation(ServerLevel serverLevel, int durationTicks) {
+        this.getNavigation().stop();
+        this.meditateTicks = Math.max(40, durationTicks);
+        setCombatPose(POSE_MEDITATE);
+        this.poseTicks = this.meditateTicks;
+        XuanhuanEffects.groundRing(serverLevel, this.position(), 1.05F);
+        this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.6F, 1.15F);
+    }
+
+    private void performIdleCultivationDrill(ServerLevel serverLevel, ElementAffinity elem) {
+        this.getNavigation().stop();
+        this.swing(InteractionHand.MAIN_HAND);
+        WeaponStyle weapon = getWeaponStyle();
+        boolean castDrill = weapon == WeaponStyle.DAOIST_STAFF || getRole() == Role.SECT_ELDER
+                || getRole() == Role.SPIRIT_SPRING_KEEPER || this.random.nextBoolean();
+        if (castDrill) {
+            setCombatPose(POSE_CAST);
+            this.poseTicks = 28;
+            Vec3 forward = this.getLookAngle().normalize();
+            Vec3 start = this.position().add(0.0D, 1.25D, 0.0D);
+            spawnSpellBeam(serverLevel, start, start.add(forward.scale(3.5D)), elem.particle(), XuanhuanParticles.QI_SPARK.get());
+            XuanhuanEffects.groundRing(serverLevel, this.position(), 0.85F);
+            this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.55F, 1.28F);
+        } else {
+            setCombatPose(POSE_MELEE);
+            this.poseTicks = 22;
+            Vec3 forward = this.getLookAngle().normalize();
+            Vec3 arcPos = this.position().add(forward.scale(1.35D)).add(0.0D, 1.15D, 0.0D);
+            serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, arcPos.x, arcPos.y, arcPos.z, 1, 0.1D, 0.05D, 0.1D, 0.0D);
+            serverLevel.sendParticles(elem.particle(), arcPos.x, arcPos.y, arcPos.z, 8, 0.35D, 0.25D, 0.35D, 0.04D);
+            this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 0.55F, 1.25F);
+        }
+    }
+
+    private void performIdleTonicOrGreeting(ServerLevel serverLevel, ElementAffinity elem) {
+        this.getNavigation().stop();
+        CultivationSettlerEntity peer = serverLevel.getEntitiesOfClass(
+                CultivationSettlerEntity.class, this.getBoundingBox().inflate(8.0D),
+                a -> a != this && a.isAlive())
+                .stream().findFirst().orElse(null);
+        if (peer != null && this.random.nextBoolean()) {
+            this.getLookControl().setLookAt(peer, 28.0F, 28.0F);
+            setCombatPose(POSE_CAST);
+            this.poseTicks = 22;
+            serverLevel.sendParticles(XuanhuanParticles.QI_SPARK.get(),
+                    this.getX(), this.getY() + 1.35D, this.getZ(), 6, 0.28D, 0.20D, 0.28D, 0.02D);
+            this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.45F, 1.40F);
+        } else {
+            setCombatPose(POSE_DRINK_PILL);
+            this.poseTicks = 24;
+            this.playSound(SoundEvents.WITCH_DRINK, 0.55F, 1.22F);
+            serverLevel.sendParticles(elem.particle(),
+                    this.getX(), this.getY() + 1.35D, this.getZ(), 6, 0.22D, 0.18D, 0.22D, 0.02D);
+        }
+    }
+
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         boolean hurt = super.hurtServer(level, source, amount);
         if (hurt && this.isAlive()) {
+            if (this.meditateTicks > 0) {
+                this.meditateTicks = 0;
+                setCombatPose(POSE_IDLE);
+                this.poseTicks = 0;
+            }
             Entity attackerEntity = source.getEntity();
             if (attackerEntity instanceof LivingEntity attacker && attacker != this
-                    && !(attacker instanceof CultivationSettlerEntity)) {
+                    && isValidCombatTarget(attacker)) {
                 this.combatTarget = attacker;
                 this.aggroTicks = getRole() == Role.SECT_ELDER ? 600 : 420;
                 if (this.attackCooldown <= 0) {
@@ -436,6 +707,7 @@ public final class CultivationSettlerEntity extends AbstractVillager {
                         ally.combatTarget = attacker;
                         ally.aggroTicks = 320;
                         ally.attackCooldown = 12;
+                        ally.meditateTicks = 0;
                     }
                 }
             }
@@ -523,19 +795,27 @@ public final class CultivationSettlerEntity extends AbstractVillager {
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.62D) {
             @Override
             public boolean canUse() {
-                return !isInCombat() && super.canUse();
+                return !isBusyCultivating() && super.canUse();
             }
 
             @Override
             public boolean canContinueToUse() {
-                return !isInCombat() && super.canContinueToUse();
+                return !isBusyCultivating() && super.canContinueToUse();
             }
         });
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
     }
 
     public boolean isInCombat() {
-        return this.aggroTicks > 0 && this.combatTarget != null && this.combatTarget.isAlive();
+        return this.aggroTicks > 0 && isValidCombatTarget(this.combatTarget);
+    }
+
+    public boolean isMeditating() {
+        return this.meditateTicks > 0 || getCombatPose() == POSE_MEDITATE;
+    }
+
+    public boolean isBusyCultivating() {
+        return isInCombat() || isMeditating() || getCombatPose() != POSE_IDLE;
     }
 
     public int getCombatPose() {
@@ -574,6 +854,9 @@ public final class CultivationSettlerEntity extends AbstractVillager {
             if (this.getOffers().isEmpty()) {
                 return InteractionResult.CONSUME;
             }
+            this.meditateTicks = 0;
+            this.poseTicks = 0;
+            setCombatPose(POSE_IDLE);
             this.setTradingPlayer(player);
             this.openTradingScreen(player, getTypeName(), 1);
         }
