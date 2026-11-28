@@ -1,5 +1,9 @@
 package com.xxsx.earth.xuanxue.client;
 
+import com.xxsx.earth.core.api.v1.EarthCoreApi;
+import com.xxsx.earth.core.api.v1.ForgingPresetApi;
+import com.xxsx.earth.xuanxue.AstralHalberdItem;
+import com.xxsx.earth.xuanxue.SpiritImplementItem;
 import com.xxsx.earth.xuanxue.XuanhuanEarth;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -13,7 +17,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 /**
  * Rich, structured Shift-expandable tooltips for every Earth: Xuanxue item & block
- * (category badge, acquisition path, core mechanics/numbers, and progression links).
+ * plus live EarthCore SolutionComposition & ForgingPresetApi material readouts.
  */
 final class XuanhuanTooltipHandler {
     private XuanhuanTooltipHandler() {
@@ -28,14 +32,24 @@ final class XuanhuanTooltipHandler {
         if (id == null || !XuanhuanEarth.MODID.equals(id.getNamespace())) {
             return;
         }
+        List<Component> lines = event.getToolTip();
+        EarthCoreApi.fluids().appendCompositionTooltip(stack, lines::add);
+
+        if (stack.getItem() instanceof AstralHalberdItem || stack.getItem() instanceof SpiritImplementItem) {
+            ForgingPresetApi.MaterialProfile profile = EarthCoreApi.forging().resolveProfile(stack);
+            lines.add(Component.translatable(
+                    "tooltip.earth_xuanxue.forging_profile",
+                    profile.displayNameZh(),
+                    String.format("%.2f", profile.qiAffinity()),
+                    String.format("+%.1f", profile.attackBonus())
+            ).withStyle(profile.fromFallbackPreset() ? ChatFormatting.DARK_AQUA : ChatFormatting.GOLD));
+        }
+
         String slug = id.getPath();
         String base = "tooltip.earth_xuanxue.detail." + slug;
         if (!I18n.exists(base + ".category")) {
             return;
         }
-
-        List<Component> lines = event.getToolTip();
-        // Category tag right beneath item display name
         int insertAt = Math.min(1, lines.size());
         lines.add(insertAt, Component.literal("[" + I18n.get(base + ".category") + "]")
                 .withStyle(ChatFormatting.GOLD));

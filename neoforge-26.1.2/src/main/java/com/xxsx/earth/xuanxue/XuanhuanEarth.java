@@ -13,8 +13,6 @@ import com.xxsx.earth.xuanxue.entity.SpiritFoxEntity;
 import com.xxsx.earth.xuanxue.entity.StonehornGoatEntity;
 import com.xxsx.earth.xuanxue.entity.WindWolfEntity;
 import com.xxsx.earth.xuanxue.particle.XuanhuanParticles;
-import com.xxsx.earth.xuanxue.settlement.XuanhuanSettlementAnchorBlock;
-import com.xxsx.earth.xuanxue.settlement.XuanhuanSettlementAnchorBlockEntity;
 import com.xxsx.earth.xuanxue.settlement.XuanhuanSettlementCatalog;
 import com.xxsx.earth.xuanxue.settlement.XuanhuanSettlementFeature;
 import net.minecraft.core.registries.Registries;
@@ -93,6 +91,10 @@ public class XuanhuanEarth {
 
     public static final DeferredHolder<MobEffect, AuspiciousMobEffect> AUSPICIOUS =
             MOB_EFFECTS.register("auspicious", AuspiciousMobEffect::new);
+    public static final DeferredHolder<MobEffect, SpiritSpringNourishEffect> SPIRIT_SPRING_NOURISH =
+            MOB_EFFECTS.register("spirit_spring_nourish", SpiritSpringNourishEffect::new);
+    public static final DeferredHolder<MobEffect, QiOverloadEffect> QI_OVERLOAD =
+            MOB_EFFECTS.register("qi_overload", QiOverloadEffect::new);
 
     public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>,
             net.minecraft.core.component.DataComponentType<PillComponent>> PILL_COMPONENT =
@@ -200,9 +202,9 @@ public class XuanhuanEarth {
                     .clientTrackingRange(8)
                     .updateInterval(2)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id("astral_flying_sword"))));
-    public static final DeferredBlock<XuanhuanSettlementAnchorBlock> SETTLEMENT_ANCHOR =
-            BLOCKS.registerBlock("settlement_anchor", XuanhuanSettlementAnchorBlock::new,
-                    () -> stone(MapColor.COLOR_CYAN, 5.0F).noOcclusion());
+    public static final DeferredBlock<SpiritHerbBlock> SPIRIT_HERB_PLANT =
+            BLOCKS.registerBlock("spirit_herb_plant", SpiritHerbBlock::new,
+                    () -> BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY).lightLevel(s -> 4));
     public static final DeferredBlock<XuanhuanMachineBlock> ALCHEMY_FURNACE = machineBlock("alchemy_furnace",
             XuanhuanMachineBlock.Kind.ALCHEMY_FURNACE, () -> stone(MapColor.TERRACOTTA_BLACK, 3.5F).noOcclusion());
     public static final DeferredBlock<XuanhuanMachineBlock> TALISMAN_TABLE = machineBlock("talisman_table",
@@ -215,9 +217,6 @@ public class XuanhuanEarth {
             BLOCK_ENTITY_TYPES.register("xuanhuan_machine", () -> new BlockEntityType<>(
                     XuanhuanMachineBlockEntity::new,
                     MACHINE_BLOCKS.stream().map(DeferredBlock::get).toArray(Block[]::new)));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<XuanhuanSettlementAnchorBlockEntity>> SETTLEMENT_ANCHOR_BLOCK_ENTITY =
-            BLOCK_ENTITY_TYPES.register("settlement_anchor", () -> new BlockEntityType<>(
-                    XuanhuanSettlementAnchorBlockEntity::new, SETTLEMENT_ANCHOR.get()));
     public static final DeferredHolder<MenuType<?>, MenuType<XuanhuanMachineMenu>> XUANHUAN_MACHINE_MENU =
             MENUS.register("xuanhuan_machine", () -> IMenuTypeExtension.create(XuanhuanMachineMenu::new));
 
@@ -277,8 +276,8 @@ public class XuanhuanEarth {
                             .noLootTable()
                             .liquid()
                             .lightLevel(s -> 6));
-    public static final DeferredItem<BucketItem> SPIRIT_SPRING_BUCKET = item("spirit_spring_bucket",
-            props -> new BucketItem(SPIRIT_SPRING_FLUID.get(), props.craftRemainder(Items.BUCKET).stacksTo(1)));
+    public static final DeferredItem<SpiritSpringBucketItem> SPIRIT_SPRING_BUCKET = item("spirit_spring_bucket",
+            props -> new SpiritSpringBucketItem(SPIRIT_SPRING_FLUID.get(), props.craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_SPRING_BOTTLE = item("spirit_spring_bottle",
             props -> new GuidedXuanhuanItem(props.craftRemainder(Items.GLASS_BOTTLE).stacksTo(16), "tooltip.earth_xuanxue.spirit_spring_bottle"));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_GRASS = material("spirit_grass", "tooltip.earth_xuanxue.spirit_grass");

@@ -24,6 +24,7 @@ public abstract class SpiritSpringFluid extends BaseFlowingFluid {
         return FluidType.Properties.create()
                 .descriptionId("block.earth_xuanxue.spirit_spring")
                 .canConvertToSource(false)
+                .isWaterLike(true)
                 .canSwim(true)
                 .canDrown(false)
                 .canPushEntity(true)

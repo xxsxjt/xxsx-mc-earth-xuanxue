@@ -2,7 +2,18 @@ package com.xxsx.earth.xuanxue.settlement;
 
 import com.mojang.serialization.Codec;
 import com.xxsx.earth.xuanxue.TalismanComponent;
+import com.xxsx.earth.core.api.v1.EarthCoreApi;
 import com.xxsx.earth.xuanxue.XuanhuanEarth;
+import com.xxsx.earth.xuanxue.entity.ContractableSpiritBeastEntity;
+import com.xxsx.earth.xuanxue.entity.CultivationSettlerEntity;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignText;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -70,14 +81,9 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
             case SPIRIT_BEAST_KEEPER_CAMP -> buildKeeperCamp(level, center, radius, palette, layout, random);
         }
 
-        level.setBlock(center, XuanhuanEarth.SETTLEMENT_ANCHOR.get().defaultBlockState(), FLAGS);
-        if (level.getBlockEntity(center) instanceof XuanhuanSettlementAnchorBlockEntity anchor) {
-            anchor.configure(type.id(), layout.ordinal(), palette.id());
-            // Record the real standing spots for this layout. The anchor cannot derive them
-            // from the layout enum alone, because each builder places its buildings
-            // differently, and a mismatch spawns residents inside walls.
-            anchor.setSpawnOffsets(spawnOffsets(layout));
-        }
+        // Place authentic settlement signpost + optional Waystones compat (no artificial anchor block)
+        BlockPos markerPos = placeSettlementSignpostAndCompat(level, center, type);
+        spawnSettlementResidents(level, markerPos, type, spawnOffsets(layout), random);
         return true;
     }
 
@@ -153,7 +159,7 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
             minSampleY = Math.min(minSampleY, ground.getY());
             maxSampleY = Math.max(maxSampleY, ground.getY());
         }
-        return (maxSampleY - minSampleY) <= 9;
+        return (maxSampleY - minSampleY) <= 3;
     }
 
     private static void clearSite(WorldGenLevel level, BlockPos center, int radius) {
@@ -391,18 +397,21 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
 
     private static void pave(WorldGenLevel level, BlockPos center, int radius,
                              SettlementStyle.Palette palette) {
-        int minFoundationY = Math.max(level.getMinY() + 1, center.getY() - 28);
+        // Natural shallow earth/stone footing (max 3 blocks deep) — NEVER stack wooden planks underneath!
+        int minFoundationY = Math.max(level.getMinY() + 1, center.getY() - 4);
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 boolean edge = Math.abs(x) == radius || Math.abs(z) == radius;
                 BlockState topState = edge ? palette.wall() : palette.floor();
                 level.setBlock(center.offset(x, -1, z), topState, FLAGS);
-                BlockState pillarState = edge ? palette.wall() : palette.floor();
+                BlockState naturalFoundation = edge
+                        ? Blocks.COBBLESTONE.defaultBlockState()
+                        : Blocks.DIRT.defaultBlockState();
                 for (int y = -2; center.getY() + y >= minFoundationY; y--) {
                     BlockPos supportPos = center.offset(x, y, z);
                     BlockState existing = level.getBlockState(supportPos);
                     if (isFoliageOrReplaceable(existing) || !existing.getFluidState().isEmpty()) {
-                        level.setBlock(supportPos, pillarState, FLAGS);
+                        level.setBlock(supportPos, naturalFoundation, FLAGS);
                     } else {
                         break;
                     }
@@ -536,7 +545,7 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                 } else {
                     level.setBlock(pos.offset(x, 0, z),
                             XuanhuanEarth.SPIRIT_SOIL.get().defaultBlockState(), FLAGS);
-                    level.setBlock(pos.offset(x, 1, z), Blocks.FERN.defaultBlockState(), FLAGS);
+                    level.setBlock(pos.offset(x, 1, z), XuanhuanEarth.SPIRIT_HERB_PLANT.get().defaultBlockState(), FLAGS);
                 }
             }
         }
@@ -670,6 +679,119 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         }
     }
 
+    private static BlockPos placeSettlementSignpostAndCompat(WorldGenLevel level, BlockPos center, Type type) {
+        level.setBlock(center, Blocks.SPRUCE_SIGN.defaultBlockState(), FLAGS);
+        if (level.getBlockEntity(center) instanceof SignBlockEntity sign) {
+            SignText text = sign.getFrontText()
+                    .setHasGlowingText(true)
+                    .setMessage(0, Component.literal("—— 修行聚落 ——").withStyle(ChatFormatting.GOLD))
+                    .setMessage(1, Component.literal(type.displayTitle()).withStyle(ChatFormatting.YELLOW))
+                    .setMessage(2, Component.literal("灵气聚汇之地").withStyle(ChatFormatting.AQUA))
+                    .setMessage(3, Component.literal("Earth: Xuanxue").withStyle(ChatFormatting.GRAY));
+            sign.setText(text, true);
+        }
+        // Soft-compat: if Waystones mod is installed, place a Waystone cleanly beside the signpost
+        if (EarthCoreApi.compat().isWaystonesLoaded()) {
+            Block waystone = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("waystones", "waystone"));
+            BlockPos wsPos = center.offset(2, 0, 0);
+            if (waystone != null && waystone != Blocks.AIR && level.isEmptyBlock(wsPos) && level.isEmptyBlock(wsPos.above())) {
+                level.setBlock(wsPos, waystone.defaultBlockState(), FLAGS);
+                return wsPos;
+            }
+        }
+        return EarthCoreApi.compat().findNearestSettlementMarker(level, center, 8).orElse(center);
+    }
+
+    private static void spawnSettlementResidents(WorldGenLevel level, BlockPos markerPos, Type type,
+                                                 int[][] spawnOffsets, RandomSource random) {
+        List<CultivationSettlerEntity.Role> roster = new ArrayList<>(rosterFor(type));
+        for (int i = roster.size() - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            CultivationSettlerEntity.Role tmp = roster.get(i);
+            roster.set(i, roster.get(j));
+            roster.set(j, tmp);
+        }
+        for (int i = 0; i < Math.min(roster.size(), spawnOffsets.length); i++) {
+            int[] off = spawnOffsets[i];
+            BlockPos preferred = markerPos.offset(off[0], off[1], off[2]);
+            BlockPos spawnPos = findOpenSpawn(level, preferred);
+            CultivationSettlerEntity resident = XuanhuanEarth.CULTIVATION_SETTLER.get()
+                    .create(level.getLevel(), EntitySpawnReason.STRUCTURE);
+            if (resident == null) continue;
+            resident.setRole(roster.get(i));
+            resident.getPersistentData().putString("EarthOnMinecraftResidentRole",
+                    "earth_xuanxue:" + roster.get(i).name().toLowerCase(java.util.Locale.ROOT));
+            resident.getPersistentData().putString("EarthOnMinecraftSettlementProfile",
+                    "earth_core:cultivation_settlement");
+            resident.getPersistentData().putInt("EarthOnMinecraftSettlementAnchorX", markerPos.getX());
+            resident.getPersistentData().putInt("EarthOnMinecraftSettlementAnchorY", markerPos.getY());
+            resident.getPersistentData().putInt("EarthOnMinecraftSettlementAnchorZ", markerPos.getZ());
+            resident.snapTo(spawnPos.getX() + 0.5D, spawnPos.getY(), spawnPos.getZ() + 0.5D,
+                    random.nextFloat() * 360.0F, 0.0F);
+            resident.setPersistenceRequired();
+            level.addFreshEntity(resident);
+        }
+        if (type != Type.WANDERING_MARKET) {
+            EntityType<? extends ContractableSpiritBeastEntity> beastType = switch (random.nextInt(5)) {
+                case 0 -> XuanhuanEarth.SPIRIT_FOX.get();
+                case 1 -> XuanhuanEarth.WIND_WOLF.get();
+                case 2 -> XuanhuanEarth.STONEHORN_GOAT.get();
+                case 3 -> XuanhuanEarth.CRYSTAL_TURTLE.get();
+                default -> XuanhuanEarth.EMBER_CRANE.get();
+            };
+            BlockPos beastPos = findOpenSpawn(level, markerPos.offset(3, 1, 2));
+            ContractableSpiritBeastEntity beast = beastType.create(level.getLevel(), EntitySpawnReason.STRUCTURE);
+            if (beast != null) {
+                beast.snapTo(beastPos.getX() + 0.5D, beastPos.getY(), beastPos.getZ() + 0.5D,
+                        random.nextFloat() * 360.0F, 0.0F);
+                beast.setPersistenceRequired();
+                level.addFreshEntity(beast);
+            }
+        }
+    }
+
+    private static List<CultivationSettlerEntity.Role> rosterFor(Type type) {
+        return switch (type) {
+            case WANDERING_MARKET -> List.of(
+                    CultivationSettlerEntity.Role.WANDERING_MERCHANT,
+                    CultivationSettlerEntity.Role.WANDERING_MERCHANT,
+                    CultivationSettlerEntity.Role.SECT_STEWARD);
+            case SPIRIT_SPRING_VILLAGE -> List.of(
+                    CultivationSettlerEntity.Role.SPIRIT_SPRING_KEEPER,
+                    CultivationSettlerEntity.Role.SPIRIT_SPRING_KEEPER,
+                    CultivationSettlerEntity.Role.WANDERING_MERCHANT);
+            case SECT_OUTPOST -> List.of(
+                    CultivationSettlerEntity.Role.SECT_STEWARD,
+                    CultivationSettlerEntity.Role.SECT_STEWARD,
+                    CultivationSettlerEntity.Role.SPIRIT_SPRING_KEEPER);
+            case MOUNTAIN_SPIRIT_SHRINE -> List.of(
+                    CultivationSettlerEntity.Role.SPIRIT_SPRING_KEEPER,
+                    CultivationSettlerEntity.Role.SECT_STEWARD,
+                    CultivationSettlerEntity.Role.WANDERING_MERCHANT);
+            case SPIRIT_BEAST_KEEPER_CAMP -> List.of(
+                    CultivationSettlerEntity.Role.SPIRIT_SPRING_KEEPER,
+                    CultivationSettlerEntity.Role.WANDERING_MERCHANT,
+                    CultivationSettlerEntity.Role.WANDERING_MERCHANT);
+        };
+    }
+
+    private static BlockPos findOpenSpawn(WorldGenLevel level, BlockPos preferred) {
+        int[] ys = {0, 1, -1, 2};
+        for (int dy : ys) {
+            for (int r = 0; r <= 3; r++) {
+                for (int x = -r; x <= r; x++) {
+                    for (int z = -r; z <= r; z++) {
+                        BlockPos c = preferred.offset(x, dy, z);
+                        if (!level.isEmptyBlock(c.below()) && level.isEmptyBlock(c) && level.isEmptyBlock(c.above())) {
+                            return c;
+                        }
+                    }
+                }
+            }
+        }
+        return preferred;
+    }
+
     public enum Type {
         WANDERING_MARKET("wandering_cultivator_market", 8),
         SPIRIT_SPRING_VILLAGE("spirit_spring_village", 9),
@@ -691,6 +813,16 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
 
         public int radius() {
             return radius;
+        }
+
+        public String displayTitle() {
+            return switch (this) {
+                case WANDERING_MARKET -> "「散修坊市」";
+                case SPIRIT_SPRING_VILLAGE -> "「灵泉村」";
+                case SECT_OUTPOST -> "「宗门前哨」";
+                case MOUNTAIN_SPIRIT_SHRINE -> "「山灵古祠」";
+                case SPIRIT_BEAST_KEEPER_CAMP -> "「御兽营地」";
+            };
         }
 
         /** Climate drives which palette pool the site draws from. */

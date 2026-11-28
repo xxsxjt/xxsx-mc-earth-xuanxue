@@ -260,7 +260,6 @@
   "settlement.earth_xuanxue.sect_frontier_outpost": "Sect Frontier Outpost",
   "settlement.earth_xuanxue.mountain_spirit_shrine": "Mountain Spirit Shrine",
   "settlement.earth_xuanxue.spirit_beast_keeper_camp": "Spirit Beast Keeper Camp",
-  "block.earth_xuanxue.settlement_anchor": "Settlement Spirit Anchor",
   "item.earth_xuanxue.spirit_beast_seal": "Spirit Beast Seal",
   "tooltip.earth_xuanxue.spirit_beast_seal": "Raise affinity to 3 with spirit grass, then use the seal to form a contract.",
   "entity.earth_xuanxue.wind_wolf": "Wind Wolf",
@@ -682,10 +681,6 @@
   "tooltip.earth_xuanxue.detail.meditation_cushion.acquire": "Woven from wool, Spirit Grass, and Spirit Thread",
   "tooltip.earth_xuanxue.detail.meditation_cushion.mechanics": "Right-click to sit and meditate with full Qi efficiency and 4-stage circulation",
   "tooltip.earth_xuanxue.detail.meditation_cushion.progression": "You can also press K anytime to open the Cultivation Panel",
-  "tooltip.earth_xuanxue.detail.settlement_anchor.category": "Settlement · Pact",
-  "tooltip.earth_xuanxue.detail.settlement_anchor.acquire": "Generates naturally inside cultivation villages & sect outposts",
-  "tooltip.earth_xuanxue.detail.settlement_anchor.mechanics": "Right-click to inspect settlement type and protective spirit field status",
-  "tooltip.earth_xuanxue.detail.settlement_anchor.progression": "Anchors local cultivators and serves as a sect waypoint",
   "tooltip.earth_xuanxue.detail.array_pillar.category": "Formation · Pillar",
   "tooltip.earth_xuanxue.detail.array_pillar.acquire": "Carved from stone bricks, Spirit Iron & crystal shards",
   "tooltip.earth_xuanxue.detail.array_pillar.mechanics": "Placed around formal arrays to channel and stabilize Qi flow",
@@ -995,5 +990,13 @@
   "message.earth_xuanxue.book.reading_chapter": "Studying Chapter %s / %s... remain still.",
   "message.earth_xuanxue.book.interrupted": "Movement or damage broke your concentration!",
   "message.earth_xuanxue.book.chapter_done": "Finished Chapter %s / %s. Pause briefly to contemplate.",
-  "message.earth_xuanxue.book.mastered": "All 4 chapters mastered! %s is now etched into your mind."
+  "message.earth_xuanxue.book.mastered": "All 4 chapters mastered! %s is now etched into your mind.",
+  "effect.earth_xuanxue.spirit_spring_nourish": "Spirit Spring Nourishment",
+  "effect.earth_xuanxue.qi_overload": "Qi Overload",
+  "block.earth_xuanxue.spirit_herb_plant": "Wild Spirit Herb",
+  "solute.earth_xuanxue.spirit_qi": "Spirit Qi Essence",
+  "msg.earth_xuanxue.spirit_spring_mortal_overload": "Unawakened meridians cannot withstand %d%% Spirit Spring! Learn Qi Guiding or dilute with water.",
+  "msg.earth_xuanxue.spirit_spring_too_concentrated": "Spirit Spring concentration (%d%%) exceeds realm tolerance (Realm %d)! Dilute with water.",
+  "msg.earth_xuanxue.spirit_spring_nourish": "Spirit Spring Nourishment (%d%%): Qi recovery & cultivation speed boosted.",
+  "tooltip.earth_xuanxue.forging_profile": "Material Profile: %s · Qi Affinity x%s · Atk %s"
 }

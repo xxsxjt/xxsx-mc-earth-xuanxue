@@ -41,7 +41,8 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
     private final ModelPart capeRoot;
     private final ModelPart capeMid;
     private final ModelPart capeLower;
-    private final ModelPart faceThirdEye;
+    private final ModelPart wgFacePlate;
+    private final ModelPart cuirassFrontPlate;
     private final ModelPart p2CrownCrest;
     private final ModelPart p2ChestCore;
     private final ModelPart p2PauldronL;
@@ -79,7 +80,8 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         this.capeRoot = this.chest.getChild("cape_root");
         this.capeMid = this.capeRoot.getChild("cape_mid");
         this.capeLower = this.capeMid.getChild("cape_lower");
-        this.faceThirdEye = this.head.getChild("face_third_eye");
+        this.wgFacePlate = this.head.getChild("wg_face_plate");
+        this.cuirassFrontPlate = this.chest.getChild("cuirass_front_plate");
         this.p2CrownCrest = this.head.getChild("p2_crown_crest");
         this.p2ChestCore = this.chest.getChild("p2_chest_core");
         this.halberdArm = this.chest.getChild("left_arm");
@@ -156,6 +158,8 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         chest.addOrReplaceChild("cuirass_side_r", CubeListBuilder.create().texOffs(384, 0).addBox(-0.80F, -3.90F, -1.40F, 1.50F, 7.90F, 2.90F), PartPose.offsetAndRotation(-7.50F, -6.50F, -4.00F, -0.0000F, -0.2443F, 0.0000F));
         chest.addOrReplaceChild("heart_bezel_b", CubeListBuilder.create().texOffs(416, 0).addBox(-2.60F, -2.00F, -0.50F, 5.20F, 4.00F, 0.90F), PartPose.offsetAndRotation(0.00F, -6.40F, -5.60F, -0.0000F, -0.0000F, 0.7854F));
         chest.addOrReplaceChild("heart_core_gem", CubeListBuilder.create().texOffs(448, 0).addBox(-1.70F, -1.70F, -0.70F, 3.40F, 3.40F, 1.00F), PartPose.offsetAndRotation(0.00F, -6.40F, -5.80F, -0.0000F, -0.0000F, 0.7854F));
+        // Painted 32x32 celestial cuirass filigree plate matching Web 3D Viewer bbmodel UV (128,192)->(160,224)
+        chest.addOrReplaceChild("cuirass_front_plate", CubeListBuilder.create().texOffs(128, 192).addBox(-16.0F, -16.0F, 0.0F, 32.0F, 32.0F, 0.0F), PartPose.offset(0.00F, -6.20F, -5.62F));
         PartDefinition astral_wings = chest.addOrReplaceChild("astral_wings", CubeListBuilder.create()
             , PartPose.offsetAndRotation(0.00F, -10.00F, 7.00F, -0.0000F, -0.0000F, 0.0000F));
         PartDefinition sword_r1 = astral_wings.addOrReplaceChild("sword_r1", CubeListBuilder.create()
@@ -275,11 +279,8 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
         head.addOrReplaceChild("wg_cheek_r", CubeListBuilder.create().texOffs(384, 0).addBox(-1.40F, -0.70F, -1.00F, 2.60F, 2.40F, 2.20F), PartPose.offsetAndRotation(-3.00F, -2.00F, -3.80F, -0.0000F, -0.1745F, 0.0000F));
         head.addOrReplaceChild("wg_mask_jaw", CubeListBuilder.create().texOffs(384, 0).addBox(-2.10F, -0.00F, -0.60F, 4.20F, 2.40F, 1.10F), PartPose.offsetAndRotation(0.00F, -2.30F, -4.30F, -0.1396F, -0.0000F, 0.0000F));
         head.addOrReplaceChild("wg_mask_chin_trim", CubeListBuilder.create().texOffs(416, 0).addBox(-1.50F, -0.50F, -0.55F, 3.00F, 0.90F, 1.05F), PartPose.offsetAndRotation(0.00F, -0.00F, -4.50F, -0.1396F, -0.0000F, 0.0000F));
-        // Sculpted celestial martial face details (3D angled luminous eyes, sculpted nose bridge, forehead star-seal)
-        head.addOrReplaceChild("face_nose_bridge", CubeListBuilder.create().texOffs(416, 0).addBox(-0.55F, -4.40F, -4.75F, 1.10F, 2.30F, 0.95F), PartPose.ZERO);
-        head.addOrReplaceChild("face_eye_l", CubeListBuilder.create().texOffs(448, 32).addBox(0.85F, -0.45F, -0.35F, 2.15F, 0.85F, 0.50F), PartPose.offsetAndRotation(0.20F, -3.55F, -4.35F, 0.0F, 0.08F, -0.16F));
-        head.addOrReplaceChild("face_eye_r", CubeListBuilder.create().texOffs(448, 32).addBox(-3.00F, -0.45F, -0.35F, 2.15F, 0.85F, 0.50F), PartPose.offsetAndRotation(-0.20F, -3.55F, -4.35F, 0.0F, -0.08F, 0.16F));
-        head.addOrReplaceChild("face_third_eye", CubeListBuilder.create().texOffs(384, 32).addBox(-0.75F, -0.75F, -0.45F, 1.50F, 1.50F, 0.65F), PartPose.offsetAndRotation(0.00F, -5.65F, -4.85F, 0.0F, 0.0F, 0.7854F));
+        // Exact painted 32x32 celestial visor face matching Web 3D Viewer bbmodel UV (448,64)->(480,96) on wg_helm_core front
+        head.addOrReplaceChild("wg_face_plate", CubeListBuilder.create().texOffs(448, 64).addBox(-16.0F, -16.0F, 0.0F, 32.0F, 32.0F, 0.0F), PartPose.offset(0.00F, -4.20F, -4.22F));
         // Phase 2 physical crown evolution (blazing celestial war-god crown horns & astral crest)
         PartDefinition p2_crown_crest = head.addOrReplaceChild("p2_crown_crest", CubeListBuilder.create()
             .texOffs(448, 32).addBox(-0.90F, -19.50F, -2.50F, 1.80F, 6.20F, 1.40F)
@@ -501,6 +502,13 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
     @Override
     public void setupAnim(AstralSovereignRenderState state) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
+        // Lock 32x32 painted face & chestplate UV plates onto wg_helm_core (8.4x8.4) and cuirass_front_main (14.8x8.8)
+        this.wgFacePlate.xScale = 8.40F / 32.0F;
+        this.wgFacePlate.yScale = 8.40F / 32.0F;
+        this.wgFacePlate.zScale = 1.0F;
+        this.cuirassFrontPlate.xScale = 14.80F / 32.0F;
+        this.cuirassFrontPlate.yScale = 8.80F / 32.0F;
+        this.cuirassFrontPlate.zScale = 1.0F;
 
         float age = state.ageInTicks;
         float p = Mth.clamp(state.actionProgress, 0.0F, 1.0F);

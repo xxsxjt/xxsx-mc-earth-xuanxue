@@ -35,7 +35,7 @@ class AstralSovereignIntegrationTest {
                 "talisman_table.json", "talisman_table_active.json",
                 "spirit_array_core.json", "spirit_array_core_active.json", "spirit_array_core_formed.json",
                 "array_pillar.json", "meditation_cushion.json", "spirit_vein_node.json",
-                "spirit_spring_stone.json", "spirit_spring_stone_size1.json", "spirit_spring_stone_size2.json", "spirit_spring_stone_size3.json", "settlement_anchor.json", "spirit_soil.json"
+                "spirit_spring_stone.json", "spirit_spring_stone_size1.json", "spirit_spring_stone_size2.json", "spirit_spring_stone_size3.json", "spirit_soil.json"
         }) {
             Path p = resources.resolve("assets/earth_xuanxue/models/block/" + model);
             assertTrue(Files.exists(p), "Missing block model: " + model);

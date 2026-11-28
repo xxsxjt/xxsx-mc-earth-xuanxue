@@ -1,5 +1,6 @@
 package com.xxsx.earth.xuanxue;
 
+import com.xxsx.earth.core.api.v1.EarthCoreApi;
 import com.xxsx.earth.xuanxue.entity.AstralFlyingSwordEntity;
 import com.xxsx.earth.xuanxue.particle.XuanhuanParticles;
 import java.util.HashMap;
@@ -200,7 +201,8 @@ public class AstralHalberdItem extends Item {
                 e -> e != player && e.isAlive());
         for (LivingEntity target : targets) {
             if (alreadyHit.add(target)) {
-                target.hurtServer(level, player.damageSources().playerAttack(player), damage);
+                float forgeBonus = EarthCoreApi.forging().resolveProfile(player.getMainHandItem()).attackBonus() * 0.25F;
+                target.hurtServer(level, player.damageSources().playerAttack(player), damage + forgeBonus);
                 target.knockback(knockback, -look.x, -look.z);
             }
         }

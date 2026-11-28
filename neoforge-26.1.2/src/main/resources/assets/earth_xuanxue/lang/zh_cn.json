@@ -260,7 +260,6 @@
   "settlement.earth_xuanxue.sect_frontier_outpost": "宗门边境前哨",
   "settlement.earth_xuanxue.mountain_spirit_shrine": "山灵祠",
   "settlement.earth_xuanxue.spirit_beast_keeper_camp": "灵兽师营地",
-  "block.earth_xuanxue.settlement_anchor": "聚落灵契锚点",
   "item.earth_xuanxue.spirit_beast_seal": "灵兽契印",
   "tooltip.earth_xuanxue.spirit_beast_seal": "先以灵草将亲和提升至 3，再对灵兽使用契印完成契约。",
   "entity.earth_xuanxue.wind_wolf": "风行狼",
@@ -682,10 +681,6 @@
   "tooltip.earth_xuanxue.detail.meditation_cushion.acquire": "以羊毛、灵草与灵丝编织合成",
   "tooltip.earth_xuanxue.detail.meditation_cushion.mechanics": "右键坐下进入吐纳打坐，获得完整修炼效率、额外环境聚灵与持续四阶段周天循环",
   "tooltip.earth_xuanxue.detail.meditation_cushion.progression": "也可随时按 K 键打开修行面板运功、切换功法与尝试突破境界",
-  "tooltip.earth_xuanxue.detail.settlement_anchor.category": "聚落设施 · 灵契",
-  "tooltip.earth_xuanxue.detail.settlement_anchor.acquire": "自然生成于灵泉村、散修坊市、宗门前哨等修行聚落",
-  "tooltip.earth_xuanxue.detail.settlement_anchor.mechanics": "右键锚点可与聚落灵契共鸣，查看当前聚落类型与灵气庇护状态",
-  "tooltip.earth_xuanxue.detail.settlement_anchor.progression": "庇护周边修行居民与灵兽，适合作为宗门据点坐标",
   "tooltip.earth_xuanxue.detail.array_pillar.category": "阵法构件 · 柱石",
   "tooltip.earth_xuanxue.detail.array_pillar.acquire": "以石砖、灵铁与灵晶碎片雕琢而成",
   "tooltip.earth_xuanxue.detail.array_pillar.mechanics": "布设于正式聚灵阵外围或阵法节点，增强灵气导流与阵纹稳定度",
@@ -1009,5 +1004,13 @@
   "message.earth_xuanxue.book.reading_chapter": "凝神展卷，正在研读第 %s / %s 卷……（请保持静立）",
   "message.earth_xuanxue.book.interrupted": "心浮气躁或身形晃动，本卷研读被打断！",
   "message.earth_xuanxue.book.chapter_done": "合卷沉思，已通读第 %s / %s 卷，略作调息后可续读下卷。",
-  "message.earth_xuanxue.book.mastered": "四卷贯通！你已彻底参透 %s，对应玄门学识已铭刻于心。"
+  "message.earth_xuanxue.book.mastered": "四卷贯通！你已彻底参透 %s，对应玄门学识已铭刻于心。",
+  "effect.earth_xuanxue.spirit_spring_nourish": "灵泉浸润",
+  "effect.earth_xuanxue.qi_overload": "灵气逆冲",
+  "block.earth_xuanxue.spirit_herb_plant": "野生灵草",
+  "solute.earth_xuanxue.spirit_qi": "灵气精粹",
+  "msg.earth_xuanxue.spirit_spring_mortal_overload": "经脉未开，难承 %d%% 灵泉之气！请先研习《引气法》或以清水稀释",
+  "msg.earth_xuanxue.spirit_spring_too_concentrated": "灵泉浓度过高（%d%%，需境界 %d），经脉胀痛逆冲！可引清水互溶稀释",
+  "msg.earth_xuanxue.spirit_spring_nourish": "灵泉浸润（浓度 %d%%）：灵力回复与修炼效率显著提升",
+  "tooltip.earth_xuanxue.forging_profile": "锻材特性：%s · 灵性亲和 x%s · 攻幅 %s"
 }
