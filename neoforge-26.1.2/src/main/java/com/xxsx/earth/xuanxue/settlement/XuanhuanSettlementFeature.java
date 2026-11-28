@@ -82,7 +82,7 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         }
 
         // Place authentic settlement signpost + optional Waystones compat (no artificial anchor block)
-        BlockPos markerPos = placeSettlementSignpostAndCompat(level, center, type);
+        BlockPos markerPos = placeSettlementSignpostAndCompat(level, center, radius, type);
         spawnSettlementResidents(level, markerPos, type, spawnOffsets(layout), random);
         return true;
     }
@@ -361,10 +361,12 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
                 if (edge) {
                     level.setBlock(center.offset(x, 0, z), palette.post(), FLAGS);
                 } else if ((x + z) % 3 == 0) {
-                    level.setBlock(center.offset(x, 0, z),
+                    level.setBlock(center.offset(x, -1, z),
                             XuanhuanEarth.SPIRIT_SOIL.get().defaultBlockState(), FLAGS);
-                } else if ((x * z) % 5 == 0) {
-                    level.setBlock(center.offset(x, 0, z), palette.accent(), FLAGS);
+                    if ((x + z) % 2 == 0) {
+                        level.setBlock(center.offset(x, 0, z),
+                                XuanhuanEarth.SPIRIT_HERB_PLANT.get().defaultBlockState(), FLAGS);
+                    }
                 }
             }
         }
@@ -397,12 +399,13 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
 
     private static void pave(WorldGenLevel level, BlockPos center, int radius,
                              SettlementStyle.Palette palette) {
-        // Natural shallow earth/stone footing (max 3 blocks deep) — NEVER stack wooden planks underneath!
-        int minFoundationY = Math.max(level.getMinY() + 1, center.getY() - 4);
+        // Natural earth/stone courtyard surface (wooden planks are strictly reserved for interior hut floors)
+        // with shallow natural dirt/cobblestone footing (max 2 blocks deep) to blend cleanly into terrain.
+        int minFoundationY = Math.max(level.getMinY() + 1, center.getY() - 3);
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 boolean edge = Math.abs(x) == radius || Math.abs(z) == radius;
-                BlockState topState = edge ? palette.wall() : palette.floor();
+                BlockState topState = edge ? palette.wall() : palette.path();
                 level.setBlock(center.offset(x, -1, z), topState, FLAGS);
                 BlockState naturalFoundation = edge
                         ? Blocks.COBBLESTONE.defaultBlockState()
@@ -679,9 +682,29 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         }
     }
 
-    private static BlockPos placeSettlementSignpostAndCompat(WorldGenLevel level, BlockPos center, Type type) {
-        level.setBlock(center, Blocks.SPRUCE_SIGN.defaultBlockState(), FLAGS);
-        if (level.getBlockEntity(center) instanceof SignBlockEntity sign) {
+    private static BlockPos findOpenSignpostSpot(WorldGenLevel level, BlockPos center, int radius) {
+        int rim = Math.max(2, radius - 2);
+        int[][] candidates = new int[][]{
+                {0, rim}, {2, rim}, {-2, rim},
+                {rim, 0}, {-rim, 0}, {0, -rim},
+                {rim - 1, rim - 1}, {-rim + 1, rim - 1},
+                {2, 2}, {-2, 2}, {2, -2}, {-2, -2}
+        };
+        for (int[] off : candidates) {
+            BlockPos pos = center.offset(off[0], 0, off[1]);
+            BlockState below = level.getBlockState(pos.below());
+            if (level.isEmptyBlock(pos) && level.isEmptyBlock(pos.above())
+                    && !below.isAir() && below.getFluidState().isEmpty()) {
+                return pos;
+            }
+        }
+        return center.offset(0, 0, rim);
+    }
+
+    private static BlockPos placeSettlementSignpostAndCompat(WorldGenLevel level, BlockPos center, int radius, Type type) {
+        BlockPos signPos = findOpenSignpostSpot(level, center, radius);
+        level.setBlock(signPos, Blocks.SPRUCE_SIGN.defaultBlockState(), FLAGS);
+        if (level.getBlockEntity(signPos) instanceof SignBlockEntity sign) {
             SignText text = sign.getFrontText()
                     .setHasGlowingText(true)
                     .setMessage(0, Component.literal("—— 修行聚落 ——").withStyle(ChatFormatting.GOLD))
@@ -693,13 +716,13 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         // Soft-compat: if Waystones mod is installed, place a Waystone cleanly beside the signpost
         if (EarthCoreApi.compat().isWaystonesLoaded()) {
             Block waystone = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("waystones", "waystone"));
-            BlockPos wsPos = center.offset(2, 0, 0);
+            BlockPos wsPos = signPos.offset(2, 0, 0);
             if (waystone != null && waystone != Blocks.AIR && level.isEmptyBlock(wsPos) && level.isEmptyBlock(wsPos.above())) {
                 level.setBlock(wsPos, waystone.defaultBlockState(), FLAGS);
                 return wsPos;
             }
         }
-        return EarthCoreApi.compat().findNearestSettlementMarker(level, center, 8).orElse(center);
+        return EarthCoreApi.compat().findNearestSettlementMarker(level, signPos, 8).orElse(signPos);
     }
 
     private static void spawnSettlementResidents(WorldGenLevel level, BlockPos markerPos, Type type,

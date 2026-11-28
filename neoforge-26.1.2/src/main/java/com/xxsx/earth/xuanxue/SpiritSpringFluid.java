@@ -26,6 +26,8 @@ public abstract class SpiritSpringFluid extends BaseFlowingFluid {
                 .canConvertToSource(false)
                 .isWaterLike(true)
                 .canSwim(true)
+                .motionScale(0.014D)
+                .fallDistanceModifier(0.0F)
                 .canDrown(false)
                 .canPushEntity(true)
                 .canExtinguish(true)

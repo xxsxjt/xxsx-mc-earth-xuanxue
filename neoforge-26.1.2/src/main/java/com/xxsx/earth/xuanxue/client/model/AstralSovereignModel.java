@@ -517,6 +517,7 @@ public final class AstralSovereignModel extends EntityModel<AstralSovereignRende
                 ? smoothWindow(p, 0.46F, 0.56F)
                 : (state.phase2 ? 1.0F : 0.0F);
         boolean showPhase2Parts = awakenFactor > 0.02F;
+        this.cuirassFrontPlate.visible = showPhase2Parts;
 
         this.head.yRot += state.yRot * Mth.DEG_TO_RAD * 0.65F;
         this.head.xRot += state.xRot * Mth.DEG_TO_RAD * 0.55F;

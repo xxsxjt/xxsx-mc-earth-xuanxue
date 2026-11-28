@@ -277,9 +277,16 @@ public class XuanhuanEarth {
                             .liquid()
                             .lightLevel(s -> 6));
     public static final DeferredItem<SpiritSpringBucketItem> SPIRIT_SPRING_BUCKET = item("spirit_spring_bucket",
-            props -> new SpiritSpringBucketItem(SPIRIT_SPRING_FLUID.get(), props.craftRemainder(Items.BUCKET).stacksTo(1)));
-    public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_SPRING_BOTTLE = item("spirit_spring_bottle",
-            props -> new GuidedXuanhuanItem(props.craftRemainder(Items.GLASS_BOTTLE).stacksTo(16), "tooltip.earth_xuanxue.spirit_spring_bottle"));
+            props -> new SpiritSpringBucketItem(SPIRIT_SPRING_FLUID.get(), props.craftRemainder(Items.BUCKET).stacksTo(1)
+                    .component(com.xxsx.earth.core.component.EarthCoreComponents.SOLUTION_COMPOSITION.get(),
+                            com.xxsx.earth.core.component.SolutionComposition.singleSolute(
+                                    "minecraft:water", SpiritSpringFluidBlock.SOLUTE_SPIRIT_QI,
+                                    SpiritSpringFluidBlock.MAX_CONCENTRATION * 250, 1000, 295))));
+    public static final DeferredItem<SpiritSpringBottleItem> SPIRIT_SPRING_BOTTLE = item("spirit_spring_bottle",
+            props -> new SpiritSpringBottleItem(props.craftRemainder(Items.GLASS_BOTTLE).stacksTo(16)
+                    .component(com.xxsx.earth.core.component.EarthCoreComponents.SOLUTION_COMPOSITION.get(),
+                            SpiritSpringBottleItem.defaultComposition()),
+                    "tooltip.earth_xuanxue.spirit_spring_bottle"));
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_GRASS = material("spirit_grass", "tooltip.earth_xuanxue.spirit_grass");
     public static final DeferredItem<GuidedXuanhuanItem> SPIRIT_HERB = material("spirit_herb", "tooltip.earth_xuanxue.spirit_herb");
     public static final DeferredItem<GuidedXuanhuanItem> CINNABAR_SPIRIT_INK = material("cinnabar_spirit_ink", "tooltip.earth_xuanxue.cinnabar_spirit_ink");

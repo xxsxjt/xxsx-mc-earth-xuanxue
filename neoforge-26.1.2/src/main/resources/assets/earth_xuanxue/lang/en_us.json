@@ -998,5 +998,8 @@
   "msg.earth_xuanxue.spirit_spring_mortal_overload": "Unawakened meridians cannot withstand %d%% Spirit Spring! Learn Qi Guiding or dilute with water.",
   "msg.earth_xuanxue.spirit_spring_too_concentrated": "Spirit Spring concentration (%d%%) exceeds realm tolerance (Realm %d)! Dilute with water.",
   "msg.earth_xuanxue.spirit_spring_nourish": "Spirit Spring Nourishment (%d%%): Qi recovery & cultivation speed boosted.",
-  "tooltip.earth_xuanxue.forging_profile": "Material Profile: %s · Qi Affinity x%s · Atk %s"
+  "tooltip.earth_xuanxue.forging_profile": "Material Profile: %s · Qi Affinity x%s · Atk %s",
+  "msg.earth_xuanxue.spirit_spring_bottle_diluted": "Diluted Spirit Spring bottle in water cauldron: %s%% -> %s%%",
+  "msg.earth_xuanxue.spirit_spring_bottle_drink": "Drank %s%% Spirit Spring water (+%s Qi, Spirit Spring Nourishment)",
+  "msg.earth_xuanxue.spirit_spring_bottle_overload": "Drinking %s%% Spirit Spring triggered Qi Overload! Dilute in a water cauldron first."
 }

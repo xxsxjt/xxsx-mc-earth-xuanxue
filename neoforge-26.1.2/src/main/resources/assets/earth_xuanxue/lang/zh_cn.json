@@ -1012,5 +1012,8 @@
   "msg.earth_xuanxue.spirit_spring_mortal_overload": "经脉未开，难承 %d%% 灵泉之气！请先研习《引气法》或以清水稀释",
   "msg.earth_xuanxue.spirit_spring_too_concentrated": "灵泉浓度过高（%d%%，需境界 %d），经脉胀痛逆冲！可引清水互溶稀释",
   "msg.earth_xuanxue.spirit_spring_nourish": "灵泉浸润（浓度 %d%%）：灵力回复与修炼效率显著提升",
-  "tooltip.earth_xuanxue.forging_profile": "锻材特性：%s · 灵性亲和 x%s · 攻幅 %s"
+  "tooltip.earth_xuanxue.forging_profile": "锻材特性：%s · 灵性亲和 x%s · 攻幅 %s",
+  "msg.earth_xuanxue.spirit_spring_bottle_diluted": "已在水釜中将灵泉稀释：%s%% → %s%%",
+  "msg.earth_xuanxue.spirit_spring_bottle_drink": "饮下 %s%% 浓度灵泉水，恢复 %s 点灵力并获得【灵泉浸润】",
+  "msg.earth_xuanxue.spirit_spring_bottle_overload": "贸然饮下 %s%% 高浓度灵泉水引发【灵气逆冲】！请先于水釜稀释或提升境界"
 }

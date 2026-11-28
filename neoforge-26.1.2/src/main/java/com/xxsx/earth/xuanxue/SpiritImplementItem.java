@@ -80,10 +80,13 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
     }
 
     private InteractionResult cast(Level level, Player player, InteractionHand hand, ItemStack stack) {
+        var forgeProfile = com.xxsx.earth.core.api.v1.EarthCoreApi.forging().resolveProfile(stack);
+        double affinityDiscount = Math.max(0.65D, Math.min(1.15D, 1.30D - forgeProfile.qiAffinity() * 0.25D));
+        double effectiveCost = kind.costPerCast() * affinityDiscount;
         ImplementComponent state = ImplementComponent.read(stack);
         double remainingCharge = state.charge();
-        if (state.charge() < kind.costPerCast() - 0.0001D) {
-            double manaFallbackCost = Math.max(4.0D, kind.costPerCast() * 0.12D);
+        if (state.charge() < effectiveCost - 0.0001D) {
+            double manaFallbackCost = Math.max(4.0D, effectiveCost * 0.12D);
             if (!ArcanaPower.trySpendMana(player, manaFallbackCost)) {
                 player.sendSystemMessage(Component.translatable("message.earth_xuanxue.implement.empty",
                         ArcanaPower.format(state.charge()), ArcanaPower.format(kind.costPerCast()))
@@ -91,7 +94,7 @@ public class SpiritImplementItem extends GuidedXuanhuanItem {
                 return InteractionResult.SUCCESS_SERVER;
             }
         } else {
-            remainingCharge = Math.max(0.0D, state.charge() - kind.costPerCast());
+            remainingCharge = Math.max(0.0D, state.charge() - effectiveCost);
             stack.set(XuanhuanEarth.IMPLEMENT_CHARGE, state.withCharge(remainingCharge));
         }
         if (!(level instanceof ServerLevel serverLevel)) {

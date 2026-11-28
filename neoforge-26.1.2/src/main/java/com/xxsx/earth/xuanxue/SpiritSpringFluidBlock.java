@@ -126,16 +126,18 @@ public class SpiritSpringFluidBlock extends LiquidBlock {
         for (Direction dir : Direction.Plane.HORIZONTAL) {
             BlockPos nPos = pos.relative(dir);
             BlockState nState = level.getBlockState(nPos);
-            if (nState.is(Blocks.WATER) && nState.getFluidState().isSource()) {
+            if (nState.is(Blocks.WATER)) {
                 FluidMixtureApi.DiffusionStep step = EarthCoreApi.fluids().diffuseStep(myConc, 0, MAX_CONCENTRATION);
-                if (step.changed() && step.nextA() >= 1 && step.nextB() >= 1) {
+                if (step.changed() && step.nextA() >= 1) {
                     level.setBlock(pos, state.setValue(CONCENTRATION, step.nextA()), Block.UPDATE_ALL);
-                    level.setBlock(nPos, this.defaultBlockState()
-                            .setValue(LEVEL, 0)
-                            .setValue(CHARGES, MAX_BOTTLE_CHARGES)
-                            .setValue(CONCENTRATION, step.nextB()), Block.UPDATE_ALL);
+                    if (nState.getFluidState().isSource() && step.nextB() >= 1) {
+                        level.setBlock(nPos, this.defaultBlockState()
+                                .setValue(LEVEL, 0)
+                                .setValue(CHARGES, MAX_BOTTLE_CHARGES)
+                                .setValue(CONCENTRATION, step.nextB()), Block.UPDATE_ALL);
+                        level.scheduleTick(nPos, this, 18);
+                    }
                     level.scheduleTick(pos, this, 18);
-                    level.scheduleTick(nPos, this, 18);
                     level.sendParticles(XuanhuanParticles.QI_MOTE.get(),
                             (pos.getX() + nPos.getX()) * 0.5D + 0.5D, pos.getY() + 0.85D,
                             (pos.getZ() + nPos.getZ()) * 0.5D + 0.5D,

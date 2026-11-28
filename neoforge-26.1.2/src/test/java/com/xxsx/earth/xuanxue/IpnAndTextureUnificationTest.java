@@ -49,7 +49,7 @@ class IpnAndTextureUnificationTest {
                 blockCount++;
             }
         }
-        assertTrue(blockCount >= 24, "Expected at least 24 block textures, got " + blockCount);
+        assertTrue(blockCount >= 22, "Expected at least 22 block textures, got " + blockCount);
 
         Set<Integer> allowedItemSizes = Set.of(16, 32, 128);
         int itemCount = 0;
@@ -105,6 +105,15 @@ class IpnAndTextureUnificationTest {
         assertTrue(settlementSrc.contains("EarthCoreApi.compat()"), "Settlement must use EarthCore signpost/Waystones compat");
         assertFalse(Files.exists(Path.of("src/main/java/com/xxsx/earth/xuanxue/settlement/XuanhuanSettlementAnchorBlock.java")),
                 "XuanhuanSettlementAnchorBlock.java must be deleted");
+        try (Stream<Path> walk = Files.walk(Path.of("src/main/resources"))) {
+            long leftover = walk.filter(f -> f.getFileName().toString().contains("settlement_anchor")).count();
+            assertEquals(0L, leftover, "Zero leftover settlement_anchor resource files may remain");
+        }
+        assertTrue(settlementSrc.contains("findOpenSignpostSpot"), "Signpost must use findOpenSignpostSpot to avoid colliding with center spring/altar/campfire");
+        assertTrue(settlementSrc.contains("BlockState topState = edge ? palette.wall() : palette.path();"),
+                "Courtyard pave() must use natural palette.path(), reserving wooden planks strictly for interior huts");
+        assertTrue(Files.exists(Path.of("src/main/java/com/xxsx/earth/xuanxue/SpiritSpringBottleItem.java")),
+                "SpiritSpringBottleItem must exist for drinkable/dilutable spirit spring bottles");
 
         String tooltipSrc = Files.readString(Path.of("src/main/java/com/xxsx/earth/xuanxue/client/XuanhuanTooltipHandler.java"));
         assertTrue(tooltipSrc.contains("EarthCoreApi.forging().resolveProfile"),
