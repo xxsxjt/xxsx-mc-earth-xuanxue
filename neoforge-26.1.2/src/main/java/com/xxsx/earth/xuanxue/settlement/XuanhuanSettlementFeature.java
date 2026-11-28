@@ -6,12 +6,12 @@ import com.xxsx.earth.core.api.v1.EarthCoreApi;
 import com.xxsx.earth.xuanxue.XuanhuanEarth;
 import com.xxsx.earth.xuanxue.entity.ContractableSpiritBeastEntity;
 import com.xxsx.earth.xuanxue.entity.CultivationSettlerEntity;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -701,25 +701,51 @@ public final class XuanhuanSettlementFeature extends Feature<NoneFeatureConfigur
         return center.offset(0, 0, rim);
     }
 
+    private static BlockPos findOpenWaystoneSpot(WorldGenLevel level, BlockPos signPos) {
+        int[][] offsets = new int[][]{{2, 0}, {-2, 0}, {0, 2}, {0, -2}};
+        for (int[] off : offsets) {
+            BlockPos pos = signPos.offset(off[0], 0, off[1]);
+            if (!level.ensureCanWrite(pos) || !level.ensureCanWrite(pos.above())) {
+                continue;
+            }
+            BlockState below = level.getBlockState(pos.below());
+            if (!below.isAir() && below.getFluidState().isEmpty()
+                    && level.isEmptyBlock(pos) && level.isEmptyBlock(pos.above())) {
+                return pos;
+            }
+        }
+        return null;
+    }
+
     private static BlockPos placeSettlementSignpostAndCompat(WorldGenLevel level, BlockPos center, int radius, Type type) {
         BlockPos signPos = findOpenSignpostSpot(level, center, radius);
-        level.setBlock(signPos, Blocks.SPRUCE_SIGN.defaultBlockState(), FLAGS);
-        if (level.getBlockEntity(signPos) instanceof SignBlockEntity sign) {
-            SignText text = sign.getFrontText()
-                    .setHasGlowingText(true)
-                    .setMessage(0, Component.literal("—— 修行聚落 ——").withStyle(ChatFormatting.GOLD))
-                    .setMessage(1, Component.literal(type.displayTitle()).withStyle(ChatFormatting.YELLOW))
-                    .setMessage(2, Component.literal("灵气聚汇之地").withStyle(ChatFormatting.AQUA))
-                    .setMessage(3, Component.literal("Earth: Xuanxue").withStyle(ChatFormatting.GRAY));
-            sign.setText(text, true);
+        if (level.ensureCanWrite(signPos)) {
+            level.setBlock(signPos, Blocks.SPRUCE_SIGN.defaultBlockState(), FLAGS);
+            if (level.getBlockEntity(signPos) instanceof SignBlockEntity sign) {
+                SignText text = SettlementSignHelper.buildSettlementSignText(sign.getFrontText(), type.displayTitle());
+                SettlementSignHelper.applyFrontTextSafely(level, sign, text);
+            }
         }
-        // Soft-compat: if Waystones mod is installed, place a Waystone cleanly beside the signpost
+        // Soft-compat: if Waystones mod is installed, place a full 2-block Waystone cleanly beside the signpost
         if (EarthCoreApi.compat().isWaystonesLoaded()) {
-            Block waystone = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("waystones", "waystone"));
-            BlockPos wsPos = signPos.offset(2, 0, 0);
-            if (waystone != null && waystone != Blocks.AIR && level.isEmptyBlock(wsPos) && level.isEmptyBlock(wsPos.above())) {
-                level.setBlock(wsPos, waystone.defaultBlockState(), FLAGS);
-                return wsPos;
+            try {
+                Block waystone = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("waystones", "waystone"));
+                BlockPos wsPos = findOpenWaystoneSpot(level, signPos);
+                if (waystone != null && waystone != Blocks.AIR && wsPos != null) {
+                    BlockState base = waystone.defaultBlockState();
+                    if (base.hasProperty(BlockStateProperties.WATERLOGGED)) {
+                        base = base.setValue(BlockStateProperties.WATERLOGGED, false);
+                    }
+                    if (base.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF)) {
+                        level.setBlock(wsPos, base.setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER), FLAGS);
+                        level.setBlock(wsPos.above(), base.setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER), FLAGS);
+                    } else {
+                        level.setBlock(wsPos, base, FLAGS);
+                    }
+                    return wsPos;
+                }
+            } catch (RuntimeException ignored) {
+                // Never allow third-party Waystones block state changes to abort worldgen
             }
         }
         return EarthCoreApi.compat().findNearestSettlementMarker(level, signPos, 8).orElse(signPos);
