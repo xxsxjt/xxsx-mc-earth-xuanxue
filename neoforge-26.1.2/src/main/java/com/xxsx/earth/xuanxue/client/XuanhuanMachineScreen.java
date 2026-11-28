@@ -1,5 +1,7 @@
 package com.xxsx.earth.xuanxue.client;
 
+import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
+
 import com.xxsx.earth.xuanxue.XuanhuanEarth;
 import com.xxsx.earth.xuanxue.XuanhuanMachineBlock;
 import com.xxsx.earth.xuanxue.XuanhuanMachineBlockEntity;
@@ -20,6 +22,7 @@ import net.minecraft.world.entity.player.Inventory;
  * Keeps the 176x166 container grid identical to vanilla Minecraft while neatly docking fire/array/redstone
  * controls on the right ear tab with zero slot/border overlap.
  */
+@IPNPlayerSideOnly
 public class XuanhuanMachineScreen extends AbstractContainerScreen<XuanhuanMachineMenu> {
     private static final Identifier ALCHEMY_TEX = XuanhuanEarth.id("textures/gui/container/alchemy_furnace_gui.png");
     private static final Identifier TALISMAN_TEX = XuanhuanEarth.id("textures/gui/container/talisman_table_gui.png");

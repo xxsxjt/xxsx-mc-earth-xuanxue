@@ -3,7 +3,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.148'
 }
 
-version = '0.9.1'
+version = '0.9.2'
 group = 'com.xxsx.earth.xuanxue'
 base.archivesName = 'earth-xuanxue-neoforge-26.1.2'
 
@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-    def earthLoreJar = providers.gradleProperty('earthLoreJar').orElse('/tmp/earth-unify/xxsx-mc-earth-lore/neoforge-26.1.2/build/libs/earth-lore-neoforge-26.1.2-0.2.0.jar').get()
+    def earthLoreJar = providers.gradleProperty('earthLoreJar').orElse('/tmp/earth-unify/xxsx-mc-earth-lore/neoforge-26.1.2/build/libs/earth-lore-neoforge-26.1.2-0.2.1.jar').get()
     compileOnly files(earthLoreJar)
     testImplementation files(earthLoreJar)
     compileOnly 'mezz.jei:jei-26.1.2-common-api:29.53.0.112'
@@ -91,4 +91,17 @@ tasks.named('test', Test) {
 
 tasks.named('check') {
     dependsOn verifyArcanaBalance
+}
+
+// Compile-only Inventory Profiles Next (IPN) API stubs (NEVER packaged into output mod JAR)
+sourceSets {
+    ipnApi {
+        java.srcDir 'src/ipnApi/java'
+    }
+}
+
+dependencies {
+    compileOnly sourceSets.ipnApi.output
+    testCompileOnly sourceSets.ipnApi.output
+    testRuntimeOnly sourceSets.ipnApi.output
 }

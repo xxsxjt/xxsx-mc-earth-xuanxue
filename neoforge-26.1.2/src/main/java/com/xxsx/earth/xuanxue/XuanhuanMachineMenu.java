@@ -1,5 +1,7 @@
 package com.xxsx.earth.xuanxue;
 
+import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,6 +15,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+@IPNPlayerSideOnly
 public class XuanhuanMachineMenu extends AbstractContainerMenu {
     public static final int BUTTON_REDSTONE_ALWAYS = 0;
     public static final int BUTTON_REDSTONE_REQUIRE_SIGNAL = 1;
